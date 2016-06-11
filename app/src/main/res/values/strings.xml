@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">AppyNews</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Configuración</string>
+    <string name="action_configuracion">Configuración</string>
+    <string name="email">oscar.rodriguezbrea@gmail.com</string>
+
+    <string name="section_comunicacion">Contacto</string>
+    <string name="action_enviar">Enviar</string>
+    <string name="action_compartir">Compartir</string>
+    <string name="action_elotroladodelmal">El otro lado del mal</string>
+    <string name="action_seguridadapple">Seguridad Apple</string>
+</resources>
