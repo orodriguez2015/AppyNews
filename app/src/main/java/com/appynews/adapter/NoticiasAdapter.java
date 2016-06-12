@@ -4,65 +4,67 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.appynews.model.dto.Noticia;
+
+import java.util.List;
 
 import material.oscar.com.materialdesign.R;
 
 /**
+ * Adapter para las noticias
  * Created by oscar on 11/06/16.
  */
-public class NoticiasAdapter extends RecyclerView.Adapter<NoticiasAdapter.ViewHolder> {
-    private String[] mDataset;
+public class NoticiasAdapter extends RecyclerView.Adapter<NoticiasAdapter.NoticiaViewHolder> {
+    private List<Noticia> items;
 
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        // each data item is just a string in this case
-        public TextView mTextView;
-        public ViewHolder(TextView v) {
+    public static class NoticiaViewHolder extends RecyclerView.ViewHolder {
+        // Campos respectivos de un item
+        public ImageView imagen;
+        public TextView descripcion;
+        public TextView fechaPublicacion;
+
+        public NoticiaViewHolder(View v) {
             super(v);
-            mTextView = v;
+            //imagen = (ImageView) v.findViewById(R.id.imagen);
+            descripcion = (TextView) v.findViewById(R.id.descripcion);
+            fechaPublicacion = (TextView) v.findViewById(R.id.fechaPublicacion);
         }
     }
 
-    // Provide a suitable constructor (depends on the kind of dataset)
-    public NoticiasAdapter(String[] myDataset) {
-        mDataset = myDataset;
+
+    /**
+     * Constructor
+     * @param items: List<Noticia>
+     */
+    public NoticiasAdapter(List<Noticia> items) {
+        this.items = items;
     }
 
-    // Create new views (invoked by the layout manager)
-    @Override
-    public NoticiasAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                   int viewType) {
-
-     /*
-
-        // create a new view
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.my_text_view, parent, false);
-        // set the view's size, margins, paddings and layout parameters
-
-        /*
-        ViewHolder vh = new ViewHolder(v);
-        return vh;
-        */
-        return null;
-    }
-
-    // Replace the contents of a view (invoked by the layout manager)
-    @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
-        holder.mTextView.setText(mDataset[position]);
-
-    }
-
-    // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mDataset.length;
+        return items.size();
+    }
+
+    @Override
+    public NoticiaViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+
+        /** Se carga el layout noticia.xml para mostrar la información de cada noticia **/
+        View v = LayoutInflater.from(viewGroup.getContext())
+                .inflate(R.layout.noticia, viewGroup, false);
+
+
+
+        return new NoticiaViewHolder(v);
+    }
+
+    @Override
+    public void onBindViewHolder(NoticiaViewHolder viewHolder, int i) {
+        //viewHolder.imagen.setImageResource(items.get(i).getImagen());
+
+        viewHolder.descripcion.setText(items.get(i).getDescripcion());
+        viewHolder.fechaPublicacion.setText("Visitas:"+String.valueOf(items.get(i).getFechaPublicacion()));
     }
 }
-
