@@ -13,4 +13,7 @@
     <string name="action_compartir">Compartir</string>
     <string name="action_elotroladodelmal">El otro lado del mal</string>
     <string name="action_seguridadapple">Seguridad Apple</string>
+
+    <string name="err_connection_state">Su dispositivo no dispone de conexión a Internet</string>
+    <string name="err_permisssion_network_state">Su dispositivo no tiene permiso para comprobar el estado de las conexiones de red</string>
 </resources>

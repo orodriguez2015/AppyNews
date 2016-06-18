@@ -1,6 +1,11 @@
 package com.appynew.activities;
 
+import android.Manifest;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -16,10 +21,16 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.appynews.adapter.NoticiasAdapter;
+import com.appynews.utils.ConnectionUtils;
+import com.appynews.utils.GetInputStreamNewsConnectionTask;
+import com.appynews.utils.MessageUtils;
 import com.appynews.model.dto.Noticia;
+import com.appynews.utils.PermissionsUtil;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import material.oscar.com.materialdesign.R;
 
@@ -35,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private RecyclerView recycler;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager lManager;
+    private int PERMISSION_ACCESS_STATE_PHONE = 1;
+
 
 
     @Override
@@ -108,11 +121,46 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         lManager = new LinearLayoutManager(this);
         recycler.setLayoutManager(lManager);
 
-        // Crear un nuevo adaptador
-        adapter = new NoticiasAdapter(noticias);
-        recycler.setAdapter(adapter);
+
+        if(!PermissionsUtil.appTienePermiso(this, Manifest.permission.ACCESS_NETWORK_STATE)) {
+            // Se comprueba si la app tiene permiso de acceso al estado de red del dispositivo, sino
+            // se dispone del permiso, entonces se informa al usuario
+            MessageUtils.showToastDuracionLarga(getApplicationContext(),getString(R.string.err_permisssion_network_state));
+        } else {
+
+            if (!ConnectionUtils.conexionRedHabilitada(this)) {
+                // Si el dispositivo no tiene habilitado ninguna conexión de red, hay que informar al usuario
+                MessageUtils.showToastDuracionLarga(getApplicationContext(),getString(R.string.err_connection_state));
+
+            } else {
+
+                GetInputStreamNewsConnectionTask conIs = new GetInputStreamNewsConnectionTask();
+                conIs.execute("http://feeds.feedburner.com/ElLadoDelMal?format=xml");
+                InputStream is = null;
+
+                try {
+                    is = conIs.get();
+
+                    if(is!=null) {
+                        MessageUtils.showToastDuracionLarga(this.getApplicationContext(),"Hay conexion con el otrolado");
+                    } else {
+                        MessageUtils.showToastDuracionLarga(this.getApplicationContext(),"SORRY no Hay conexion con el otrolado");
+                    }
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
 
 
+
+                // Crear un nuevo adaptador
+                adapter = new NoticiasAdapter(noticias);
+                recycler.setAdapter(adapter);
+
+            }
+        }
 
     }
 
@@ -172,4 +220,50 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
+    /**
+     * Método que comprueba si el dispositivo tiene acceso a internet, bien sea por WIFI o por Datos móviles
+     * Para ello habrá que añadir un permiso extra en el AndroidManifest.xml
+     * @return True si hay permiso y false en caso contrario
+     */
+    public boolean isOnline(){
+        boolean exito = false;
+
+
+        ConnectivityManager cm = (ConnectivityManager) getApplication().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if(netInfo!=null && netInfo.isConnected()) exito = true;
+
+        return exito;
+    }
+
+
+/**
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_ACCESS_STATE_PHONE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
+    */
+
 }
