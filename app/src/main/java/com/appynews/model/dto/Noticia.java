@@ -180,4 +180,11 @@ public class Noticia implements Serializable{
         this.origen = origen;
     }
 
+
+    public String toString() {
+        String salida = "Autor: ".concat(getAutor()).concat(" <> descripcion: ").concat(getDescripcion()).concat(" <> descripcionCompleta: ").concat(getDescripcionCompleta())
+                .concat(" <> titulo: ").concat(getTitulo());
+        return salida;
+    }
+
 }

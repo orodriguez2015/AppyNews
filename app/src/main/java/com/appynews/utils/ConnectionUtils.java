@@ -5,6 +5,15 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.appynews.adapter.NoticiasAdapter;
+import com.appynews.asynctasks.GetInputStreamNewsConnectionTask;
+import com.appynews.asynctasks.GetNewsRssSourceTask;
+import com.appynews.model.dto.Noticia;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
+
 /**
  * Clase ConnectionUtils
  * Created by oscar on 18/06/16.
@@ -34,12 +43,5 @@ public class ConnectionUtils {
         }
         return exito;
     }
-
-
-
-
-
-
-
 
 }

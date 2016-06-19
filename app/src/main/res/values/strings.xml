@@ -11,9 +11,13 @@
     <string name="section_comunicacion">Contacto</string>
     <string name="action_enviar">Enviar</string>
     <string name="action_compartir">Compartir</string>
+
+    <string name="action_meneame">Menéame</string>
     <string name="action_elotroladodelmal">El otro lado del mal</string>
     <string name="action_seguridadapple">Seguridad Apple</string>
+    <string name="action_applesfera">Applesfera</string>
 
     <string name="err_connection_state">Su dispositivo no dispone de conexión a Internet</string>
     <string name="err_permisssion_network_state">Su dispositivo no tiene permiso para comprobar el estado de las conexiones de red</string>
+
 </resources>

@@ -20,20 +20,33 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Large Text"
+            android:text="Título"
             android:id="@+id/descripcion"
             android:layout_toRightOf="@+id/imagen"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="10dp" />
+            android:layout_marginLeft="10dp"
+            android:textSize="15dp"
+            android:textIsSelectable="true" />
+
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Small Text"
-            android:id="@+id/fechaPublicacion"
+            android:text="Origen RSs"
+            android:id="@+id/origenRss"
             android:layout_below="@+id/descripcion"
             android:layout_alignLeft="@+id/descripcion" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Fecha publicación"
+            android:id="@+id/fechaPublicacion"
+            android:layout_below="@+id/origenRss"
+            android:layout_alignLeft="@+id/origenRss" />
         <View
             android:layout_width="wrap_content"
             android:layout_height="1dp"

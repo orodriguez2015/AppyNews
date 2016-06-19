@@ -18,11 +18,15 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 
 import com.appynews.adapter.NoticiasAdapter;
+import com.appynews.asynctasks.GetNewsRssSourceTask;
+import com.appynews.com.appynews.controllers.NoticiaController;
 import com.appynews.utils.ConnectionUtils;
-import com.appynews.utils.GetInputStreamNewsConnectionTask;
+import com.appynews.asynctasks.GetInputStreamNewsConnectionTask;
+import com.appynews.utils.LogCat;
 import com.appynews.utils.MessageUtils;
 import com.appynews.model.dto.Noticia;
 import com.appynews.utils.PermissionsUtil;
@@ -47,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager lManager;
     private int PERMISSION_ACCESS_STATE_PHONE = 1;
-
+    private NoticiaController noticiaController = new NoticiaController(this);
 
 
     @Override
@@ -76,41 +80,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
 
+        /** Añadir elementos al menú de forma dinámica
+        Menu menu = navigationView.getMenu();
 
-        /** carga del adapter **/
+        menu.add(Menu.CATEGORY_SYSTEM, 4, Menu.CATEGORY_SYSTEM, "Opcion1")
+                .setIcon(android.R.drawable.ic_menu_preferences);
 
-        List<Noticia> noticias = new ArrayList<Noticia>();
-        Noticia n1 = new Noticia();
-        n1.setAutor("Óscar");
-        n1.setDescripcion("Google busca nuevos talentos");
-        n1.setFechaPublicacion("12/06/2015");
-        noticias.add(n1);
-
-
-        Noticia n2 = new Noticia();
-        n2.setAutor("Óscar");
-        n2.setDescripcion("El ganador del Rallye de Naron ha sido Alberto Meira");
-        n2.setFechaPublicacion("14/06/2015");
-        noticias.add(n2);
+        menu.add(Menu.NONE, 5, Menu.NONE, "Opcion2")
+                .setIcon(android.R.drawable.ic_menu_compass);
 
 
-        Noticia n3 = new Noticia();
-        n3.setAutor("Óscar");
-        n3.setDescripcion("Noticia 2");
-        n3.setFechaPublicacion("14/06/2015");
-        noticias.add(n3);
-
-        Noticia n4 = new Noticia();
-        n4.setAutor("Óscar");
-        n4.setDescripcion("Noticia 2");
-        n4.setFechaPublicacion("14/06/2015");
-        noticias.add(n4);
-
-        Noticia n5 = new Noticia();
-        n5.setAutor("Óscar");
-        n5.setDescripcion("El Depor ha fichado a Gaika Garitano como entrenador");
-        n5.setFechaPublicacion("14/06/2015");
-        noticias.add(n5);
+        SubMenu submenu = menu.addSubMenu(Menu.CATEGORY_SYSTEM);
+        submenu.add(Menu.NONE, 5, Menu.NONE, "Opcion3").setIcon(android.R.drawable.ic_menu_compass);
+        */
+        ArrayList<Noticia> noticias = new ArrayList<Noticia>();
 
 
         // Obtener el Recycler
@@ -133,36 +116,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 MessageUtils.showToastDuracionLarga(getApplicationContext(),getString(R.string.err_connection_state));
 
             } else {
-
-                GetInputStreamNewsConnectionTask conIs = new GetInputStreamNewsConnectionTask();
-                conIs.execute("http://feeds.feedburner.com/ElLadoDelMal?format=xml");
-                InputStream is = null;
-
-                try {
-                    is = conIs.get();
-
-                    if(is!=null) {
-                        MessageUtils.showToastDuracionLarga(this.getApplicationContext(),"Hay conexion con el otrolado");
-                    } else {
-                        MessageUtils.showToastDuracionLarga(this.getApplicationContext(),"SORRY no Hay conexion con el otrolado");
-                    }
-
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
-
-
-
-                // Crear un nuevo adaptador
-                adapter = new NoticiasAdapter(noticias);
-                recycler.setAdapter(adapter);
-
+                // Carga inicial de noticias de un determinado origen
+                cargarNoticias("http://feeds.feedburner.com/ElLadoDelMal?format=xml","El otro lado del mal");
             }
         }
-
     }
+
+
+    /**
+     * Método que carga las noticias de una determinada url
+     * @param url: String
+     */
+    private void cargarNoticias(String url,String origen) {
+
+        adapter = new NoticiasAdapter(noticiaController.getNoticias(url),origen);
+        recycler.setAdapter(adapter);
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -202,68 +172,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
 
-        } else if (id == R.id.nav_slideshow) {
+        LogCat.debug(" ================> Se ha selecciona el elemento del menú con id: " + id);
 
-        } else if (id == R.id.nav_manage) {
+        if (id == R.id.meneame) {
+            cargarNoticias("https://www.meneame.net/rss","Menéame");
 
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.elotrolado) {
+            cargarNoticias("http://feeds.feedburner.com/ElLadoDelMal?format=xml","El otro lado del mal");
+
+        } else if (id == R.id.seguridadapple) {
+            cargarNoticias("http://feeds.feedburner.com/Seguridadapple?format=xml","Seguridad Apple");
+
+        }
+        /*
+        else if(id==R.id.applesfera) {
+            cargarNoticias("http://feeds.weblogssl.com/genbetadev?format=xml");
+        }
+        /*else if (id == R.id.applesfera) {
+            cargarNoticias("http://feeds.weblogssl.com/applesfera");
+        }*/
+
+        /*
+        else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
 
         }
-
+        */
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-
-    /**
-     * Método que comprueba si el dispositivo tiene acceso a internet, bien sea por WIFI o por Datos móviles
-     * Para ello habrá que añadir un permiso extra en el AndroidManifest.xml
-     * @return True si hay permiso y false en caso contrario
-     */
-    public boolean isOnline(){
-        boolean exito = false;
-
-
-        ConnectivityManager cm = (ConnectivityManager) getApplication().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        if(netInfo!=null && netInfo.isConnected()) exito = true;
-
-        return exito;
-    }
-
-
-/**
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSION_ACCESS_STATE_PHONE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-
-                } else {
-
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-                return;
-            }
-
-            // other 'case' lines to check for other
-            // permissions this app might request
-        }
-    }
-    */
 
 }
