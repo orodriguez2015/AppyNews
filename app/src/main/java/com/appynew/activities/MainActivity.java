@@ -2,10 +2,12 @@ package com.appynew.activities;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Message;
+import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -18,15 +20,20 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.SubMenu;
 import android.view.View;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.Volley;
 import com.appynews.adapter.NoticiasAdapter;
 import com.appynews.asynctasks.GetNewsRssSourceTask;
 import com.appynews.com.appynews.controllers.NoticiaController;
 import com.appynews.utils.ConnectionUtils;
 import com.appynews.asynctasks.GetInputStreamNewsConnectionTask;
 import com.appynews.utils.LogCat;
+import com.appynews.utils.LruBitmapCache;
 import com.appynews.utils.MessageUtils;
 import com.appynews.model.dto.Noticia;
 import com.appynews.utils.PermissionsUtil;
@@ -48,10 +55,11 @@ import material.oscar.com.materialdesign.R;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private RecyclerView recycler;
-    private RecyclerView.Adapter adapter;
+    //private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager lManager;
     private int PERMISSION_ACCESS_STATE_PHONE = 1;
     private NoticiaController noticiaController = new NoticiaController(this);
+    private ImageLoader imageLoader = null;
 
 
     @Override
@@ -90,7 +98,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .setIcon(android.R.drawable.ic_menu_compass);
 
 
-        SubMenu submenu = menu.addSubMenu(Menu.CATEGORY_SYSTEM);
+        SubMenu submenu = menu.a
+         ddSubMenu(Menu.CATEGORY_SYSTEM);
         submenu.add(Menu.NONE, 5, Menu.NONE, "Opcion3").setIcon(android.R.drawable.ic_menu_compass);
         */
         ArrayList<Noticia> noticias = new ArrayList<Noticia>();
@@ -99,6 +108,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Obtener el Recycler
         recycler = (RecyclerView) findViewById(R.id.reciclador);
         recycler.setHasFixedSize(true);
+
+
+        /**
+        recycler.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+
+            @Override
+            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+                MessageUtils.showToastDuracionLarga(getApplicationContext(),"onInterceptTouchEvent");
+                return false;
+            }
+
+            @Override
+            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+                MessageUtils.showToastDuracionLarga(getApplicationContext(),"ontTouchEvent");
+            }
+
+            @Override
+            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+                MessageUtils.showToastDuracionLarga(getApplicationContext(),"onRequestDisallowIntercept");
+            }
+        });
+        **/
 
         // Usar un administrador para LinearLayout
         lManager = new LinearLayoutManager(this);
@@ -116,6 +147,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 MessageUtils.showToastDuracionLarga(getApplicationContext(),getString(R.string.err_connection_state));
 
             } else {
+
+                RequestQueue requestQueau = Volley.newRequestQueue(this);
+                // Se crea para la cola una caché de 10 imágenes
+                this.imageLoader = new ImageLoader(requestQueau,new LruBitmapCache());
+
+
                 // Carga inicial de noticias de un determinado origen
                 cargarNoticias("http://feeds.feedburner.com/ElLadoDelMal?format=xml","El otro lado del mal");
             }
@@ -125,12 +162,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     /**
      * Método que carga las noticias de una determinada url
-     * @param url: String
+     * @param url: String que contiene la url del orígen de datos RSS
+     * @param origen: String que contiene el nombre del orígen de datos RSS
      */
     private void cargarNoticias(String url,String origen) {
 
-        adapter = new NoticiasAdapter(noticiaController.getNoticias(url),origen);
+        // Se recupera la lista de noticias a través
+        final List<Noticia> noticias = noticiaController.getNoticias(url);
+        NoticiasAdapter adapter =  new NoticiasAdapter(noticias,origen,imageLoader,getResources());
+
+        /**
+         * Se establece el listener que se pasa al adapter para que añade
+         * este Listener a cada View a mostrar en el RecyclerView
+         */
+        adapter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int pos =  recycler.getChildAdapterPosition(view);
+                cargarActivityDetalleNoticia(noticias.get(pos));
+            }
+        });
+
         recycler.setAdapter(adapter);
+    }
+
+
+    private void cargarActivityDetalleNoticia(Noticia noticia) {
+
+        // Se pasa la noticia seleccionada al Activity que mostrará la descripción, en este caso, ActividadDescripcionNoticia
+        Intent intent = new Intent(MainActivity.this, DetalleNoticiaActivity.class);
+
+        // Se recupera la noticia seleccionada de la colección de noticias, en base al parámetro con la posición
+
+        // Origen de la noticia que está en el atributo origenNoticias
+
+        intent.putExtra("noticia",noticia);
+        startActivity(intent);
+
     }
 
 
@@ -185,6 +253,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             cargarNoticias("http://feeds.feedburner.com/Seguridadapple?format=xml","Seguridad Apple");
 
         }
+
+
         /*
         else if(id==R.id.applesfera) {
             cargarNoticias("http://feeds.weblogssl.com/genbetadev?format=xml");
