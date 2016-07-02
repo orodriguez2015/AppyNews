@@ -154,7 +154,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
                 // Carga inicial de noticias de un determinado origen
-                cargarNoticias("http://feeds.feedburner.com/ElLadoDelMal?format=xml","El otro lado del mal");
+                //cargarNoticias("http://feeds.feedburner.com/ElLadoDelMal?format=xml","El otro lado del mal");
+                cargarNoticias("https://www.meneame.net/rss","Menéame");
             }
         }
     }
@@ -252,6 +253,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.seguridadapple) {
             cargarNoticias("http://feeds.feedburner.com/Seguridadapple?format=xml","Seguridad Apple");
 
+        } else if(id==R.id.expansion) {
+            cargarNoticias("http://estaticos.expansion.com/rss/portada.xml","Expansión");
         }
 
 

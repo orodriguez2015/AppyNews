@@ -8,11 +8,21 @@
     tools:context="com.appynew.activities.DetalleNoticiaActivity"
     tools:showIn="@layout/activity_detalle_noticia">
 
+
+    <!--
     <TextView
         android:id="@+id/descripcionNoticia"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/text_margin"
         android:text="" />
+    -->
+    <WebView
+        android:id="@+id/webviewDescripcionNoticia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+    </WebView>
+
 
 </android.support.v4.widget.NestedScrollView>

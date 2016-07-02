@@ -49,14 +49,30 @@ public class LectorRssImpl{
                     if(dato.getNodeType()==Node.ELEMENT_NODE){
                         // Se obtiene el hijo de descripcion, que es un nodo
                         Node datoContenido = dato.getFirstChild();
+
+                        if(datoContenido!=null && datoContenido.getNodeType()==Node.CDATA_SECTION_NODE) {
+                            // La descripción por ejemplo en menéame se agrupa en un node de tipo CDATA_SECTION_NODE
+                            if(dato.getNodeName().equals("description")) {
+                                noticia.setDescripcion(dato.getTextContent());
+                            }
+
+                        } else
                         if(datoContenido!=null && datoContenido.getNodeType()==Node.TEXT_NODE){
                             String valor = datoContenido.getNodeValue();
+
+
+                            //LogCat.debug(" ****** NOMBRE NODO: " + dato.getNodeName());
+                            //LogCat.debug(" ****** VALOR NODO: " + valor);
 
                             if(dato.getNodeName().equals("title"))
                                 noticia.setTitulo(valor);
                             else
-                            if(dato.getNodeName().equals("description"))
-                                noticia.setDescripcion(valor);
+                            if(dato.getNodeName().trim().equals("description")) {
+                                LogCat.debug(" ****** ESTABLECIENDO DESCRIPCION ");
+
+                                LogCat.debug(" ****** getTextContent: " + dato.getTextContent());
+                                noticia.setDescripcion(dato.getTextContent());
+                            }
                             else
                             if(dato.getNodeName().equals("content:encoded"))
                                 noticia.setDescripcionCompleta(valor);

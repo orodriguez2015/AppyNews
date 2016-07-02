@@ -16,12 +16,11 @@
             android:icon="@drawable/ic_menu_gallery"
             android:title="@string/action_seguridadapple" />
 
-    <!--
         <item
-            android:id="@+id/applesfera"
+            android:id="@+id/expansion"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/action_applesfera" />
-        -->
+            android:title="Expansión" />
+
         <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"
