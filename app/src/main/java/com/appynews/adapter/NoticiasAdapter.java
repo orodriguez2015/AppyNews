@@ -22,12 +22,19 @@ import material.oscar.com.materialdesign.R;
  * Created by oscar on 11/06/16.
  */
 public class NoticiasAdapter extends RecyclerView.Adapter<NoticiasAdapter.NoticiaViewHolder> implements View.OnClickListener {
+
     private List<Noticia> items = null;
     private String origen = null;
     private ImageLoader imageLoader = null;
     private Resources resources = null;
     private View.OnClickListener listener = null;
 
+
+    /**
+     * Clase NoticiaViewHolder que contiene los componentes que forman
+     * parte de la vista a renderizar para cada componente
+     *
+     */
     public static class NoticiaViewHolder extends RecyclerView.ViewHolder {
         // Campos respectivos de un item
         public TextView descripcion;
@@ -36,6 +43,10 @@ public class NoticiasAdapter extends RecyclerView.Adapter<NoticiasAdapter.Notici
         public NetworkImageView imagen = null;
 
 
+        /**
+         * Constructor
+         * @param v: View
+         */
         public NoticiaViewHolder(View v) {
             super(v);
             imagen           = (NetworkImageView) v.findViewById(R.id.imagen);
@@ -66,6 +77,10 @@ public class NoticiasAdapter extends RecyclerView.Adapter<NoticiasAdapter.Notici
     }
 
 
+    /**
+     * Devuelve el número de noticias que se muestran
+     * @return int
+     */
     @Override
     public int getItemCount() {
         return items.size();
@@ -85,33 +100,15 @@ public class NoticiasAdapter extends RecyclerView.Adapter<NoticiasAdapter.Notici
 
     @Override
     public void onBindViewHolder(NoticiaViewHolder viewHolder, int i) {
-        //viewHolder.imagen.setImageResource(items.get(i).getImagen());
 
         if(items.get(i).getUrlThumbnail()!=null && !"".equals(items.get(i).getUrlThumbnail())) {
 
-            LogCat.debug("NoticiasAdapter <> obtenerImagen de la url: " + items.get(i).getUrlThumbnail());
-
-
-            viewHolder.imagen.setDefaultImageResId(android.R.drawable.sym_def_app_icon);
-            //viewHolder.imagen.setErrorImageResId(R.drawable.ic_launcher);
+            // Se indica al NetWorkImage la url de la imagen a mostrar, en caso de que no haya imagen.
+            // Se muestra el logo de la aplicación como background del NetworkImageView
             viewHolder.imagen.setAdjustViewBounds(true);
-            //viewHolder.imagen.setImageResource(R.drawable.ic_launcher);
-
-
-            if(items.get(i).getUrlThumbnail()!=null && !"".equals(items.get(i).getUrlThumbnail())){
-
-                LogCat.debug("============> Estableciendo imagen " + items.get(i).getUrlThumbnail());
-                viewHolder.imagen.setImageUrl(items.get(i).getUrlThumbnail(), this.imageLoader);
-
-                //BitmapDrawable bd = (BitmapDrawable)viewHolder.imagen.getDrawable();
-
-                //RoundedBitmapDrawableFactory.create(this.resources,null);
-
-
-            }else{
-                LogCat.debug("============> No hay imagen ");
-                viewHolder.imagen.setDefaultImageResId(android.R.drawable.sym_def_app_icon);
-            }
+            viewHolder.imagen.setImageUrl(items.get(i).getUrlThumbnail(), this.imageLoader);
+            //BitmapDrawable bd = (BitmapDrawable)viewHolder.imagen.getDrawable();
+            //RoundedBitmapDrawableFactory.create(this.resources,null);
         }
 
         viewHolder.descripcion.setText(items.get(i).getTitulo());

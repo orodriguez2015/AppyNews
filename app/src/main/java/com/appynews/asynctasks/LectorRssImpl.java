@@ -54,23 +54,20 @@ public class LectorRssImpl{
                             // La descripción por ejemplo en menéame se agrupa en un node de tipo CDATA_SECTION_NODE
                             if(dato.getNodeName().equals("description")) {
                                 noticia.setDescripcion(dato.getTextContent());
+                            } else
+                            if(dato.getNodeName().equals("title")) {
+                                noticia.setTitulo(dato.getTextContent());
                             }
 
                         } else
                         if(datoContenido!=null && datoContenido.getNodeType()==Node.TEXT_NODE){
                             String valor = datoContenido.getNodeValue();
 
-
-                            //LogCat.debug(" ****** NOMBRE NODO: " + dato.getNodeName());
-                            //LogCat.debug(" ****** VALOR NODO: " + valor);
-
-                            if(dato.getNodeName().equals("title"))
+                            if(dato.getNodeName().equals("title")) {
                                 noticia.setTitulo(valor);
+                            }
                             else
                             if(dato.getNodeName().trim().equals("description")) {
-                                LogCat.debug(" ****** ESTABLECIENDO DESCRIPCION ");
-
-                                LogCat.debug(" ****** getTextContent: " + dato.getTextContent());
                                 noticia.setDescripcion(dato.getTextContent());
                             }
                             else
@@ -86,18 +83,13 @@ public class LectorRssImpl{
                             if(dato.getNodeName().equals("pubDate") && valor!=null && valor.length()>0)
                                 noticia.setFechaPublicacion(DateOperationsUtils.convertirFechaRss(valor));
 
-
                         }else{
 
                             if(dato.getNodeName().equals("media:thumbnail") ){
                                 noticia.setUrlThumbnail(dato.getAttributes().getNamedItem("url").getTextContent());
                             }
-
                         }
-
                     }
-
-
                 }
                 salida.add(noticia);
             }

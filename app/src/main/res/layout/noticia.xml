@@ -14,24 +14,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <!--
-        <ImageView
-            android:id="@+id/imagen"
-            android:layout_width="100dp"
-            android:layout_height="150dp"
-            android:scaleType="centerCrop" />
-        -->
-
         <com.android.volley.toolbox.NetworkImageView
             android:id="@+id/imagen"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:contentDescription="@string/app_name"
             android:scaleType="center"
-            android:background="#FFFFFF"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:background="@drawable/logoappynews"
+            />
 
         <TextView
             android:layout_width="wrap_content"

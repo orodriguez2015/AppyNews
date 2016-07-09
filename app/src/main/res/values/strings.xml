@@ -21,5 +21,6 @@
     <string name="err_permisssion_network_state">Su dispositivo no tiene permiso para comprobar el estado de las conexiones de red</string>
     <string name="enlace_ir_noticia">Ir a noticia</string>
     <string name="title_activity_detalle_noticia">Titulo</string>
+    <string name="err_fuentes_datos">Error al obtener las fuentes de datos</string>
 
 </resources>

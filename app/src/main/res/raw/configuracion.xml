@@ -1,55 +1,61 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
 <origenes>
     <origen>
+        <id>1</id>
         <descripcion>Menéame</descripcion>
         <url>https://www.meneame.net/rss</url>
     </origen>
     <origen>
+        <id>2</id>
         <descripcion>El otro lado del mal</descripcion>
         <url>http://feeds.feedburner.com/ElLadoDelMal?format=xml</url>
     </origen>
     <origen>
+        <id>3</id>
         <descripcion>Seguridad Apple</descripcion>
         <url>http://feeds.feedburner.com/Seguridadapple?format=xml</url>
     </origen>
 
     <origen>
+        <id>4</id>
         <descripcion>Applesfera</descripcion>
         <url>http://feeds.weblogssl.com/applesfera</url>
     </origen>
 
     <origen>
+        <id>5</id>
         <descripcion>Vitónica</descripcion>
         <url>http://feeds.weblogssl.com/Vitonica?format=xml</url>
     </origen>
+
     <origen>
+        <id>6</id>
         <descripcion>GenBeta Dev</descripcion>
         <url>http://feeds.weblogssl.com/genbetadev?format=xml</url>
     </origen>
 
     <origen>
+        <id>7</id>
         <descripcion>Xataka Ciencia</descripcion>
         <url>http://feeds.weblogssl.com/xatakaciencia</url>
     </origen>
+
     <origen>
+        <id>8</id>
         <descripcion>Xataka Smart Home</descripcion>
         <url>http://feeds.weblogssl.com/Xatakahome?format=xml</url>
     </origen>
+
     <origen>
+        <id>9</id>
         <descripcion>Xataka</descripcion>
         <url>http://feeds.weblogssl.com/xataka2</url>
     </origen>
+
     <origen>
-        <descripcion>The hacker way</descripcion>
-        <url>http://thehackerway.com/feed/</url>
-    </origen>
-    <origen>
+        <id>11</id>
         <descripcion>Andro4all</descripcion>
         <url>http://feeds.feedburner.com/Andro4all?format=xml</url>
-    </origen>
-    <origen>
-        <descripcion>Geeky Theory</descripcion>
-        <url>http://geekytheory.com/feed/</url>
     </origen>
 
 </origenes>

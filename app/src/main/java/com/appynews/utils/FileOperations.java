@@ -1,15 +1,32 @@
 package com.appynews.utils;
 
 import android.content.res.Resources;
+import android.util.JsonReader;
 
 import com.appynews.model.dto.Noticia;
+import com.appynews.model.dto.OrigenNoticiaVO;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import material.oscar.com.materialdesign.R;
 
+
+/**
+ * Clase FileOperations con operaciones sobre archivos
+ * @author oscar
+ */
 public class FileOperations {
 
     /**
@@ -99,16 +116,21 @@ public class FileOperations {
     }
 
 
+
+
     /**
      * Lee el archivo de configuracion.xml que contiene los orígenes de datos RSS
-     * @param fis: FileInputStream con el stream de datos correspondiente a configuracion.xml
-     * @return ArrayList<Origen>
-     *
-    public static ArrayList<Origen> leerArchivoConfiguracion(InputStream fis){
-        ArrayList<Origen> salida = new ArrayList<Origen>();
+     * @param resources: Objeto de la clase Resources necesario para leer el archivo de configuración con los orígenes
+     *                 de datos rss
+     * @return HashMap<Integer,OrigenNoticiaVO>
+     */
+    public static HashMap<Integer,OrigenNoticiaVO> leerArchivoConfiguracion(Resources resources){
+        ArrayList<OrigenNoticiaVO> salida = new ArrayList<OrigenNoticiaVO>();
+        HashMap<Integer,OrigenNoticiaVO> mapa = new HashMap<Integer,OrigenNoticiaVO>();
 
         try{
-            AndroidLog.debug("FileOperations.leerArchivoConfiguracion ============>");
+            InputStream fis = resources.openRawResource(R.raw.configuracion);
+            LogCat.debug("FileOperations.leerArchivoConfiguracion ============>");
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
 
@@ -121,7 +143,7 @@ public class FileOperations {
                 Node item = items.item(i);
                 NodeList datosNoticia = item.getChildNodes();
 
-                Origen origen = new Origen();
+                OrigenNoticiaVO origen = new OrigenNoticiaVO();
                 for (int j=0; j<datosNoticia.getLength(); j++)
                 {
                     Node dato = datosNoticia.item(j);
@@ -131,28 +153,34 @@ public class FileOperations {
                         if(datoContenido!=null && datoContenido.getNodeType()==Node.TEXT_NODE){
                             String valor = datoContenido.getNodeValue();
 
-                            if(dato.getNodeName().equals("descripcion"))
-                                origen.setNombre(valor);
+                            if(dato.getNodeName().equals("id") && NumberOperations.isInteger(valor)) {
+                                origen.setId(new Integer(valor));
+                            }
 
-                            if(dato.getNodeName().equals("url"))
+                            if(dato.getNodeName().equals("descripcion")) {
+                                origen.setNombre(valor);
+                            }
+
+                            if(dato.getNodeName().equals("url")) {
                                 origen.setUrl(valor);
+                            }
                         }
                     }
-                }
-                salida.add(origen);
+                }// for
+                mapa.put(origen.getId(),origen);
             }
 
         }catch(Exception e){
             e.printStackTrace();
-            AndroidLog.error("==============> Error al leer el archivo de configuración: " + e.getMessage());
+            LogCat.error("==============> Error al leer el archivo de configuración: " + e.getMessage());
         }
 
-        AndroidLog.debug("FileOperations.leerArchivoConfiguracion< ============");
-        return salida;
+        LogCat.debug("FileOperations.leerArchivoConfiguracion< ============");
+        return mapa;
     }
 
 
-
+    /**
     public static void escribirXML( FileOutputStream fout,ArrayList<Origen> origenes) {
 
         XmlSerializer serializer = Xml.newSerializer();
@@ -187,7 +215,7 @@ public class FileOperations {
             AndroidLog.error("Error: " + e.getMessage());
         }
     }
-    */
+     **/
 
 }
 

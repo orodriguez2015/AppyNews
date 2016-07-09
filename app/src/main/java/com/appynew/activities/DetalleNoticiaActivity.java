@@ -56,7 +56,7 @@ public class DetalleNoticiaActivity extends AppCompatActivity {
          */
         Bundle parametros = getIntent().getExtras();
         Noticia noticia = (Noticia)parametros.get("noticia");
-        this.setTitle(noticia.getTitulo());
+        this.setTitle(noticia.getOrigen());
         this.setProgressBarVisibility(true);
 
         String desc = null;

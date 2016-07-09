@@ -30,8 +30,10 @@ import com.android.volley.toolbox.Volley;
 import com.appynews.adapter.NoticiasAdapter;
 import com.appynews.asynctasks.GetNewsRssSourceTask;
 import com.appynews.com.appynews.controllers.NoticiaController;
+import com.appynews.model.dto.OrigenNoticiaVO;
 import com.appynews.utils.ConnectionUtils;
 import com.appynews.asynctasks.GetInputStreamNewsConnectionTask;
+import com.appynews.utils.FileOperations;
 import com.appynews.utils.LogCat;
 import com.appynews.utils.LruBitmapCache;
 import com.appynews.utils.MessageUtils;
@@ -39,8 +41,14 @@ import com.appynews.model.dto.Noticia;
 import com.appynews.utils.PermissionsUtil;
 
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 
 import material.oscar.com.materialdesign.R;
@@ -55,11 +63,20 @@ import material.oscar.com.materialdesign.R;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private RecyclerView recycler;
-    //private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager lManager;
     private int PERMISSION_ACCESS_STATE_PHONE = 1;
     private NoticiaController noticiaController = new NoticiaController(this);
     private ImageLoader imageLoader = null;
+
+    /**
+     * Contiene los datos y url de un origen RSS del que se obtendrá sus noticia
+     */
+    private HashMap<Integer,OrigenNoticiaVO> origenes = new HashMap<Integer,OrigenNoticiaVO>();
+
+    /**
+     * Nombre del origen de las noticias que se están listando actualmente en el RecyclerView
+     */
+    private String nombreOrigenNoticiasRecuperadas = null;
 
 
     @Override
@@ -88,48 +105,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
 
-        /** Añadir elementos al menú de forma dinámica
-        Menu menu = navigationView.getMenu();
+        /** Añadir elementos al menú de forma dinámica **/
+        //Menu menu = navigationView.getMenu();
 
+        rellenarMenu(navigationView);
+
+        /*
         menu.add(Menu.CATEGORY_SYSTEM, 4, Menu.CATEGORY_SYSTEM, "Opcion1")
                 .setIcon(android.R.drawable.ic_menu_preferences);
+    */
 
-        menu.add(Menu.NONE, 5, Menu.NONE, "Opcion2")
-                .setIcon(android.R.drawable.ic_menu_compass);
+        // menu.add(int groupId, int itemId, int order, int titleRes)
+        //MenuItem menuItem = menu.add(Menu.NONE, 5, Menu.NONE, "Opcion2").setIcon(android.R.drawable.ic_menu_compass);
 
+        /**
+        SubMenu submenu = menu.addSubMenu(Menu.FIRST);
+        submenu.add(Menu.NONE, 5, Menu.NONE, "Opcion3");
+        **/
 
-        SubMenu submenu = menu.a
-         ddSubMenu(Menu.CATEGORY_SYSTEM);
-        submenu.add(Menu.NONE, 5, Menu.NONE, "Opcion3").setIcon(android.R.drawable.ic_menu_compass);
-        */
-        ArrayList<Noticia> noticias = new ArrayList<Noticia>();
 
 
         // Obtener el Recycler
         recycler = (RecyclerView) findViewById(R.id.reciclador);
         recycler.setHasFixedSize(true);
 
-
-        /**
-        recycler.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-
-            @Override
-            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-                MessageUtils.showToastDuracionLarga(getApplicationContext(),"onInterceptTouchEvent");
-                return false;
-            }
-
-            @Override
-            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-                MessageUtils.showToastDuracionLarga(getApplicationContext(),"ontTouchEvent");
-            }
-
-            @Override
-            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-                MessageUtils.showToastDuracionLarga(getApplicationContext(),"onRequestDisallowIntercept");
-            }
-        });
-        **/
 
         // Usar un administrador para LinearLayout
         lManager = new LinearLayoutManager(this);
@@ -154,10 +153,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
                 // Carga inicial de noticias de un determinado origen
-                //cargarNoticias("http://feeds.feedburner.com/ElLadoDelMal?format=xml","El otro lado del mal");
                 cargarNoticias("https://www.meneame.net/rss","Menéame");
             }
         }
+    }
+
+
+    /**
+     * Operación que obtiene los datos de orígenes de datos rss y configurar el menú
+     * para acceder a cada origen de datos
+     * @param navigationView: NavigationView en el que se añaden los menús
+     */
+    private void rellenarMenu(NavigationView navigationView) {
+
+        boolean continuar = false;
+        try {
+            origenes  = FileOperations.leerArchivoConfiguracion(getResources());
+            continuar = true;
+
+        }catch(Exception e) {
+            MessageUtils.showToastDuracionLarga(getApplicationContext(),getString(R.string.err_fuentes_datos));
+        }
+
+        if(continuar) {
+
+            Menu menu = navigationView.getMenu();
+            // Se almacena en HashMap en un TreeMap que ordena el contenido por la clave
+            Map<Integer, OrigenNoticiaVO> treeMap = new TreeMap<Integer, OrigenNoticiaVO>(origenes);
+
+
+            for (Map.Entry entry : treeMap.entrySet()) {
+                OrigenNoticiaVO origen = origenes.get((Integer)entry.getKey());
+                MenuItem menuItem = menu.add(Menu.NONE, origen.getId(), Menu.NONE, origen.getNombre()).setIcon(android.R.drawable.ic_menu_compass);
+
+            }
+        }
+
     }
 
 
@@ -167,6 +198,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * @param origen: String que contiene el nombre del orígen de datos RSS
      */
     private void cargarNoticias(String url,String origen) {
+
+        this.nombreOrigenNoticiasRecuperadas = origen;
 
         // Se recupera la lista de noticias a través
         final List<Noticia> noticias = noticiaController.getNoticias(url);
@@ -188,15 +221,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
+    /**
+     * Este método pasa el control del activity actual al activity DetalleNoticiaActivity.
+     * @param noticia: Objeto de la clase Noticia que se pasa a la actividad DetalleNoticiaActivity
+     */
     private void cargarActivityDetalleNoticia(Noticia noticia) {
 
         // Se pasa la noticia seleccionada al Activity que mostrará la descripción, en este caso, ActividadDescripcionNoticia
         Intent intent = new Intent(MainActivity.this, DetalleNoticiaActivity.class);
-
-        // Se recupera la noticia seleccionada de la colección de noticias, en base al parámetro con la posición
-
-        // Origen de la noticia que está en el atributo origenNoticias
-
+        noticia.setOrigen(this.nombreOrigenNoticiasRecuperadas);
         intent.putExtra("noticia",noticia);
         startActivity(intent);
 
@@ -241,38 +274,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-
         LogCat.debug(" ================> Se ha selecciona el elemento del menú con id: " + id);
 
-        if (id == R.id.meneame) {
-            cargarNoticias("https://www.meneame.net/rss","Menéame");
+        OrigenNoticiaVO origenSeleccionado = origenes.get(id);
+        cargarNoticias(origenSeleccionado.getUrl(),origenSeleccionado.getNombre());
 
-        } else if (id == R.id.elotrolado) {
-            cargarNoticias("http://feeds.feedburner.com/ElLadoDelMal?format=xml","El otro lado del mal");
-
-        } else if (id == R.id.seguridadapple) {
-            cargarNoticias("http://feeds.feedburner.com/Seguridadapple?format=xml","Seguridad Apple");
-
-        } else if(id==R.id.expansion) {
-            cargarNoticias("http://estaticos.expansion.com/rss/portada.xml","Expansión");
-        }
-
-
-        /*
-        else if(id==R.id.applesfera) {
-            cargarNoticias("http://feeds.weblogssl.com/genbetadev?format=xml");
-        }
-        /*else if (id == R.id.applesfera) {
-            cargarNoticias("http://feeds.weblogssl.com/applesfera");
-        }*/
-
-        /*
-        else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
-        */
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
