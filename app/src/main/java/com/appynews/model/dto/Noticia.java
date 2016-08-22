@@ -3,7 +3,7 @@ package com.appynews.model.dto;
 import java.io.Serializable;
 
 /**
- * Clase Noticia cuya información será la que se muestra en la actividad principal
+ * Entidad Noticia cuya información será la que se muestra en la actividad principal
  * de la aplicación
  * @author oscar
  *
@@ -181,6 +181,10 @@ public class Noticia implements Serializable{
     }
 
 
+    /**
+     * Método toString
+     * @return String
+     */
     public String toString() {
         String salida = "Autor: ".concat(getAutor()).concat(" <> descripcion: ").concat(getDescripcion()).concat(" <> descripcionCompleta: ").concat(getDescripcionCompleta())
                 .concat(" <> titulo: ").concat(getTitulo());

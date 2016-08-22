@@ -30,6 +30,7 @@ import com.android.volley.toolbox.Volley;
 import com.appynews.adapter.NoticiasAdapter;
 import com.appynews.asynctasks.GetNewsRssSourceTask;
 import com.appynews.com.appynews.controllers.NoticiaController;
+import com.appynews.model.dto.DatosTelefonoVO;
 import com.appynews.model.dto.OrigenNoticiaVO;
 import com.appynews.utils.ConnectionUtils;
 import com.appynews.asynctasks.GetInputStreamNewsConnectionTask;
@@ -39,6 +40,7 @@ import com.appynews.utils.LruBitmapCache;
 import com.appynews.utils.MessageUtils;
 import com.appynews.model.dto.Noticia;
 import com.appynews.utils.PermissionsUtil;
+import com.appynews.utils.TelephoneUtil;
 
 import java.io.InputStream;
 import java.lang.reflect.Array;
@@ -133,6 +135,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Usar un administrador para LinearLayout
         lManager = new LinearLayoutManager(this);
         recycler.setLayoutManager(lManager);
+
+
+        // Si se dispone de permiso para leer el estado del teléfono, se obtiene datos como el número, imei, etc ...
+        if(PermissionsUtil.appTienePermiso(this,Manifest.permission.READ_PHONE_STATE)) {
+            // Recopilación de datos del dispositivo
+            DatosTelefonoVO datosTelefono = TelephoneUtil.getInfoDispositivo(getBaseContext());
+            System.out.println(" datos del telefono: " + datosTelefono.toString());
+
+        }
 
 
         if(!PermissionsUtil.appTienePermiso(this, Manifest.permission.ACCESS_NETWORK_STATE)) {
