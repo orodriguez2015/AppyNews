@@ -2,12 +2,10 @@ package com.appynews.asynctasks;
 
 import android.os.AsyncTask;
 
-import com.appynews.model.dto.Noticia;
 import com.appynews.utils.LogCat;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 
 /**
  * Tarea asíncrona que para una url determinada, establece una conexión y se devuelve
@@ -49,6 +47,5 @@ public class GetInputStreamNewsConnectionTask extends AsyncTask<String,Void,Inpu
 
         return getInputStream(params[0]);
     }
-
 
 }

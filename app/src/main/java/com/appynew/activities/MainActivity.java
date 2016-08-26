@@ -1,13 +1,8 @@
 package com.appynew.activities;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Message;
-import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -20,36 +15,31 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.SubMenu;
 import android.view.View;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 import com.appynews.adapter.NoticiasAdapter;
-import com.appynews.asynctasks.GetNewsRssSourceTask;
+import com.appynews.asynctasks.ParametrosAsyncTask;
+import com.appynews.asynctasks.RespuestaAsyncTask;
+import com.appynews.asynctasks.SaveUsuarioAsyncTask;
 import com.appynews.com.appynews.controllers.NoticiaController;
-import com.appynews.model.dto.DatosTelefonoVO;
+import com.appynews.database.helper.AppyNewsHelper;
+import com.appynews.model.dto.DatosUsuarioVO;
+import com.appynews.model.dto.Noticia;
 import com.appynews.model.dto.OrigenNoticiaVO;
 import com.appynews.utils.ConnectionUtils;
-import com.appynews.asynctasks.GetInputStreamNewsConnectionTask;
 import com.appynews.utils.FileOperations;
 import com.appynews.utils.LogCat;
 import com.appynews.utils.LruBitmapCache;
 import com.appynews.utils.MessageUtils;
-import com.appynews.model.dto.Noticia;
 import com.appynews.utils.PermissionsUtil;
 import com.appynews.utils.TelephoneUtil;
 
-import java.io.InputStream;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 
@@ -140,8 +130,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Si se dispone de permiso para leer el estado del teléfono, se obtiene datos como el número, imei, etc ...
         if(PermissionsUtil.appTienePermiso(this,Manifest.permission.READ_PHONE_STATE)) {
             // Recopilación de datos del dispositivo
-            DatosTelefonoVO datosTelefono = TelephoneUtil.getInfoDispositivo(getBaseContext());
-            System.out.println(" datos del telefono: " + datosTelefono.toString());
+            DatosUsuarioVO datosTelefono = TelephoneUtil.getInfoDispositivo(getBaseContext());
+            LogCat.debug(" datos del telefono: " + datosTelefono.toString());
 
         }
 
@@ -157,11 +147,40 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 MessageUtils.showToastDuracionLarga(getApplicationContext(),getString(R.string.err_connection_state));
 
             } else {
+                // Se almacena la info del dispositivo en la base de datos
+                AppyNewsHelper dbhelper = new AppyNewsHelper(getApplicationContext());
+
+
+                /************************************************************/
+                /**** Se almacenan los datos del dispositivo en la BBDD *****/
+
+                try {
+                    ParametrosAsyncTask params = new ParametrosAsyncTask();
+                    params.setContext(this.getApplicationContext());
+                    params.setUsuario(TelephoneUtil.getInfoDispositivo(getApplicationContext()));
+                    SaveUsuarioAsyncTask asyncTask = new SaveUsuarioAsyncTask();
+                    asyncTask.execute(params);
+
+                    RespuestaAsyncTask res = asyncTask.get();
+                    if(res.getStatus()==0) {
+                        LogCat.debug("Datos del teléfono/usuario grabados en BBDD");
+                    } else {
+                        LogCat.error("Se ha producido un error al grabar el teléfono/usuario grabados en BBDD ".concat(res.getDescStatus()));
+                    }
+
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    LogCat.error("Error al ejecutar tarea asíncrona de grabación de usuario en BD: ".concat(e.getMessage()));
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                    LogCat.error("Error al ejecutar tarea asíncrona de grabación de usuario en BD: ".concat(e.getMessage()));
+                }
+
 
                 RequestQueue requestQueau = Volley.newRequestQueue(this);
                 // Se crea para la cola una caché de 10 imágenes
                 this.imageLoader = new ImageLoader(requestQueau,new LruBitmapCache());
-
 
                 // Carga inicial de noticias de un determinado origen
                 cargarNoticias("https://www.meneame.net/rss","Menéame");

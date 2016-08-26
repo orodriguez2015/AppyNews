@@ -10,6 +10,7 @@ import java.io.Serializable;
  */
 public class Noticia implements Serializable{
 
+    private int id;
     private String titulo;
     private String descripcion;
     private String descripcionCompleta;
@@ -191,4 +192,11 @@ public class Noticia implements Serializable{
         return salida;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

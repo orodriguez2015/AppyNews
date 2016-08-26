@@ -9,7 +9,7 @@ import android.net.Uri;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
-import com.appynews.model.dto.DatosTelefonoVO;
+import com.appynews.model.dto.DatosUsuarioVO;
 
 /**
  * Created by oscar on 22/08/16.
@@ -20,11 +20,11 @@ public class TelephoneUtil {
     /**
      * Devuelve la info del dispositivo
      * @param context: Context
-     * @return DatosTelefonoVO
+     * @return DatosUsuarioVO
      */
-    public static DatosTelefonoVO getInfoDispositivo(Context context){
+    public static DatosUsuarioVO getInfoDispositivo(Context context){
 
-        DatosTelefonoVO salida = new DatosTelefonoVO();
+        DatosUsuarioVO salida = new DatosUsuarioVO();
         StringBuffer sb = new StringBuffer();
         TelephonyManager telephoneManager = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
 
@@ -65,7 +65,7 @@ public class TelephoneUtil {
      * @param datos: DatosTelefonoVO
      * @return void
      */
-    private static void getEmailUsuario(Context context,DatosTelefonoVO datos) {
+    private static void getEmailUsuario(Context context, DatosUsuarioVO datos) {
         AccountManager accountManager = AccountManager.get(context);
         Account[] accounts = accountManager.getAccounts();
 

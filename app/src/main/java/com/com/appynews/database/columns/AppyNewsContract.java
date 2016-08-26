@@ -1,4 +1,4 @@
-package com.appynews.db.columns;
+package com.com.appynews.database.columns;
 
 import android.provider.BaseColumns;
 
@@ -32,6 +32,8 @@ public class AppyNewsContract  {
         public static final String ID                   = "id";
         public static final String TELEFONO             = "telefono";
         public static final String IMEI                 = "imei";
+        public static final String EMAIL                = "email";
+        public static final String REGION_ISO           = "regionIso";
         public static final String NOMBRE               = "nombre";
         public static final String APELLIDO1            = "apellido1";
         public static final String APELLIDO2            = "apellido2";
