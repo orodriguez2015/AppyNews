@@ -211,11 +211,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // Se almacena en HashMap en un TreeMap que ordena el contenido por la clave
             Map<Integer, OrigenNoticiaVO> treeMap = new TreeMap<Integer, OrigenNoticiaVO>(origenes);
 
-
             for (Map.Entry entry : treeMap.entrySet()) {
                 OrigenNoticiaVO origen = origenes.get((Integer)entry.getKey());
                 MenuItem menuItem = menu.add(Menu.NONE, origen.getId(), Menu.NONE, origen.getNombre()).setIcon(android.R.drawable.ic_menu_compass);
-
             }
         }
 

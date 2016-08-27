@@ -3,6 +3,7 @@ package com.appynews.asynctasks;
 import android.content.Context;
 
 import com.appynews.model.dto.DatosUsuarioVO;
+import com.appynews.model.dto.Noticia;
 
 import java.io.Serializable;
 
@@ -16,6 +17,7 @@ public class ParametrosAsyncTask implements Serializable {
 
     private Context context        = null;
     private DatosUsuarioVO usuario = null;
+    private Noticia noticia        = null;
 
     /**
      * Devuelve el Context
@@ -47,5 +49,22 @@ public class ParametrosAsyncTask implements Serializable {
      */
     public void setUsuario(DatosUsuarioVO usuario) {
         this.usuario = usuario;
+    }
+
+
+    /**
+     * Devuelve la noticia que se va a almacenar en base de datos
+     * @return Noticia
+     */
+    public Noticia getNoticia() {
+        return noticia;
+    }
+
+    /**
+     * Establece la noticia que se va a almacenar en base de datos
+     * @return Noticia
+     */
+    public void setNoticia(Noticia noticia) {
+        this.noticia = noticia;
     }
 }

@@ -89,10 +89,19 @@ public class AppyNewsHelper extends SQLiteOpenHelper {
      * Graba una noticia en la base de datos
      * @param noticia: Noticia
      */
-    public void saveNoticia(Noticia noticia) {
+    public void saveNoticia(Noticia noticia) throws SQLiteException {
         SQLiteDatabase db = getWritableDatabase();
-        db.insert(AppyNewsContract.NoticiaEntry.TABLE_NAME,null, ModelConversorUtil.toContentValues(noticia));
-        db.close();
+
+        try {
+            LogCat.info("saveNoticia init");
+            db.insert(AppyNewsContract.NoticiaEntry.TABLE_NAME, null, ModelConversorUtil.toContentValues(noticia));
+            db.close();
+            LogCat.info("saveNoticia end");
+
+        } catch(Exception e) {
+            e.printStackTrace();
+            throw new SQLiteException(DatabaseErrors.ERROR_INSERTAR_NOTICIA,"Error al grabar una noticia en la base de datos: ".concat(e.getMessage()));
+        }
     }
 
 
@@ -133,13 +142,12 @@ public class AppyNewsHelper extends SQLiteOpenHelper {
 
             String sql = "select count(*) as num from usuario where imei=? and email=? and regionIso=?";
 
-            System.out.println("sql: " + sql);
+            LogCat.debug("sql: " + sql);
             db = getReadableDatabase();
             rs = db.rawQuery(sql,new String[]{usuario.getImei(),usuario.getEmail(),usuario.getRegionIso()});
 
 
             if(rs!=null && rs.getCount()>0 && rs.moveToFirst()) {
-                LogCat.debug("A comprobar si existe el usuario");
                 do {
                     int num = rs.getInt(0);
                     LogCat.debug("Numero " + num);
@@ -154,7 +162,7 @@ public class AppyNewsHelper extends SQLiteOpenHelper {
                 LogCat.debug("No existe el usuario");
 
 
-
+            LogCat.debug("Existe el usuario/telefono en base de datos: " + exito);
 
         } catch(Exception e) {
             e.printStackTrace();

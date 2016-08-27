@@ -23,4 +23,11 @@
     <string name="title_activity_detalle_noticia">Titulo</string>
     <string name="err_fuentes_datos">Error al obtener las fuentes de datos</string>
 
+
+    <string name="atencion">Atención</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="pregunta_grabar_noticia_favorita">¿Desea almacenar esta noticia como favorita?</string>
+    <string name="noticia_grabada">La noticia ha sido grabada</string>
+
 </resources>
