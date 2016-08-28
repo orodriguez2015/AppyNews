@@ -29,5 +29,6 @@
     <string name="cancelar">Cancelar</string>
     <string name="pregunta_grabar_noticia_favorita">¿Desea almacenar esta noticia como favorita?</string>
     <string name="noticia_grabada">La noticia ha sido grabada</string>
+    <string name="error_grabar_noticia">Se ha producido un error al grabar la noticia como favorita</string>
 
 </resources>

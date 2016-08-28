@@ -21,11 +21,11 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 import com.appynews.adapter.NoticiasAdapter;
+import com.appynews.asynctasks.GetNoticiasAsyncTask;
 import com.appynews.asynctasks.ParametrosAsyncTask;
 import com.appynews.asynctasks.RespuestaAsyncTask;
 import com.appynews.asynctasks.SaveUsuarioAsyncTask;
 import com.appynews.com.appynews.controllers.NoticiaController;
-import com.appynews.database.helper.AppyNewsHelper;
 import com.appynews.model.dto.DatosUsuarioVO;
 import com.appynews.model.dto.Noticia;
 import com.appynews.model.dto.OrigenNoticiaVO;
@@ -147,13 +147,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 MessageUtils.showToastDuracionLarga(getApplicationContext(),getString(R.string.err_connection_state));
 
             } else {
-                // Se almacena la info del dispositivo en la base de datos
-                AppyNewsHelper dbhelper = new AppyNewsHelper(getApplicationContext());
+
 
 
                 /************************************************************/
                 /**** Se almacenan los datos del dispositivo en la BBDD *****/
-
+                /************************************************************/
                 try {
                     ParametrosAsyncTask params = new ParametrosAsyncTask();
                     params.setContext(this.getApplicationContext());
@@ -166,6 +165,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         LogCat.debug("Datos del teléfono/usuario grabados en BBDD");
                     } else {
                         LogCat.error("Se ha producido un error al grabar el teléfono/usuario grabados en BBDD ".concat(res.getDescStatus()));
+                    }
+
+
+                    GetNoticiasAsyncTask task = new GetNoticiasAsyncTask();
+                    task.execute(params);
+                    RespuestaAsyncTask res2 = task.get();
+
+                    if(res2.getStatus()==0 && res2.getNoticias()!=null) {
+
+                        for(Noticia n:res2.getNoticias()) {
+                            LogCat.info("ID noticia : " + n.getId());
+                            LogCat.info("titulo noticia : " + n.getTitulo());
+                            LogCat.info("descripcion noticia : " + n.getDescripcion());
+                            LogCat.info("descripcionCompleta noticia : " + n.getDescripcionCompleta());
+                            LogCat.info("autor noticia : " + n.getAutor());
+                            LogCat.info("origen noticia : " + n.getOrigen());
+                            LogCat.info("fecha noticia : " + n.getFechaPublicacion());
+                        }
+
+                    } else {
+                        LogCat.error("Se ha producido un error al recuperar las noticias");
                     }
 
 

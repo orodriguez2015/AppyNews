@@ -1,8 +1,8 @@
 package com.appynew.activities.dialog;
 
-import android.content.Context;
 import android.content.DialogInterface;
 
+import com.appynew.activities.DetalleNoticiaActivity;
 import com.appynews.asynctasks.ParametrosAsyncTask;
 import com.appynews.asynctasks.RespuestaAsyncTask;
 import com.appynews.asynctasks.SaveNoticiaAsyncTask;
@@ -21,17 +21,17 @@ import material.oscar.com.materialdesign.R;
  */
 public class NoticiaFavoritaBtnAceptar implements DialogInterface.OnClickListener {
 
-    private Noticia noticia = null;
-    private Context context = null;
+    private Noticia noticia   = null;
+    private DetalleNoticiaActivity activity = null;
 
     /**
      * Constructor
-     * @param context: Context
+     * @param activity: Activity que renderiza la vista de detalle de la noticia
      * @param noticia: Noticia
      */
-    public NoticiaFavoritaBtnAceptar(Context context,Noticia noticia) {
-        this.context = context;
-        this.noticia = noticia;
+    public NoticiaFavoritaBtnAceptar(DetalleNoticiaActivity activity, Noticia noticia) {
+        this.activity = activity;
+        this.noticia  = noticia;
     }
 
     /**
@@ -45,14 +45,17 @@ public class NoticiaFavoritaBtnAceptar implements DialogInterface.OnClickListene
 
         ParametrosAsyncTask params = new ParametrosAsyncTask();
         params.setNoticia(this.noticia);
-        params.setContext(this.context);
+        params.setContext(this.activity.getApplicationContext());
 
         try {
             SaveNoticiaAsyncTask task = new SaveNoticiaAsyncTask();
             task.execute(params);
             RespuestaAsyncTask res = task.get();
             if(res.getStatus()==0) {
-                MessageUtils.showToastDuracionLarga(this.context,this.context.getString(R.string.noticia_grabada));
+                MessageUtils.showToastDuracionLarga(this.activity,this.activity.getString(R.string.noticia_grabada));
+                this.activity.mostrarBotonFlotante(false);
+            } else {
+                MessageUtils.showToastDuracionLarga(this.activity,this.activity.getString(R.string.error_grabar_noticia));
             }
 
         } catch (InterruptedException e) {

@@ -15,7 +15,7 @@ public class ModelConversorUtil {
     public static ContentValues toContentValues(Noticia noticia) {
 
         ContentValues values = new ContentValues();
-        values.put(AppyNewsContract.NoticiaEntry._ID,noticia.getId());
+        //values.put(AppyNewsContract.NoticiaEntry._ID,noticia.getId());
         values.put(AppyNewsContract.NoticiaEntry.TITULO,noticia.getTitulo());
         values.put(AppyNewsContract.NoticiaEntry.DESCRIPCION,noticia.getDescripcion());
         values.put(AppyNewsContract.NoticiaEntry.DESCRIPCION_COMPLETA,noticia.getDescripcionCompleta());

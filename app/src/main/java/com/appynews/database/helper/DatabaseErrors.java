@@ -16,6 +16,6 @@ public class DatabaseErrors {
     public static final int ERROR_EXISTENCIA_USUARIO   = 6;
     public static final int ERROR_RECUPERAR_USUARIOS   = 7;
     public static final int ERROR_INSERTAR_NOTICIA     = 8;
-    //public static final int ERROR_ACTUALIZAR_NOTICIA   = 8;
+    public static final int ERROR_RECUPERAR_NOTICIAS   = 9;
 
 }

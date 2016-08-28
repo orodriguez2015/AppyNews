@@ -21,9 +21,11 @@ import material.oscar.com.materialdesign.R;
 
 public class DetalleNoticiaActivity extends AppCompatActivity {
 
-    //private TextView descripcionNoticia = null;
+
     private WebView webViewNoticia = null;
     private Noticia noticia = null;
+    private FloatingActionButton fab = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,19 +37,22 @@ public class DetalleNoticiaActivity extends AppCompatActivity {
         /**
          * Botón flotante para guardar la noticia como favorita
          */
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        this.fab = (FloatingActionButton) findViewById(R.id.fab);
+        this.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 AlertDialogHelper.crearDialogoAlertaSimple(DetalleNoticiaActivity.this,getString(R.string.atencion),getString(R.string.pregunta_grabar_noticia_favorita),
-                        new NoticiaFavoritaBtnAceptar(getApplicationContext(),noticia),new NoticiaFavoritaBtnCancelar()).show();
+                        new NoticiaFavoritaBtnAceptar(DetalleNoticiaActivity.this,noticia),new NoticiaFavoritaBtnCancelar()).show();
                 /*
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
                         **/
             }
         });
+
+
+        //fab.setImageResource(R.drawable.);
 
 
         /**
@@ -96,6 +101,15 @@ public class DetalleNoticiaActivity extends AppCompatActivity {
     }
 
 
-
-
+    /**
+     * Muestra/Oculta el botón flotante
+     * @param mostrar: True si se muestra y false en caso contrario
+     */
+    public void mostrarBotonFlotante(boolean mostrar) {
+        if(mostrar) {
+            this.fab.show();
+        } else {
+            this.fab.hide();
+        }
+    }
 }

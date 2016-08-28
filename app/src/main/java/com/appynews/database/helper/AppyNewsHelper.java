@@ -12,6 +12,9 @@ import com.appynews.model.dto.Noticia;
 import com.appynews.utils.LogCat;
 import com.com.appynews.database.columns.AppyNewsContract;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Clase AppyNewsHelper encargada de crear la base de datos SQLite y de actualizarla
  * cuando sea preciso
@@ -44,8 +47,8 @@ public class AppyNewsHelper extends SQLiteOpenHelper {
             // Se crea la tabla Noticia
             sqLiteDatabase.execSQL("CREATE TABLE " + AppyNewsContract.NoticiaEntry.TABLE_NAME + " ("
                     + AppyNewsContract.NoticiaEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                    + AppyNewsContract.NoticiaEntry.DESCRIPCION + " TEXT NOT NULL,"
-                    + AppyNewsContract.NoticiaEntry.TITULO + " TEXT NOT NULL,"
+                    + AppyNewsContract.NoticiaEntry.DESCRIPCION + " TEXT,"
+                    + AppyNewsContract.NoticiaEntry.TITULO + " TEXT,"
                     + AppyNewsContract.NoticiaEntry.DESCRIPCION_COMPLETA + " TEXT,"
                     + AppyNewsContract.NoticiaEntry.ORIGEN + " TEXT NOT NULL,"
                     + AppyNewsContract.NoticiaEntry.FECHA_PUBLICACION + " DATE,"
@@ -94,13 +97,18 @@ public class AppyNewsHelper extends SQLiteOpenHelper {
 
         try {
             LogCat.info("saveNoticia init");
-            db.insert(AppyNewsContract.NoticiaEntry.TABLE_NAME, null, ModelConversorUtil.toContentValues(noticia));
-            db.close();
+            Long id = db.insert(AppyNewsContract.NoticiaEntry.TABLE_NAME, null, ModelConversorUtil.toContentValues(noticia));
+            noticia.setId(id.intValue());
             LogCat.info("saveNoticia end");
+
 
         } catch(Exception e) {
             e.printStackTrace();
             throw new SQLiteException(DatabaseErrors.ERROR_INSERTAR_NOTICIA,"Error al grabar una noticia en la base de datos: ".concat(e.getMessage()));
+        } finally {
+            if(db!=null) {
+                db.close();
+            }
         }
     }
 
@@ -115,14 +123,17 @@ public class AppyNewsHelper extends SQLiteOpenHelper {
         try {
             LogCat.info("saveUsuario init");
             db = getWritableDatabase();
-            db.insert(AppyNewsContract.UsuarioEntry.TABLE_NAME, null, ModelConversorUtil.toContentValues(usuario));
+            Long id = db.insert(AppyNewsContract.UsuarioEntry.TABLE_NAME, null, ModelConversorUtil.toContentValues(usuario));
+            usuario.setId(id.intValue());
             LogCat.info("saveUsuario end");
 
         } catch(Exception e) {
             e.printStackTrace();
             throw new SQLiteException(DatabaseErrors.ERROR_INSERTAR_USUARIO,"Error al grabar un usuario en la base de datos: ".concat(e.getMessage()));
         } finally {
-            db.close();
+            if(db!=null) {
+                db.close();
+            }
         }
     }
 
@@ -161,7 +172,6 @@ public class AppyNewsHelper extends SQLiteOpenHelper {
             } else
                 LogCat.debug("No existe el usuario");
 
-
             LogCat.debug("Existe el usuario/telefono en base de datos: " + exito);
 
         } catch(Exception e) {
@@ -176,8 +186,54 @@ public class AppyNewsHelper extends SQLiteOpenHelper {
     }
 
 
-    public void getNoticias() {
-        SQLiteDatabase db = getReadableDatabase();
+    /**
+     * Recupera las noticias de la base de datos
+     * @return List<Noticia>
+     * @throws SQLiteException
+     */
+    public List<Noticia> getNoticias() throws SQLiteException {
+        List<Noticia> noticias = new ArrayList<Noticia>();
+        SQLiteDatabase db = null;
+        Cursor rs = null;
 
+        try {
+            LogCat.info("getNoticias() init");
+            String sql = "select _id,titulo,descripcion,descripcionCompleta,fechaPublicacion,origen,url from noticia order by fechaPublicacion desc";
+            LogCat.debug("sql: " + sql);
+
+            db = getReadableDatabase();
+            rs = db.rawQuery(sql,null);
+
+
+
+            if(rs!=null && rs.getCount()>0 && rs.moveToFirst()) {
+                LogCat.debug("Numero noticias recuperadas: " + rs.getCount());
+
+                do {
+                    Noticia noticia = new Noticia();
+                    noticia.setId(rs.getInt(0));
+                    noticia.setTitulo(rs.getString(1));
+                    noticia.setDescripcion(rs.getString(2));
+                    noticia.setDescripcionCompleta(rs.getString(3));
+                    noticia.setFechaPublicacion(rs.getString(4));
+                    noticia.setOrigen(rs.getString(5));
+                    noticia.setUrl(rs.getString(6));
+                    noticias.add(noticia);
+
+                } while(rs.moveToNext());
+
+            } else
+                LogCat.debug("No existe el usuario");
+
+            LogCat.info("getNoticias() end");
+
+        } catch(Exception e) {
+            e.printStackTrace();
+            throw new SQLiteException(DatabaseErrors.ERROR_RECUPERAR_NOTICIAS,"Error al recuperar las noticias de la base de datos: ".concat(e.getMessage()));
+        } finally {
+            if(rs!=null) rs.close();
+            if(db!=null) db.close();
+        }
+        return noticias;
     }
 }
