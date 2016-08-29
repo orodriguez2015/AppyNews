@@ -21,6 +21,7 @@ public class ModelConversorUtil {
         values.put(AppyNewsContract.NoticiaEntry.DESCRIPCION_COMPLETA,noticia.getDescripcionCompleta());
         values.put(AppyNewsContract.NoticiaEntry.URL,noticia.getUrl());
         values.put(AppyNewsContract.NoticiaEntry.ORIGEN,noticia.getOrigen());
+        values.put(AppyNewsContract.NoticiaEntry.FECHA_PUBLICACION,noticia.getFechaPublicacion());
         return values;
     }
 

@@ -270,6 +270,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     /**
+     * Carga las noticias de la base de datos
+     */
+    private void cargarNoticiasBD() {
+
+        final List<Noticia> favoritas = noticiaController.getNoticiasFavoritas(getApplicationContext());
+        NoticiasAdapter adapter =  new NoticiasAdapter(favoritas,"Prueva",imageLoader,getResources());
+
+        /**
+         * Se establece el listener que se pasa al adapter para que añade
+         * este Listener a cada View a mostrar en el RecyclerView
+         */
+        adapter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int pos =  recycler.getChildAdapterPosition(view);
+                cargarActivityDetalleNoticia(favoritas.get(pos));
+            }
+        });
+
+        recycler.setAdapter(adapter);
+
+    }
+
+    /**
      * Este método pasa el control del activity actual al activity DetalleNoticiaActivity.
      * @param noticia: Objeto de la clase Noticia que se pasa a la actividad DetalleNoticiaActivity
      */
@@ -316,6 +340,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return super.onOptionsItemSelected(item);
     }
 
+
+    /**
+     * Detecta el item de menú que ha seleccionado el usuario
+     * @param item: MenuItem seleccionado por el usuario
+     * @return boolean
+     */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -324,8 +354,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         LogCat.debug(" ================> Se ha selecciona el elemento del menú con id: " + id);
 
-        OrigenNoticiaVO origenSeleccionado = origenes.get(id);
-        cargarNoticias(origenSeleccionado.getUrl(),origenSeleccionado.getNombre());
+        switch(item.getItemId()) {
+            case R.id.favoritos:
+                // Se recuperan las noticias grabadas en la base de datos
+                cargarNoticiasBD();
+                break;
+
+            case R.id.nuevo_origen:
+                // Dar de alta un nuevo origen
+                LogCat.info(" TODO: Por implementar el nuevo origen");
+                break;
+
+            default:
+                // Se recuperan las noticias del origen seleccionado por el usuario
+                OrigenNoticiaVO origenSeleccionado = origenes.get(id);
+                cargarNoticias(origenSeleccionado.getUrl(),origenSeleccionado.getNombre());
+                break;
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

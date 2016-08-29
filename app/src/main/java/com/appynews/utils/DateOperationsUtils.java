@@ -11,13 +11,37 @@ import java.util.Locale;
  */
 public class DateOperationsUtils {
 
+    public static final String FORMATO_FECHA_HORA = "dd/MM/yyyy HH:mm:ss";
+
+    /**
+     * Devuelve la fecha y hora actual en el formato que se indique por parámetro
+     * @param formato: String con el formato de la hora
+     * @return String
+     */
+    public static String getFechaHoraActual(String formato) {
+        String salida = null;
+
+        try {
+            SimpleDateFormat sf = new SimpleDateFormat(formato);
+            salida = sf.format(Calendar.getInstance().getTime());
+
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return salida;
+    }
+
+
+    /**
+     * Convierte una fecha en formato String en un objeto Calendar
+     * @param fecha: Fecha
+     * @return Calendar
+     */
     public static Calendar getCalendar(String fecha){
         Calendar c = Calendar.getInstance();
         c.clear();
 
         try{
-
-
             SimpleDateFormat sf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
             Date d = sf.parse(fecha);
             c.setTime(d);

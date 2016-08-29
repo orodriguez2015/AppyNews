@@ -30,5 +30,9 @@
     <string name="pregunta_grabar_noticia_favorita">¿Desea almacenar esta noticia como favorita?</string>
     <string name="noticia_grabada">La noticia ha sido grabada</string>
     <string name="error_grabar_noticia">Se ha producido un error al grabar la noticia como favorita</string>
+    <string name="contacto">Contacto</string>
+    <string name="configuracion">Configuración</string>
+    <string name="favoritos">Mis favoritos</string>
+    <string name="nuevoOrigen">Nuevo origen</string>
 
 </resources>

@@ -13,6 +13,7 @@ import com.appynew.activities.dialog.NoticiaFavoritaBtnAceptar;
 import com.appynew.activities.dialog.NoticiaFavoritaBtnCancelar;
 import com.appynews.model.dto.Noticia;
 import com.appynews.utils.ConstantesDatos;
+import com.appynews.utils.DateOperationsUtils;
 import com.appynews.utils.FileOperations;
 import com.appynews.utils.LogCat;
 import com.appynews.utils.StringUtil;
@@ -42,6 +43,8 @@ public class DetalleNoticiaActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                noticia.setFechaPublicacion(DateOperationsUtils.getFechaHoraActual(DateOperationsUtils.FORMATO_FECHA_HORA));
+
                 AlertDialogHelper.crearDialogoAlertaSimple(DetalleNoticiaActivity.this,getString(R.string.atencion),getString(R.string.pregunta_grabar_noticia_favorita),
                         new NoticiaFavoritaBtnAceptar(DetalleNoticiaActivity.this,noticia),new NoticiaFavoritaBtnCancelar()).show();
                 /*
@@ -50,9 +53,6 @@ public class DetalleNoticiaActivity extends AppCompatActivity {
                         **/
             }
         });
-
-
-        //fab.setImageResource(R.drawable.);
 
 
         /**

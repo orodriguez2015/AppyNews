@@ -8,6 +8,7 @@ package com.appynews.database.helper;
  */
 public class DatabaseErrors {
 
+    public static final int OK                         = 0;
     public static final int ERROR_CREAR_BASEDATOS      = 1;
     public static final int ERROR_ACTUALIZAR_BASEDATOS = 2;
     public static final int ERROR_INSERTAR_USUARIO     = 3;
