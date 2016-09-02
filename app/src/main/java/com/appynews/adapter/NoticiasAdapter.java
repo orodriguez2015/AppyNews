@@ -10,7 +10,8 @@ import android.widget.TextView;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.appynews.model.dto.Noticia;
-import com.appynews.utils.LogCat;
+import com.appynews.utils.StringUtil;
+
 import java.util.List;
 
 import material.oscar.com.materialdesign.R;
@@ -52,7 +53,7 @@ public class NoticiasAdapter extends RecyclerView.Adapter<NoticiasAdapter.Notici
             imagen           = (NetworkImageView) v.findViewById(R.id.imagen);
             descripcion      = (TextView) v.findViewById(R.id.descripcion);
             fechaPublicacion = (TextView) v.findViewById(R.id.fechaPublicacion);
-            origen           = (TextView) v.findViewById(R.id.origenRss);
+            origen           = (TextView) v.findViewById(R.id.origen);
         }
     }
 
@@ -113,7 +114,12 @@ public class NoticiasAdapter extends RecyclerView.Adapter<NoticiasAdapter.Notici
 
         viewHolder.descripcion.setText(items.get(i).getTitulo());
         viewHolder.fechaPublicacion.setText(String.valueOf(items.get(i).getFechaPublicacion()));
-        viewHolder.origen.setText(origen);
+
+        String origenFinal = this.origen;
+        if(StringUtil.isNotEmpty(items.get(i).getOrigen())) {
+            origenFinal = items.get(i).getOrigen();
+        }
+        viewHolder.origen.setText(origenFinal);
     }
 
 

@@ -39,4 +39,15 @@ public class AppyNewsContract  {
         public static final String APELLIDO2            = "apellido2";
     }
 
+
+    /**
+     * Definición de las columnas de la tabla Origen de la base de datos
+     */
+    public static abstract class OrigenEntry implements BaseColumns {
+
+        public static final String TABLE_NAME           = "origen";
+        public static final String DESCRIPCION          = "descripcion";
+        public static final String URL                  = "url";
+    }
+
 }

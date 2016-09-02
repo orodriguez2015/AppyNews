@@ -43,7 +43,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Origen RSs"
-            android:id="@+id/origenRss"
+            android:id="@+id/origen"
             android:layout_below="@+id/descripcion"
             android:layout_alignLeft="@+id/descripcion" />
 
@@ -53,8 +53,8 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Fecha publicación"
             android:id="@+id/fechaPublicacion"
-            android:layout_below="@+id/origenRss"
-            android:layout_alignLeft="@+id/origenRss" />
+            android:layout_below="@+id/origen"
+            android:layout_alignLeft="@+id/origen" />
 
         <!--
         <View

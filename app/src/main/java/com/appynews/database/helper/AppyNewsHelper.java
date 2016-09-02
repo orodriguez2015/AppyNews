@@ -9,6 +9,7 @@ import com.appynews.database.com.appynews.database.exception.SQLiteException;
 import com.appynews.database.conversor.ModelConversorUtil;
 import com.appynews.model.dto.DatosUsuarioVO;
 import com.appynews.model.dto.Noticia;
+import com.appynews.model.dto.OrigenNoticiaVO;
 import com.appynews.utils.LogCat;
 import com.com.appynews.database.columns.AppyNewsContract;
 
@@ -22,7 +23,7 @@ import java.util.List;
  */
 public class AppyNewsHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 3;
     public static final String DATABASE_NAME = "AppyNews.db";
 
 
@@ -68,6 +69,56 @@ public class AppyNewsHelper extends SQLiteOpenHelper {
                     + AppyNewsContract.UsuarioEntry.TELEFONO + " TEXT)");
             //+ "UNIQUE (" + AppyNewsContract.NoticiaEntry._ID + "))");
 
+
+            // Se crea la tabla origen
+            sqLiteDatabase.execSQL("CREATE TABLE " + AppyNewsContract.OrigenEntry.TABLE_NAME + " ("
+                    + AppyNewsContract.OrigenEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + AppyNewsContract.OrigenEntry.URL + " TEXT,"
+                    + AppyNewsContract.OrigenEntry.DESCRIPCION + " TEXT)");
+
+
+            sqLiteDatabase.execSQL("INSERT INTO " + AppyNewsContract.OrigenEntry.TABLE_NAME
+                    + " ("  + AppyNewsContract.OrigenEntry.URL + "," + AppyNewsContract.OrigenEntry.DESCRIPCION + ") "
+                    + "VALUES('https://www.meneame.net/rss','Menéame')");
+
+            sqLiteDatabase.execSQL("INSERT INTO " + AppyNewsContract.OrigenEntry.TABLE_NAME
+                    + " ("  + AppyNewsContract.OrigenEntry.URL + "," + AppyNewsContract.OrigenEntry.DESCRIPCION + ") "
+                    + "VALUES('http://feeds.feedburner.com/ElLadoDelMal?format=xml','El otro lado del mal')");
+
+            sqLiteDatabase.execSQL("INSERT INTO " + AppyNewsContract.OrigenEntry.TABLE_NAME
+                    + " ("  + AppyNewsContract.OrigenEntry.URL + "," + AppyNewsContract.OrigenEntry.DESCRIPCION + ") "
+                    + "VALUES('http://feeds.feedburner.com/Seguridadapple?format=xml','Seguridad Apple')");
+
+            sqLiteDatabase.execSQL("INSERT INTO " + AppyNewsContract.OrigenEntry.TABLE_NAME
+                    + " ("  + AppyNewsContract.OrigenEntry.URL + "," + AppyNewsContract.OrigenEntry.DESCRIPCION + ") "
+                    + "VALUES('http://feeds.weblogssl.com/applesfera','Applesfera')");
+
+            sqLiteDatabase.execSQL("INSERT INTO " + AppyNewsContract.OrigenEntry.TABLE_NAME
+                    + " ("  + AppyNewsContract.OrigenEntry.URL + "," + AppyNewsContract.OrigenEntry.DESCRIPCION + ") "
+                    + "VALUES('http://feeds.weblogssl.com/Vitonica?format=xml','Vitónica')");
+
+
+            sqLiteDatabase.execSQL("INSERT INTO " + AppyNewsContract.OrigenEntry.TABLE_NAME
+                    + " ("  + AppyNewsContract.OrigenEntry.URL + "," + AppyNewsContract.OrigenEntry.DESCRIPCION + ") "
+                    + "VALUES('http://feeds.weblogssl.com/genbetadev?format=xml','GenBeta Dev')");
+
+            sqLiteDatabase.execSQL("INSERT INTO " + AppyNewsContract.OrigenEntry.TABLE_NAME
+                    + " ("  + AppyNewsContract.OrigenEntry.URL + "," + AppyNewsContract.OrigenEntry.DESCRIPCION + ") "
+                    + "VALUES('http://feeds.weblogssl.com/xatakaciencia','Xataka Ciencia')");
+
+            sqLiteDatabase.execSQL("INSERT INTO " + AppyNewsContract.OrigenEntry.TABLE_NAME
+                    + " ("  + AppyNewsContract.OrigenEntry.URL + "," + AppyNewsContract.OrigenEntry.DESCRIPCION + ") "
+                    + "VALUES('http://feeds.weblogssl.com/Xatakahome?format=xml','Xataka Smart Home')");
+
+
+            sqLiteDatabase.execSQL("INSERT INTO " + AppyNewsContract.OrigenEntry.TABLE_NAME
+                    + " ("  + AppyNewsContract.OrigenEntry.URL + "," + AppyNewsContract.OrigenEntry.DESCRIPCION + ") "
+                    + "VALUES('hhttp://feeds.weblogssl.com/xataka2','Xataka')");
+
+            sqLiteDatabase.execSQL("INSERT INTO " + AppyNewsContract.OrigenEntry.TABLE_NAME
+                    + " ("  + AppyNewsContract.OrigenEntry.URL + "," + AppyNewsContract.OrigenEntry.DESCRIPCION + ") "
+                    + "VALUES('http://feeds.weblogssl.com/xataka2','Xataka')");
+
             LogCat.info("onCreate end()");
         }catch(Exception e) {
             e.printStackTrace();
@@ -84,6 +135,17 @@ public class AppyNewsHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+
+        LogCat.debug("onUpgrade init");
+
+        /**
+        sqLiteDatabase.execSQL("CREATE TABLE " + AppyNewsContract.OrigenEntry.TABLE_NAME + " ("
+                + AppyNewsContract.OrigenEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + AppyNewsContract.OrigenEntry.URL + " TEXT,"
+                + AppyNewsContract.OrigenEntry.DESCRIPCION + " TEXT)");
+         **/
+
+        LogCat.debug("onUpgrade end");
 
     }
 
@@ -235,5 +297,52 @@ public class AppyNewsHelper extends SQLiteOpenHelper {
             if(db!=null) db.close();
         }
         return noticias;
+    }
+
+
+
+    /**
+     * Recupera las orígenes de datos RSS de la base de datos
+     * @return List<>
+     * @throws SQLiteException
+     */
+    public List<OrigenNoticiaVO> getOrigenes() throws SQLiteException {
+        List<OrigenNoticiaVO> origenes = new ArrayList<OrigenNoticiaVO>();
+        SQLiteDatabase db = null;
+        Cursor rs = null;
+
+        try {
+            LogCat.info("getOrigenes() init");
+            String sql = "select _id,url,descripcion from origen";
+            LogCat.debug("sql: " + sql);
+
+            db = getReadableDatabase();
+            rs = db.rawQuery(sql,null);
+
+            if(rs!=null && rs.getCount()>0 && rs.moveToFirst()) {
+                LogCat.debug("Numero origenes recuperados: " + rs.getCount());
+
+                do {
+                    OrigenNoticiaVO origen = new OrigenNoticiaVO();
+                    origen.setId(rs.getInt(0));
+                    origen.setUrl(rs.getString(1));
+                    origen.setNombre(rs.getString(2));
+                    origenes.add(origen);
+
+                } while(rs.moveToNext());
+
+            } else
+                LogCat.debug("No hay orígenes almacenados en la base de datos");
+
+            LogCat.info("getOrigenes() end");
+
+        } catch(Exception e) {
+            e.printStackTrace();
+            throw new SQLiteException(DatabaseErrors.ERROR_RECUPERAR_ORIGENES,"Error al recuperar los orígenes de datos RSS de la base de datos: ".concat(e.getMessage()));
+        } finally {
+            if(rs!=null) rs.close();
+            if(db!=null) db.close();
+        }
+        return origenes;
     }
 }
