@@ -132,8 +132,8 @@ public class NoticiasAdapter extends RecyclerView.Adapter<NoticiasAdapter.Notici
     }
 
     /**
-     * Cuando el usuario seleccione Invoca al método onClick del
-     * @param view
+     * Cuando el usuario ejecuta el método onClick sobre la vista
+     * @param view: View
      */
     public void onClick(View view) {
 

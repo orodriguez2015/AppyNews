@@ -20,17 +20,19 @@ import android.view.View;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
+import com.appynew.activities.dialog.AlertDialogHelper;
+import com.appynew.activities.dialog.BtnAceptarDialogGenerico;
 import com.appynews.adapter.NoticiasAdapter;
-import com.appynews.asynctasks.GetNoticiasAsyncTask;
+import com.appynews.asynctasks.GetOrigenesRssAsyncTask;
 import com.appynews.asynctasks.ParametrosAsyncTask;
 import com.appynews.asynctasks.RespuestaAsyncTask;
 import com.appynews.asynctasks.SaveUsuarioAsyncTask;
 import com.appynews.com.appynews.controllers.NoticiaController;
+import com.appynews.database.helper.DatabaseErrors;
 import com.appynews.model.dto.DatosUsuarioVO;
 import com.appynews.model.dto.Noticia;
 import com.appynews.model.dto.OrigenNoticiaVO;
 import com.appynews.utils.ConnectionUtils;
-import com.appynews.utils.FileOperations;
 import com.appynews.utils.LogCat;
 import com.appynews.utils.LruBitmapCache;
 import com.appynews.utils.MessageUtils;
@@ -39,8 +41,6 @@ import com.appynews.utils.TelephoneUtil;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 
 import material.oscar.com.materialdesign.R;
@@ -59,6 +59,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private int PERMISSION_ACCESS_STATE_PHONE = 1;
     private NoticiaController noticiaController = new NoticiaController(this);
     private ImageLoader imageLoader = null;
+
+    /**
+     * Colección con los origenes de datos RSS de los que se van a leer noticias
+     */
+    private List<OrigenNoticiaVO> fuentesDatos = null;
+
 
     /**
      * Contiene los datos y url de un origen RSS del que se obtendrá sus noticia
@@ -168,27 +174,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
 
 
-                    GetNoticiasAsyncTask task = new GetNoticiasAsyncTask();
-                    task.execute(params);
-                    RespuestaAsyncTask res2 = task.get();
-
-                    if(res2.getStatus()==0 && res2.getNoticias()!=null) {
-
-                        for(Noticia n:res2.getNoticias()) {
-                            LogCat.info("ID noticia : " + n.getId());
-                            LogCat.info("titulo noticia : " + n.getTitulo());
-                            LogCat.info("descripcion noticia : " + n.getDescripcion());
-                            LogCat.info("descripcionCompleta noticia : " + n.getDescripcionCompleta());
-                            LogCat.info("autor noticia : " + n.getAutor());
-                            LogCat.info("origen noticia : " + n.getOrigen());
-                            LogCat.info("fecha noticia : " + n.getFechaPublicacion());
-                        }
-
-                    } else {
-                        LogCat.error("Se ha producido un error al recuperar las noticias");
-                    }
-
-
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                     LogCat.error("Error al ejecutar tarea asíncrona de grabación de usuario en BD: ".concat(e.getMessage()));
@@ -203,7 +188,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 this.imageLoader = new ImageLoader(requestQueau,new LruBitmapCache());
 
                 // Carga inicial de noticias de un determinado origen
-                cargarNoticias("https://www.meneame.net/rss","Menéame");
+                //cargarNoticias("https://www.meneame.net/rss","Menéame");
+                cargarFavoritas();
             }
         }
     }
@@ -215,25 +201,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * @param navigationView: NavigationView en el que se añaden los menús
      */
     private void rellenarMenu(NavigationView navigationView) {
-
         boolean continuar = false;
-        try {
-            origenes  = FileOperations.leerArchivoConfiguracion(getResources());
-            continuar = true;
 
-        }catch(Exception e) {
-            MessageUtils.showToastDuracionLarga(getApplicationContext(),getString(R.string.err_fuentes_datos));
+        try {
+
+            ParametrosAsyncTask params = new ParametrosAsyncTask();
+            params.setContext(getBaseContext());
+
+            GetOrigenesRssAsyncTask task = new GetOrigenesRssAsyncTask();
+            task.execute(params);
+            RespuestaAsyncTask res = task.get();
+
+            if(res.getStatus().equals(DatabaseErrors.OK)) {
+                this.fuentesDatos = res.getOrigenes();
+                continuar = true;
+
+            } else {
+                MessageUtils.showToastDuracionLarga(getApplicationContext(),getString(R.string.err_get_fuentes_datos));
+            }
+
+        } catch(Exception e) {
+            e.printStackTrace();
+            MessageUtils.showToastDuracionLarga(getApplicationContext(),getString(R.string.err_get_fuentes_datos));
         }
 
+
+        // Si se han recuperado las fuentes de datos, se rellena el menú de la aplicación con l
         if(continuar) {
-
             Menu menu = navigationView.getMenu();
-            // Se almacena en HashMap en un TreeMap que ordena el contenido por la clave
-            Map<Integer, OrigenNoticiaVO> treeMap = new TreeMap<Integer, OrigenNoticiaVO>(origenes);
 
-            for (Map.Entry entry : treeMap.entrySet()) {
-                OrigenNoticiaVO origen = origenes.get((Integer)entry.getKey());
-                MenuItem menuItem = menu.add(Menu.NONE, origen.getId(), Menu.NONE, origen.getNombre()).setIcon(android.R.drawable.ic_menu_compass);
+            for(int i=0;fuentesDatos!=null && i<fuentesDatos.size();i++) {
+                MenuItem menuItem = menu.add(Menu.NONE, fuentesDatos.get(i).getId(), Menu.NONE, fuentesDatos.get(i).getNombre()).setIcon(android.R.drawable.ic_menu_compass);
             }
         }
 
@@ -272,10 +270,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     /**
      * Carga las noticias de la base de datos
      */
-    private void cargarNoticiasBD() {
+    private void cargarFavoritas() {
 
         final List<Noticia> favoritas = noticiaController.getNoticiasFavoritas(getApplicationContext());
         NoticiasAdapter adapter =  new NoticiasAdapter(favoritas,"Prueva",imageLoader,getResources());
+
+        try {
+
+            if(favoritas==null || favoritas.size()==0) {
+                AlertDialogHelper.crearDialogoAlertaSimple(this, getString(R.string.atencion), getString(R.string.msg_no_hay_noticias_favoritas), new BtnAceptarDialogGenerico()).show();
+            }
+
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+
 
         /**
          * Se establece el listener que se pasa al adapter para que añade
@@ -290,7 +299,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
         recycler.setAdapter(adapter);
-
     }
 
     /**
@@ -298,13 +306,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * @param noticia: Objeto de la clase Noticia que se pasa a la actividad DetalleNoticiaActivity
      */
     private void cargarActivityDetalleNoticia(Noticia noticia) {
-
         // Se pasa la noticia seleccionada al Activity que mostrará la descripción, en este caso, ActividadDescripcionNoticia
         Intent intent = new Intent(MainActivity.this, DetalleNoticiaActivity.class);
         noticia.setOrigen(this.nombreOrigenNoticiasRecuperadas);
         intent.putExtra("noticia",noticia);
         startActivity(intent);
-
     }
 
 
@@ -325,14 +331,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+
+    /**
+     * Operación que es invocada cuando el usuario selecciona un determinado ítem del menú
+     * @param item: MenuItem
+     * @return boolean
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        // Id del item de menú seleccionado por el usuario
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -357,17 +366,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch(item.getItemId()) {
             case R.id.favoritos:
                 // Se recuperan las noticias grabadas en la base de datos
-                cargarNoticiasBD();
+                cargarFavoritas();
                 break;
 
             case R.id.nuevo_origen:
                 // Dar de alta un nuevo origen
-                LogCat.info(" TODO: Por implementar el nuevo origen");
+                MessageUtils.showToastDuracionCorta(getApplicationContext(),getString(R.string.err_accion_no_implementada));
                 break;
 
             default:
                 // Se recuperan las noticias del origen seleccionado por el usuario
-                OrigenNoticiaVO origenSeleccionado = origenes.get(id);
+                OrigenNoticiaVO origenSeleccionado = fuentesDatos.get(id);
                 cargarNoticias(origenSeleccionado.getUrl(),origenSeleccionado.getNombre());
                 break;
         }

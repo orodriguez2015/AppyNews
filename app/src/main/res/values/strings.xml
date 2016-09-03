@@ -34,5 +34,8 @@
     <string name="configuracion">Configuración</string>
     <string name="favoritos">Mis favoritos</string>
     <string name="nuevoOrigen">Nuevo origen</string>
+    <string name="err_get_fuentes_datos">Se ha producido un error al recuperar las fuentes de datos</string>
+    <string name="err_accion_no_implementada">Acción no implementada</string>
+    <string name="msg_no_hay_noticias_favoritas">No tienes ninguna noticia favorita. Selecciona en el menú un origen de datos para visualizar sus noticias</string>
 
 </resources>

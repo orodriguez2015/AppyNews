@@ -34,6 +34,29 @@ public class AlertDialogHelper  {
         builder.setNegativeButton(activity.getString(R.string.cancelar),cancelar);
 
         return builder.create();
+
+    }
+
+
+    /**
+     * Operación que crea un AlertDialog de Android simple con un determinado mensaje
+     * @param activity: Actividad padre sobre la que se mostrará el AlertDialog
+     * @param titulo: Título del activity
+     * @param mensaje: Mensaje a mostrar al usuario
+     * @param aceptar: Clase que implementa la interfaz DialogInterface.OnClickListener para la acción asociada
+     *                 al botón de Aceptar
+     * @return AlertDialog
+     */
+    public static AlertDialog crearDialogoAlertaSimple(final Activity activity, String titulo, String mensaje, DialogInterface.OnClickListener aceptar) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle(titulo);
+        builder.setMessage(mensaje);
+        // Acción para el botón de "Aceptar"
+        builder.setPositiveButton(activity.getString(R.string.aceptar),aceptar);
+
+        return builder.create();
+
     }
 
 }

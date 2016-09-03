@@ -1,6 +1,7 @@
 package com.appynews.asynctasks;
 
 import com.appynews.model.dto.Noticia;
+import com.appynews.model.dto.OrigenNoticiaVO;
 
 import java.io.Serializable;
 import java.util.List;
@@ -15,6 +16,7 @@ public class RespuestaAsyncTask implements Serializable {
     private Integer status    = null;
     private String descStatus = null;
     private List<Noticia> noticias = null;
+    private List<OrigenNoticiaVO> origenes = null;
 
 
     /**
@@ -74,5 +76,22 @@ public class RespuestaAsyncTask implements Serializable {
      */
     public void setNoticias(List<Noticia> noticias) {
         this.noticias = noticias;
+    }
+
+
+    /**
+     * Devuelve los origenes de datos RSS de los que se leen las noticias
+     * @return List<OrigenNoticiaVO>
+     */
+    public List<OrigenNoticiaVO> getOrigenes() {
+        return origenes;
+    }
+
+    /**
+     * Permite establecer  los origenes de datos RSS de los que se leen las noticias
+     * @param origenes: List<OrigenNoticiaVO>
+     */
+    public void setOrigenes(List<OrigenNoticiaVO> origenes) {
+        this.origenes = origenes;
     }
 }
