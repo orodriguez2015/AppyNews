@@ -45,6 +45,9 @@ public class DetalleNoticiaActivity extends AppCompatActivity {
 
                 noticia.setFechaPublicacion(DateOperationsUtils.getFechaHoraActual(DateOperationsUtils.FORMATO_FECHA_HORA));
 
+                LogCat.debug("Noticia a grabar imagen: " + noticia.getUrlThumbnail());
+                LogCat.debug("Noticia a grabar titulo: " + noticia.getTitulo());
+
                 AlertDialogHelper.crearDialogoAlertaSimple(DetalleNoticiaActivity.this,getString(R.string.atencion),getString(R.string.pregunta_grabar_noticia_favorita),
                         new NoticiaFavoritaBtnAceptar(DetalleNoticiaActivity.this,noticia),new NoticiaFavoritaBtnCancelar()).show();
                 /*

@@ -5,11 +5,8 @@ package com.appynews.model.dto;
  *
  * Created by oscar on 03/07/16.
  */
-public class OrigenNoticiaVO {
+public class OrigenNoticiaVO implements Comparable<OrigenNoticiaVO>  {
 
-    /**
-     * Id
-     */
     private Integer id = null;
     /**
      * Nombre del sitio
@@ -41,6 +38,8 @@ public class OrigenNoticiaVO {
     }
 
     /**
+     * Id
+     */ /**
      * Devuelve el id
      * @return Integer
      */
@@ -91,5 +90,56 @@ public class OrigenNoticiaVO {
     public void setUrl(String url) {
         this.url = url;
     }
+
+
+    /**
+     * hashCode
+     * @return: int
+     */
+    public int hashCode() {
+        return this.getId().hashCode();
+    }
+
+    /**
+     * equals
+     * @param objeto: Object
+     * @return: boolean
+     */
+    public boolean equals( Object objeto ) {
+        if (objeto == null) return false;
+        OrigenNoticiaVO origen = (OrigenNoticiaVO)objeto;
+        if (this.getId() == origen.getId()) {
+            return true;
+        }
+
+        return false;
+    }
+
+
+    /**
+     * Método  compareTo
+     // Devuelve +1 si this es > que objeto
+     // Devuelve -1 si this es < que objeto
+     // Devuelve 0 si son iguales
+     * @param objeto: Object
+     * @return int
+     */
+    public int compareTo(OrigenNoticiaVO objeto) {
+
+        int salida = -1; // Valor de salida por defecto
+
+        if (this.equals(objeto)) {
+            salida = 0;
+        } else if (this.getId() > objeto.getId()) {
+            salida = 1;
+        } else if (this.getId() < objeto.getId()) {
+            salida = -1;
+        }
+
+        return salida;
+    }
+
+
+
 
 }

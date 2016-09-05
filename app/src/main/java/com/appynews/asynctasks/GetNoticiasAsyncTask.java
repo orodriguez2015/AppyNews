@@ -3,7 +3,7 @@ package com.appynews.asynctasks;
 import android.content.Context;
 import android.os.AsyncTask;
 
-import com.appynews.database.com.appynews.database.exception.SQLiteException;
+import com.appynews.database.exceptions.SQLiteException;
 import com.appynews.database.helper.AppyNewsHelper;
 import com.appynews.model.dto.Noticia;
 

@@ -1,4 +1,4 @@
-package com.appynews.database.com.appynews.database.exception;
+package com.appynews.database.exceptions;
 
 /**
  * Excepción que se lanza cuando se produce un error al realizar

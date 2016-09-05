@@ -20,14 +20,12 @@ import android.view.View;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
-import com.appynew.activities.dialog.AlertDialogHelper;
-import com.appynew.activities.dialog.BtnAceptarDialogGenerico;
 import com.appynews.adapter.NoticiasAdapter;
 import com.appynews.asynctasks.GetOrigenesRssAsyncTask;
 import com.appynews.asynctasks.ParametrosAsyncTask;
 import com.appynews.asynctasks.RespuestaAsyncTask;
 import com.appynews.asynctasks.SaveUsuarioAsyncTask;
-import com.appynews.com.appynews.controllers.NoticiaController;
+import com.appynews.controllers.NoticiaController;
 import com.appynews.database.helper.DatabaseErrors;
 import com.appynews.model.dto.DatosUsuarioVO;
 import com.appynews.model.dto.Noticia;
@@ -38,6 +36,7 @@ import com.appynews.utils.LruBitmapCache;
 import com.appynews.utils.MessageUtils;
 import com.appynews.utils.PermissionsUtil;
 import com.appynews.utils.TelephoneUtil;
+import com.appynews.utils.Utils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -102,26 +101,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
-        /** Añadir elementos al menú de forma dinámica **/
-        //Menu menu = navigationView.getMenu();
-
+        // Rellenar el menú con las fuentes de datos
         rellenarMenu(navigationView);
-
-        /*
-        menu.add(Menu.CATEGORY_SYSTEM, 4, Menu.CATEGORY_SYSTEM, "Opcion1")
-                .setIcon(android.R.drawable.ic_menu_preferences);
-    */
-
-        // menu.add(int groupId, int itemId, int order, int titleRes)
-        //MenuItem menuItem = menu.add(Menu.NONE, 5, Menu.NONE, "Opcion2").setIcon(android.R.drawable.ic_menu_compass);
-
-        /**
-        SubMenu submenu = menu.addSubMenu(Menu.FIRST);
-        submenu.add(Menu.NONE, 5, Menu.NONE, "Opcion3");
-        **/
-
-
 
         // Obtener el Recycler
         recycler = (RecyclerView) findViewById(R.id.reciclador);
@@ -138,7 +119,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // Recopilación de datos del dispositivo
             DatosUsuarioVO datosTelefono = TelephoneUtil.getInfoDispositivo(getBaseContext());
             LogCat.debug(" datos del telefono: " + datosTelefono.toString());
-
         }
 
 
@@ -273,17 +253,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void cargarFavoritas() {
 
         final List<Noticia> favoritas = noticiaController.getNoticiasFavoritas(getApplicationContext());
-        NoticiasAdapter adapter =  new NoticiasAdapter(favoritas,"Prueva",imageLoader,getResources());
+        NoticiasAdapter adapter =  new NoticiasAdapter(favoritas,null,imageLoader,getResources());
 
-        try {
 
-            if(favoritas==null || favoritas.size()==0) {
-                AlertDialogHelper.crearDialogoAlertaSimple(this, getString(R.string.atencion), getString(R.string.msg_no_hay_noticias_favoritas), new BtnAceptarDialogGenerico()).show();
-            }
-
-        }catch(Exception e) {
-            e.printStackTrace();
+        if(favoritas==null || favoritas.size()==0) {
+            MessageUtils.showToastDuracionCorta(this,getString(R.string.msg_no_hay_noticias_favoritas));
+            //AlertDialogHelper.crearDialogoAlertaSimple(this, getString(R.string.atencion), getString(R.string.msg_no_hay_noticias_favoritas), new BtnAceptarDialogGenerico()).show();
         }
+
+
+        for(int i=0;favoritas!=null && i<favoritas.size();i++) {
+
+            LogCat.debug("autor: " + favoritas.get(i).getAutor());
+            LogCat.debug("titulo: " + favoritas.get(i).getTitulo());
+            LogCat.debug("url: " + favoritas.get(i).getUrl());
+            LogCat.debug("url imagen: " + favoritas.get(i).getUrlThumbnail());
+            LogCat.debug("");
+        }
+
 
 
         /**
@@ -360,7 +347,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
         LogCat.debug(" ================> Se ha selecciona el elemento del menú con id: " + id);
 
         switch(item.getItemId()) {
@@ -376,7 +362,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             default:
                 // Se recuperan las noticias del origen seleccionado por el usuario
-                OrigenNoticiaVO origenSeleccionado = fuentesDatos.get(id);
+                OrigenNoticiaVO origenSeleccionado = Utils.getFuenteDatos(fuentesDatos,id);
                 cargarNoticias(origenSeleccionado.getUrl(),origenSeleccionado.getNombre());
                 break;
         }
@@ -385,5 +371,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
 
 }

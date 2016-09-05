@@ -5,13 +5,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.appynews.database.com.appynews.database.exception.SQLiteException;
+import com.appynews.database.exceptions.SQLiteException;
 import com.appynews.database.conversor.ModelConversorUtil;
 import com.appynews.model.dto.DatosUsuarioVO;
 import com.appynews.model.dto.Noticia;
 import com.appynews.model.dto.OrigenNoticiaVO;
 import com.appynews.utils.LogCat;
-import com.com.appynews.database.columns.AppyNewsContract;
+import com.appynews.database.colums.AppyNewsContract;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,9 +53,8 @@ public class AppyNewsHelper extends SQLiteOpenHelper {
                     + AppyNewsContract.NoticiaEntry.DESCRIPCION_COMPLETA + " TEXT,"
                     + AppyNewsContract.NoticiaEntry.ORIGEN + " TEXT NOT NULL,"
                     + AppyNewsContract.NoticiaEntry.FECHA_PUBLICACION + " DATE,"
+                    + AppyNewsContract.NoticiaEntry.URL_IMAGEN + " TEXT,"
                     + AppyNewsContract.NoticiaEntry.URL + " TEXT)");
-            //+ "UNIQUE (" + AppyNewsContract.NoticiaEntry._ID + "))");
-
 
             // Se crea la tabla Usuario
             sqLiteDatabase.execSQL("CREATE TABLE " + AppyNewsContract.UsuarioEntry.TABLE_NAME + " ("
@@ -115,9 +114,6 @@ public class AppyNewsHelper extends SQLiteOpenHelper {
                     + " ("  + AppyNewsContract.OrigenEntry.URL + "," + AppyNewsContract.OrigenEntry.DESCRIPCION + ") "
                     + "VALUES('hhttp://feeds.weblogssl.com/xataka2','Xataka')");
 
-            sqLiteDatabase.execSQL("INSERT INTO " + AppyNewsContract.OrigenEntry.TABLE_NAME
-                    + " ("  + AppyNewsContract.OrigenEntry.URL + "," + AppyNewsContract.OrigenEntry.DESCRIPCION + ") "
-                    + "VALUES('http://feeds.weblogssl.com/xataka2','Xataka')");
 
             LogCat.info("onCreate end()");
         }catch(Exception e) {
@@ -260,7 +256,7 @@ public class AppyNewsHelper extends SQLiteOpenHelper {
 
         try {
             LogCat.info("getNoticias() init");
-            String sql = "select _id,titulo,descripcion,descripcionCompleta,fechaPublicacion,origen,url from noticia order by fechaPublicacion desc";
+            String sql = "select _id,titulo,descripcion,descripcionCompleta,fechaPublicacion,origen,url,urlImagen from noticia order by fechaPublicacion desc";
             LogCat.debug("sql: " + sql);
 
             db = getReadableDatabase();
@@ -280,6 +276,7 @@ public class AppyNewsHelper extends SQLiteOpenHelper {
                     noticia.setFechaPublicacion(rs.getString(4));
                     noticia.setOrigen(rs.getString(5));
                     noticia.setUrl(rs.getString(6));
+                    noticia.setUrlThumbnail(rs.getString(7));
                     noticias.add(noticia);
 
                 } while(rs.moveToNext());

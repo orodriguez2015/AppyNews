@@ -4,7 +4,7 @@ import android.content.ContentValues;
 
 import com.appynews.model.dto.DatosUsuarioVO;
 import com.appynews.model.dto.Noticia;
-import com.com.appynews.database.columns.AppyNewsContract;
+import com.appynews.database.colums.AppyNewsContract;
 
 /**
  * Created by oscar on 22/08/16.
@@ -15,11 +15,11 @@ public class ModelConversorUtil {
     public static ContentValues toContentValues(Noticia noticia) {
 
         ContentValues values = new ContentValues();
-        //values.put(AppyNewsContract.NoticiaEntry._ID,noticia.getId());
         values.put(AppyNewsContract.NoticiaEntry.TITULO,noticia.getTitulo());
         values.put(AppyNewsContract.NoticiaEntry.DESCRIPCION,noticia.getDescripcion());
         values.put(AppyNewsContract.NoticiaEntry.DESCRIPCION_COMPLETA,noticia.getDescripcionCompleta());
         values.put(AppyNewsContract.NoticiaEntry.URL,noticia.getUrl());
+        values.put(AppyNewsContract.NoticiaEntry.URL_IMAGEN,noticia.getUrlThumbnail());
         values.put(AppyNewsContract.NoticiaEntry.ORIGEN,noticia.getOrigen());
         values.put(AppyNewsContract.NoticiaEntry.FECHA_PUBLICACION,noticia.getFechaPublicacion());
         return values;

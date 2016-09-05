@@ -1,4 +1,4 @@
-package com.com.appynews.database.columns;
+package com.appynews.database.colums;
 
 import android.provider.BaseColumns;
 
@@ -21,6 +21,7 @@ public class AppyNewsContract  {
         public static final String FECHA_PUBLICACION    = "fechaPublicacion";
         public static final String ORIGEN               = "origen";
         public static final String URL                  = "url";
+        public static final String URL_IMAGEN           = "urlImagen";
     }
 
     /**

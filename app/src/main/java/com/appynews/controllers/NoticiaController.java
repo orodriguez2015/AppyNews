@@ -1,4 +1,4 @@
-package com.appynews.com.appynews.controllers;
+package com.appynews.controllers;
 
 import android.app.Activity;
 import android.content.Context;
