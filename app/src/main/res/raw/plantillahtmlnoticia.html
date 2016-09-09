@@ -3,7 +3,9 @@
 	<title>Noticias</title>
 
 	<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1"/>
+	<!--
 	<meta name="viewport" content="width=device-width, height=device-height, user-scalable=yes, initial-scale=1.0" />
+	-->
 	
 	<link rel="stylesheet" media="screen and (-webkit-device-pixel-ratio: 1.5)" href="hdpi.css" />
 	<link rel="stylesheet" media="screen and (-webkit-device-pixel-ratio: 1.0)" href="mdpi.css" />
@@ -12,22 +14,23 @@
 
 		.titulo{
 			font-family:Verdana,Arial,Helvetica;
-			font-size:15px;
+			font-size:45px;
 			font-weight: bold;
-			font-color:blue;
+			color:blue;
 	     }
 	     
 	     .autor{
 			font-family:Verdana,Arial,Helvetica;
-			font-size:12px;
+			font-size:35px;
 			font-weight:normal;
 			text-align: justify;
 			font-color:#000000;
 	     }
 	     
-	     .fecha{
+	     .fecha {
+			margin-top:10px;
 			font-family:Verdana,Arial,Helvetica;
-			font-size:12px;
+			font-size:35px;
 			font-weight:normal;
 			text-align: justify;
 			font-color:#000000;
@@ -41,17 +44,16 @@
 	     }
 	     
 	     .descripcion{
+			margin-top:10px;
 			font-family:Verdana,Arial,Helvetica;
-			font-size:14px;
+			font-size:42px;
 			font-weight:normal;
 			text-align: left;
 			font-color:#000000;
-			width:85%;
+			width:100%;
+			border:0px solid #000000;
 	     }
 
-		 .tabla{
-		 	width:60%;
-		 }
 	</style>
 </head>
 <body>
@@ -68,7 +70,7 @@
 		_FECHA_
 	</div>	
 	
-	<div class="descripcion">
+	<div class="descripcion" style="width:100%;">
 		_DESCRIPCION_
 	</div>
 	

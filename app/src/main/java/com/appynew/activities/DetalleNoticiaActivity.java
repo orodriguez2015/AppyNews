@@ -91,12 +91,14 @@ public class DetalleNoticiaActivity extends AppCompatActivity {
 
         WebSettings configuracionWebView = webViewNoticia.getSettings();
         webViewNoticia.setInitialScale(1);
+
+
+        configuracionWebView.setLoadsImagesAutomatically(true);
         configuracionWebView.setUseWideViewPort(true);
         configuracionWebView.setLoadWithOverviewMode(true);
         configuracionWebView.setBuiltInZoomControls(true);
         configuracionWebView.setJavaScriptEnabled(true);
         configuracionWebView.setDisplayZoomControls(true);
-
 
         // Se carga la plantilla HTML con los datos de la noticia en el webview
         webViewNoticia.loadDataWithBaseURL(null,html, ConstantesDatos.MIMETYPE_TEXT_HTML,ConstantesDatos.UTF_8,null);

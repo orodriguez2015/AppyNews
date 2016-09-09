@@ -35,6 +35,7 @@ import com.appynews.utils.LogCat;
 import com.appynews.utils.LruBitmapCache;
 import com.appynews.utils.MessageUtils;
 import com.appynews.utils.PermissionsUtil;
+import com.appynews.utils.StringUtil;
 import com.appynews.utils.TelephoneUtil;
 import com.appynews.utils.Utils;
 
@@ -219,6 +220,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     /**
+     * Devuelve true si las noticias que se están visualizando proceden de un origen externo
+     * @return boolean
+     */
+    private boolean isOrigenExterno() {
+        boolean exito = false;
+
+        if(StringUtil.isNotEmpty(this.nombreOrigenNoticiasRecuperadas)) {
+            exito = true;
+        }
+        return exito;
+    }
+
+
+    /**
+     * Devuelve el nombre del origen del cual se están cargando noticias
+     * @return String
+     */
+    private String getOrigenExterno() {
+        return this.nombreOrigenNoticiasRecuperadas;
+    }
+
+
+
+
+    /**
      * Método que carga las noticias de una determinada url
      * @param url: String que contiene la url del orígen de datos RSS
      * @param origen: String que contiene el nombre del orígen de datos RSS
@@ -258,7 +284,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if(favoritas==null || favoritas.size()==0) {
             MessageUtils.showToastDuracionCorta(this,getString(R.string.msg_no_hay_noticias_favoritas));
-            //AlertDialogHelper.crearDialogoAlertaSimple(this, getString(R.string.atencion), getString(R.string.msg_no_hay_noticias_favoritas), new BtnAceptarDialogGenerico()).show();
         }
 
 
@@ -293,9 +318,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * @param noticia: Objeto de la clase Noticia que se pasa a la actividad DetalleNoticiaActivity
      */
     private void cargarActivityDetalleNoticia(Noticia noticia) {
+
         // Se pasa la noticia seleccionada al Activity que mostrará la descripción, en este caso, ActividadDescripcionNoticia
         Intent intent = new Intent(MainActivity.this, DetalleNoticiaActivity.class);
-        noticia.setOrigen(this.nombreOrigenNoticiasRecuperadas);
+        if(isOrigenExterno()) { // Si se cargan las noticias de un origen externo, se establece el nombre del origen en la noticia
+            noticia.setOrigen(getOrigenExterno());
+        }
         intent.putExtra("noticia",noticia);
         startActivity(intent);
     }
