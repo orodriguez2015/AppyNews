@@ -192,11 +192,35 @@ public class Noticia implements Serializable{
         return salida;
     }
 
+    /**
+     * Devuelve el id
+     * @return int
+     */
     public int getId() {
         return id;
     }
 
+
+    /**
+     * Establece el id de la noticia
+     * @param id int
+     */
     public void setId(int id) {
         this.id = id;
+    }
+
+    /**
+     * Devuelve true si la noticia tiene asociado un id y false en
+     * caso contrario. Si tiene id, es que la noticia se ha recuperado de la BBDD, y por tanto,
+     * es una noticia favorita
+     * @return boolean
+     */
+    public boolean isNoticiaFavorita() {
+        boolean exito = false;
+        
+        if(this.id>=1) {
+            exito = true;
+        }
+        return exito;
     }
 }

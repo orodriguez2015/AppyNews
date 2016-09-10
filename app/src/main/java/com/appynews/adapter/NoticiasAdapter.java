@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.appynews.model.dto.Noticia;
+import com.appynews.utils.LogCat;
 import com.appynews.utils.StringUtil;
 
 import java.util.List;
@@ -87,6 +88,37 @@ public class NoticiasAdapter extends RecyclerView.Adapter<NoticiasAdapter.Notici
         return items.size();
     }
 
+
+    /**
+     * Añade una noticia
+     * @param noticia Noticia
+     */
+    public void addItem(Noticia noticia) {
+
+    }
+
+    /**
+     * Elimina un elemento del adapter de noticia
+     * @param pos Posición del elemento a borrar
+     */
+    public void removeItem(int pos) {
+        getNoticias().remove(pos);
+    }
+
+
+    /**
+     * Devuelve una determinada noticia
+     * @param pos int que indica una posición válida de la colección de noticias
+     * @return Noticia
+     */
+    public Noticia getNoticia(int pos) {
+        Noticia noticia = null;
+        if(pos>=0 && pos<getNoticias().size()) {
+            noticia = getNoticias().get(pos);
+        }
+        return noticia;
+    }
+
     @Override
     public NoticiaViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
 
@@ -95,7 +127,6 @@ public class NoticiasAdapter extends RecyclerView.Adapter<NoticiasAdapter.Notici
                 .inflate(R.layout.noticia, viewGroup, false);
 
         v.setOnClickListener(this);
-
         return new NoticiaViewHolder(v);
     }
 
@@ -136,7 +167,7 @@ public class NoticiasAdapter extends RecyclerView.Adapter<NoticiasAdapter.Notici
      * @param view: View
      */
     public void onClick(View view) {
-
+        LogCat.debug("NoticiasAdapter.onClick ====>");
         if(listener != null) {
             listener.onClick(view);
         }

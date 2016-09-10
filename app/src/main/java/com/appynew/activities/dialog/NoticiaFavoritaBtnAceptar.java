@@ -52,10 +52,10 @@ public class NoticiaFavoritaBtnAceptar implements DialogInterface.OnClickListene
             task.execute(params);
             RespuestaAsyncTask res = task.get();
             if(res.getStatus()==0) {
-                MessageUtils.showToastDuracionLarga(this.activity,this.activity.getString(R.string.noticia_grabada));
+                MessageUtils.showToastDuracionCorta(this.activity,this.activity.getString(R.string.noticia_grabada));
                 this.activity.mostrarBotonFlotante(false);
             } else {
-                MessageUtils.showToastDuracionLarga(this.activity,this.activity.getString(R.string.error_grabar_noticia));
+                MessageUtils.showToastDuracionCorta(this.activity,this.activity.getString(R.string.error_grabar_noticia));
             }
 
         } catch (InterruptedException e) {

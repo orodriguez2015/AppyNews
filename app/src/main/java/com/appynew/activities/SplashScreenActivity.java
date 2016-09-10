@@ -16,7 +16,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     /**
      * Temporizador para la pantalla de bienvenida
      */
-    private static int SPLASH_TIEMPO = 500;
+    private static int SPLASH_TIEMPO = 150;
 
 
     /**

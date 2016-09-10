@@ -2,6 +2,12 @@ package com.appynew.activities;
 
 import android.Manifest;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -13,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,7 +27,10 @@ import android.view.View;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
+import com.appynew.activities.dialog.AlertDialogHelper;
+import com.appynew.activities.dialog.BtnAceptarDialogGenerico;
 import com.appynews.adapter.NoticiasAdapter;
+import com.appynews.asynctasks.DeleteNoticiaAsyncTask;
 import com.appynews.asynctasks.GetOrigenesRssAsyncTask;
 import com.appynews.asynctasks.ParametrosAsyncTask;
 import com.appynews.asynctasks.RespuestaAsyncTask;
@@ -45,6 +55,8 @@ import java.util.concurrent.ExecutionException;
 
 import material.oscar.com.materialdesign.R;
 
+import static material.oscar.com.materialdesign.R.drawable.ic_menu_delete2;
+
 
 
 /**
@@ -56,9 +68,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private RecyclerView recycler;
     private RecyclerView.LayoutManager lManager;
-    private int PERMISSION_ACCESS_STATE_PHONE = 1;
     private NoticiaController noticiaController = new NoticiaController(this);
     private ImageLoader imageLoader = null;
+    private NoticiasAdapter noticiaAdapter = null;
+    private Paint p = new Paint();
+
 
     /**
      * Colección con los origenes de datos RSS de los que se van a leer noticias
@@ -115,6 +129,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         recycler.setLayoutManager(lManager);
 
 
+
+        // Se inicializa el listener para el swipe
+        initSwipe();
+
+
         // Si se dispone de permiso para leer el estado del teléfono, se obtiene datos como el número, imei, etc ...
         if(PermissionsUtil.appTienePermiso(this,Manifest.permission.READ_PHONE_STATE)) {
             // Recopilación de datos del dispositivo
@@ -169,7 +188,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 this.imageLoader = new ImageLoader(requestQueau,new LruBitmapCache());
 
                 // Carga inicial de noticias de un determinado origen
-                //cargarNoticias("https://www.meneame.net/rss","Menéame");
                 cargarFavoritas();
             }
         }
@@ -246,8 +264,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     /**
      * Método que carga las noticias de una determinada url
-     * @param url: String que contiene la url del orígen de datos RSS
-     * @param origen: String que contiene el nombre del orígen de datos RSS
+     * @param url String que contiene la url del orígen de datos RSS
+     * @param origen String que contiene el nombre del orígen de datos RSS
      */
     private void cargarNoticias(String url,String origen) {
 
@@ -255,13 +273,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Se recupera la lista de noticias a través
         final List<Noticia> noticias = noticiaController.getNoticias(url);
-        NoticiasAdapter adapter =  new NoticiasAdapter(noticias,origen,imageLoader,getResources());
-
+        noticiaAdapter =  new NoticiasAdapter(noticias,origen,imageLoader,getResources());
+        noticiaAdapter.notifyDataSetChanged();
         /**
          * Se establece el listener que se pasa al adapter para que añade
          * este Listener a cada View a mostrar en el RecyclerView
          */
-        adapter.setOnClickListener(new View.OnClickListener() {
+        noticiaAdapter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int pos =  recycler.getChildAdapterPosition(view);
@@ -269,7 +287,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        recycler.setAdapter(adapter);
+        recycler.setAdapter(noticiaAdapter);
     }
 
 
@@ -279,8 +297,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void cargarFavoritas() {
 
         final List<Noticia> favoritas = noticiaController.getNoticiasFavoritas(getApplicationContext());
-        NoticiasAdapter adapter =  new NoticiasAdapter(favoritas,null,imageLoader,getResources());
-
+        noticiaAdapter =  new NoticiasAdapter(favoritas,null,imageLoader,getResources());
+        noticiaAdapter.notifyDataSetChanged();
 
         if(favoritas==null || favoritas.size()==0) {
             MessageUtils.showToastDuracionCorta(this,getString(R.string.msg_no_hay_noticias_favoritas));
@@ -302,7 +320,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
          * Se establece el listener que se pasa al adapter para que añade
          * este Listener a cada View a mostrar en el RecyclerView
          */
-        adapter.setOnClickListener(new View.OnClickListener() {
+        noticiaAdapter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int pos =  recycler.getChildAdapterPosition(view);
@@ -310,12 +328,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        recycler.setAdapter(adapter);
+        recycler.setAdapter(noticiaAdapter);
     }
 
     /**
      * Este método pasa el control del activity actual al activity DetalleNoticiaActivity.
-     * @param noticia: Objeto de la clase Noticia que se pasa a la actividad DetalleNoticiaActivity
+     * @param noticia Objeto de la clase Noticia que se pasa a la actividad DetalleNoticiaActivity
      */
     private void cargarActivityDetalleNoticia(Noticia noticia) {
 
@@ -399,6 +417,101 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
+
+    /*** prueba ***/
+
+    private void initSwipe(){
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+
+                if (direction == ItemTouchHelper.LEFT){
+                    // Se recupera la noticia del adapter, y se dispone a borrarla de la BBDD
+                    Noticia noticiaDelete = noticiaAdapter.getNoticia(position);
+
+                    if(noticiaDelete.isNoticiaFavorita()) {
+                        // Si la noticia procede de la BBDD, se procede a eliminarla
+                        ParametrosAsyncTask params = new ParametrosAsyncTask();
+                        params.setContext(getApplicationContext());
+                        params.setNoticia(noticiaDelete);
+
+                        try {
+                            DeleteNoticiaAsyncTask task = new DeleteNoticiaAsyncTask();
+                            task.execute(params);
+                            RespuestaAsyncTask res = task.get();
+                            if (res.getStatus() == DatabaseErrors.OK) {
+                                noticiaAdapter.removeItem(position);
+                            }
+
+                        } catch (Exception e) {
+                            AlertDialogHelper.crearDialogoAlertaSimple(MainActivity.this, getString(R.string.atencion),getString(R.string.err_borrar_noticia),new BtnAceptarDialogGenerico(),null);
+                        }
+
+                    }
+
+                } else {
+
+                    /*
+                    removeView();
+                    edit_position = position;
+                    alertDialog.setTitle("Edit Country");
+                    et_country.setText(countries.get(position));
+                    alertDialog.show();
+                    */
+                }
+                noticiaAdapter.notifyDataSetChanged();
+
+            }
+
+            @Override
+            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+
+                Bitmap icon;
+                if(actionState == ItemTouchHelper.ACTION_STATE_SWIPE){
+
+                    View itemView = viewHolder.itemView;
+                    float height = (float) itemView.getBottom() - (float) itemView.getTop();
+                    float width = height / 3;
+
+
+                    /** Si se hace swipe hacia la derecha
+                    if(dX > 0){
+                        p.setColor(Color.parseColor("#388E3C"));
+                        RectF background = new RectF((float) itemView.getLeft(), (float) itemView.getTop(), dX,(float) itemView.getBottom());
+                        c.drawRect(background,p);
+                        icon = BitmapFactory.decodeResource(getBaseContext().getResources(), ic_menu_gallery);
+                        RectF icon_dest = new RectF((float) itemView.getLeft() + width ,(float) itemView.getTop() + width,(float) itemView.getLeft()+ 2*width,(float)itemView.getBottom() - width);
+                        c.drawBitmap(icon,null,icon_dest,p);
+                    } else {
+                     **/
+                    if(dX<=0) {
+                        // El usuario ha hecho swipe hacia la izquierda
+                        p.setColor(Color.parseColor("#D32F2F"));
+                        RectF background = new RectF((float) itemView.getRight() + dX, (float) itemView.getTop(),(float) itemView.getRight(), (float) itemView.getBottom());
+                        c.drawRect(background,p);
+                        icon = BitmapFactory.decodeResource(getResources(), ic_menu_delete2);
+                        RectF icon_dest = new RectF((float) itemView.getRight() - 2*width ,(float) itemView.getTop() + width,(float) itemView.getRight() - width,(float)itemView.getBottom() - width);
+                        c.drawBitmap(icon,null,icon_dest,p);
+                        c.drawText("Eliminar",500,1000,p);
+                    }
+                }
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
+        };
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(recycler);
+    }
+
+
 
 
 

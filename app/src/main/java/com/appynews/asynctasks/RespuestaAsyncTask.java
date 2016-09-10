@@ -17,6 +17,7 @@ public class RespuestaAsyncTask implements Serializable {
     private String descStatus = null;
     private List<Noticia> noticias = null;
     private List<OrigenNoticiaVO> origenes = null;
+    private Noticia noticia = null;
 
 
     /**
@@ -94,4 +95,5 @@ public class RespuestaAsyncTask implements Serializable {
     public void setOrigenes(List<OrigenNoticiaVO> origenes) {
         this.origenes = origenes;
     }
+
 }

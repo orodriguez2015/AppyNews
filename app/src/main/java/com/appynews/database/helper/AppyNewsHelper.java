@@ -171,6 +171,34 @@ public class AppyNewsHelper extends SQLiteOpenHelper {
     }
 
 
+
+    /**
+     * Elimina una noticia de la base de datos
+     * @param noticia: Noticia
+     */
+    public void deleteNoticia(Noticia noticia) throws SQLiteException {
+        SQLiteDatabase db = getWritableDatabase();
+
+        try {
+            LogCat.info("deleteNoticia init");
+            //db.delete(DATABASE_TABLE, KEY_NAME + "=" + name, null) > 0;
+            db.delete(AppyNewsContract.NoticiaEntry.TABLE_NAME, AppyNewsContract.NoticiaEntry._ID + "=" + noticia.getId(), null);
+            LogCat.info("deleteNoticia end");
+
+        } catch(Exception e) {
+            e.printStackTrace();
+            throw new SQLiteException(DatabaseErrors.ERROR_ELIMINAR_NOTICIA,"Error al eliminar la noticia de id " + noticia.getId() + " de la base de datos: ".concat(e.getMessage()));
+        } finally {
+            if(db!=null) {
+                db.close();
+            }
+        }
+    }
+
+
+
+
+
     /**
      * Graba una noticia en la base de datos
      * @param usuario: Objeto que contiene los datos a almacenar del dispositivo del usuario
@@ -184,6 +212,8 @@ public class AppyNewsHelper extends SQLiteOpenHelper {
             Long id = db.insert(AppyNewsContract.UsuarioEntry.TABLE_NAME, null, ModelConversorUtil.toContentValues(usuario));
             usuario.setId(id.intValue());
             LogCat.info("saveUsuario end");
+
+
 
         } catch(Exception e) {
             e.printStackTrace();

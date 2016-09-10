@@ -25,7 +25,7 @@ public class DetalleNoticiaActivity extends AppCompatActivity {
 
     private WebView webViewNoticia = null;
     private Noticia noticia = null;
-    private FloatingActionButton fab = null;
+    private FloatingActionButton floatingActionButton = null;
 
 
     @Override
@@ -38,8 +38,8 @@ public class DetalleNoticiaActivity extends AppCompatActivity {
         /**
          * Botón flotante para guardar la noticia como favorita
          */
-        this.fab = (FloatingActionButton) findViewById(R.id.fab);
-        this.fab.setOnClickListener(new View.OnClickListener() {
+        this.floatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
+        this.floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -85,8 +85,20 @@ public class DetalleNoticiaActivity extends AppCompatActivity {
         LogCat.debug(" =====> descripcionCompleta: " + noticia.getDescripcionCompleta());
         LogCat.debug(" =====> urlThumbnail: " + noticia.getUrlThumbnail());
 
-        // Se lee la plantilla html de noticias, se incluyen los datos de la noticia en la misma, y se devuelve el +
-        // html en un String
+
+        /** Si la noticia procede de la base de datos, se oculta el botón flotante para que el usuario
+         * no puede almacenarla de nuevo en la base de datos
+         */
+        if(noticia.isNoticiaFavorita()) {
+            mostrarBotonFlotante(false);
+        }
+
+
+
+        /******************************************************************************/
+        /*** SE CARGA LA PLANTILLA HTML PARA MOSTRARLA LAS NOTICIAS EN LA MISMA Y   ***/
+        /*** VISUALIZARLA EN EL WEBVIEW                                             ***/
+        /******************************************************************************/
         String html = FileOperations.readHtmlFromResource(R.raw.plantillahtmlnoticia,noticia,getResources());
 
         WebSettings configuracionWebView = webViewNoticia.getSettings();
@@ -108,13 +120,13 @@ public class DetalleNoticiaActivity extends AppCompatActivity {
 
     /**
      * Muestra/Oculta el botón flotante
-     * @param mostrar: True si se muestra y false en caso contrario
+     * @param mostrar True si se muestra y false en caso contrario
      */
     public void mostrarBotonFlotante(boolean mostrar) {
         if(mostrar) {
-            this.fab.show();
+            this.floatingActionButton.show();
         } else {
-            this.fab.hide();
+            this.floatingActionButton.hide();
         }
     }
 }
