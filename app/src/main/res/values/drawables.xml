@@ -6,6 +6,6 @@
     <item name="ic_menu_share" type="drawable">@android:drawable/ic_menu_share</item>
     <item name="ic_menu_send" type="drawable">@android:drawable/ic_menu_send</item>
     <item name="ic_delete" type="drawable">@android:drawable/ic_delete</item>
-    <item name="ic_menu_delete2" type="drawable">@android:drawable/ic_menu_delete</item>
+    <item name="ic_menu_delete" type="drawable">@android:drawable/ic_menu_delete</item>
 
 </resources>

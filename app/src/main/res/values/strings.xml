@@ -38,5 +38,6 @@
     <string name="err_accion_no_implementada">Acción no implementada</string>
     <string name="msg_no_hay_noticias_favoritas">No tienes ninguna noticia favorita. Selecciona en el menú un origen de datos para visualizar sus noticias</string>
     <string name="err_borrar_noticia">Se ha producido un error al eliminar la noticia</string>
+    <string name="nuevo_origen_datos">Nuevo orígen de datos</string>
 
 </resources>
