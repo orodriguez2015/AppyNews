@@ -19,7 +19,6 @@ public class RespuestaAsyncTask implements Serializable {
     private List<OrigenNoticiaVO> origenes = null;
     private Noticia noticia = null;
 
-
     /**
      * Constructor
      * @param status: Integer
@@ -95,5 +94,6 @@ public class RespuestaAsyncTask implements Serializable {
     public void setOrigenes(List<OrigenNoticiaVO> origenes) {
         this.origenes = origenes;
     }
+
 
 }

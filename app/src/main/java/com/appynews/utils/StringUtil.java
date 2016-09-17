@@ -14,7 +14,7 @@ public class StringUtil {
     public static boolean isEmpty(String dato) {
         boolean exito = false;
 
-        if(dato==null || "".equalsIgnoreCase(dato.trim())) {
+        if(dato==null || "".equalsIgnoreCase(dato.trim()) || dato.trim().length()==0) {
             exito = true;
         }
 

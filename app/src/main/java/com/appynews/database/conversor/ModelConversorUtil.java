@@ -5,13 +5,39 @@ import android.content.ContentValues;
 import com.appynews.model.dto.DatosUsuarioVO;
 import com.appynews.model.dto.Noticia;
 import com.appynews.database.colums.AppyNewsContract;
+import com.appynews.model.dto.OrigenNoticiaVO;
 
 /**
+ * Clase ModelConversorUtil que dispone de operaciones que convierte un objeto VO en
+ * uno de tipo ContentValues necesario para persistir el objeto original en la base de
+ * datos SQLite
  * Created by oscar on 22/08/16.
  */
 public class ModelConversorUtil {
 
 
+    /**
+     * Convierte un objeto de la clase OrigenNoticiaVO en el ContentValues que se usará para
+     * persistir la información en la base de datos
+     * @param origen OrigenNoticiaVO
+     * @return ContentValues
+     */
+    public static ContentValues toContentValues(OrigenNoticiaVO origen) {
+
+        ContentValues values = new ContentValues();
+        values.put(AppyNewsContract.OrigenEntry.DESCRIPCION,origen.getNombre());
+        values.put(AppyNewsContract.OrigenEntry.URL,origen.getUrl());
+        return values;
+    }
+
+
+
+    /**
+     * Convierte un objeto de la clase Noticia en el ContentValues que se usará para
+     * persistir la información en la base de datos
+     * @param noticia Noticia
+     * @return ContentValues
+     */
     public static ContentValues toContentValues(Noticia noticia) {
 
         ContentValues values = new ContentValues();
@@ -26,6 +52,13 @@ public class ModelConversorUtil {
     }
 
 
+
+    /**
+     * Convierte un objeto de la clase Noticia en el ContentValues que se usará para
+     * persistir la información en la base de datos
+     * @param telefono DatosUsuarioVO
+     * @return ContentValues
+     */
     public static ContentValues toContentValues(DatosUsuarioVO telefono) {
 
         ContentValues values = new ContentValues();

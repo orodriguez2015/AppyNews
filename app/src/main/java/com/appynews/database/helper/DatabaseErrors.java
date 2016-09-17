@@ -20,5 +20,6 @@ public class DatabaseErrors {
     public static final int ERROR_RECUPERAR_NOTICIAS   = 9;
     public static final int ERROR_RECUPERAR_ORIGENES   = 10;
     public static final int ERROR_ELIMINAR_NOTICIA     = 11;
+    public static final int ERROR_GRABAR_ORIGEN        = 12;
 
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.appynews.model.dto.DatosUsuarioVO;
 import com.appynews.model.dto.Noticia;
+import com.appynews.model.dto.OrigenNoticiaVO;
 
 import java.io.Serializable;
 
@@ -18,6 +19,8 @@ public class ParametrosAsyncTask implements Serializable {
     private Context context        = null;
     private DatosUsuarioVO usuario = null;
     private Noticia noticia        = null;
+    private OrigenNoticiaVO origen = null;
+
 
     /**
      * Devuelve el Context
@@ -66,5 +69,22 @@ public class ParametrosAsyncTask implements Serializable {
      */
     public void setNoticia(Noticia noticia) {
         this.noticia = noticia;
+    }
+
+    /**
+     * Devuelve el origen/fuente de datos
+     * @return OrigenNoticiaVO
+     */
+    public OrigenNoticiaVO getOrigen() {
+        return origen;
+    }
+
+
+    /**
+     * Establece el  origen/fuente de datos
+     * @param origen OrigenNoticiaVO
+     */
+    public void setOrigen(OrigenNoticiaVO origen) {
+        this.origen = origen;
     }
 }

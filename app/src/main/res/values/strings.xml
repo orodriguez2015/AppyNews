@@ -39,5 +39,14 @@
     <string name="msg_no_hay_noticias_favoritas">No tienes ninguna noticia favorita. Selecciona en el menú un origen de datos para visualizar sus noticias</string>
     <string name="err_borrar_noticia">Se ha producido un error al eliminar la noticia</string>
     <string name="nuevo_origen_datos">Nuevo orígen de datos</string>
+    <string name="nombre_origen">Nombre:</string>
+    <string name="url_origen">Dirección/URL:</string>
+    <string name="btn_guardar">Guardar</string>
+    <string name="btn_cancelar">Cancelar</string>
+
+    <string name="error_nombre_origen_obligatorio">El nombre de la fuente/orígen de datos es obligatorio</string>
+    <string name="error_url_origen_obligatorio">La dirección/url de la fuente/orígen de datos es obligatoria</string>
+    <string name="error_url_no_valida">La dirección/url no tiene un formato válido</string>
+    <string name="error_grabar_origen_bbdd">Se ha producido un error al dar de alta el orígen de datos</string>
 
 </resources>

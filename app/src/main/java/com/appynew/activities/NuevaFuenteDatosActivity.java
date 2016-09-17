@@ -2,7 +2,21 @@ package com.appynew.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+
+import com.appynew.activities.dialog.AlertDialogHelper;
+import com.appynew.activities.dialog.BtnAceptarDialogGenerico;
+import com.appynews.asynctasks.ParametrosAsyncTask;
+import com.appynews.asynctasks.RespuestaAsyncTask;
+import com.appynews.asynctasks.SaveOrigenRssAsyncTask;
+import com.appynews.database.helper.DatabaseErrors;
+import com.appynews.model.dto.OrigenNoticiaVO;
+import com.appynews.utils.LogCat;
 
 import material.oscar.com.materialdesign.R;
 
@@ -11,6 +25,11 @@ import material.oscar.com.materialdesign.R;
  * Activity a través del cual se puede dar de alta un nuevo origen de datos
  */
 public class NuevaFuenteDatosActivity extends AppCompatActivity {
+
+    private Button btnAceptar = null;
+    private Button btnCancelar = null;
+    private EditText txtNombreOrigen = null;
+    private EditText txtUrlOrigen = null;
 
     /**
      * Métoo onCreate
@@ -26,6 +45,91 @@ public class NuevaFuenteDatosActivity extends AppCompatActivity {
         // Se muestra el botón de atrás en la barra de título
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+
+        // Se recuperan los elementos que forman la interfaz de usuario
+        btnAceptar      = (Button)findViewById(R.id.btnGrabarOrigen);
+        btnCancelar     = (Button)findViewById(R.id.btnCancelar);
+        txtNombreOrigen = (EditText)findViewById(R.id.txtNombreOrigen);
+        txtUrlOrigen    = (EditText)findViewById(R.id.txtUrlOrigen);
+
+
+        /**
+         * Evento onClickListener sobre el botón Aceptar
+         */
+        btnAceptar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                boolean error = false;
+                String nombre = txtNombreOrigen.getText().toString();
+                String url    = txtUrlOrigen.getText().toString();
+
+                LogCat.debug(" ===> nombre: " + nombre + ", leng: " + nombre.length());
+                LogCat.debug(" ===> url: " + url + ", leng: " + url.length());
+
+                if(TextUtils.isEmpty(nombre)) {
+                    AlertDialogHelper.crearDialogoAlertaSimple(NuevaFuenteDatosActivity.this,getString(R.string.atencion),getString(R.string.error_nombre_origen_obligatorio),new BtnAceptarDialogGenerico()).show();
+                }
+                else
+                if(TextUtils.isEmpty(url)) {
+                    AlertDialogHelper.crearDialogoAlertaSimple(NuevaFuenteDatosActivity.this,getString(R.string.atencion),getString(R.string.error_url_origen_obligatorio),new BtnAceptarDialogGenerico()).show();
+                } else {
+
+                    boolean esUrlValida = Patterns.WEB_URL.matcher(url).matches();
+
+                    if(!esUrlValida) {
+                        // Si la url no es válida
+                        AlertDialogHelper.crearDialogoAlertaSimple(NuevaFuenteDatosActivity.this,getString(R.string.atencion),getString(R.string.error_url_no_valida),new BtnAceptarDialogGenerico()).show();
+                    } else {
+                        LogCat.debug("La url es valida " + url);
+
+                        OrigenNoticiaVO origen = new OrigenNoticiaVO();
+                        origen.setNombre(nombre);
+                        origen.setUrl(url);
+
+                        ParametrosAsyncTask params = new ParametrosAsyncTask();
+                        params.setContext(getApplicationContext());
+                        params.setOrigen(origen);
+
+                        SaveOrigenRssAsyncTask task = new SaveOrigenRssAsyncTask();
+                        task.execute(params);
+
+                        try {
+                            RespuestaAsyncTask res = task.get();
+                            if(res.getStatus().equals(DatabaseErrors.OK)) {
+                                finish();
+                            } else {
+                                // Se muestra un error
+                                AlertDialogHelper.crearDialogoAlertaSimple(NuevaFuenteDatosActivity.this,getString(R.string.atencion),getString(R.string.error_grabar_origen_bbdd),new BtnAceptarDialogGenerico()).show();
+                            }
+
+                        }catch(Exception e) {
+
+                        }
+
+
+
+
+                    }
+                }
+
+            }
+        });
+
+
+        /**
+         * Evento onClickListener sobre el botón Cancelar
+         */
+        btnCancelar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+
+
     }
 
 

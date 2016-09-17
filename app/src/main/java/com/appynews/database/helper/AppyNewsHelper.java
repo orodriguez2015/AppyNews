@@ -112,7 +112,7 @@ public class AppyNewsHelper extends SQLiteOpenHelper {
 
             sqLiteDatabase.execSQL("INSERT INTO " + AppyNewsContract.OrigenEntry.TABLE_NAME
                     + " ("  + AppyNewsContract.OrigenEntry.URL + "," + AppyNewsContract.OrigenEntry.DESCRIPCION + ") "
-                    + "VALUES('hhttp://feeds.weblogssl.com/xataka2','Xataka')");
+                    + "VALUES('http://feeds.weblogssl.com/xataka2','Xataka')");
 
 
             LogCat.info("onCreate end()");
@@ -326,6 +326,31 @@ public class AppyNewsHelper extends SQLiteOpenHelper {
         return noticias;
     }
 
+
+
+    /**
+     * Graba una fuente/origen de datos en la base de datos
+     * @param origen: OrigenNoticiaVO
+     */
+    public void saveOrigen(OrigenNoticiaVO origen) throws SQLiteException {
+        SQLiteDatabase db = getWritableDatabase();
+
+        try {
+            LogCat.info("saveOrigen init");
+            Long id = db.insert(AppyNewsContract.OrigenEntry.TABLE_NAME, null, ModelConversorUtil.toContentValues(origen));
+            //origen.setId(id.intValue());
+            LogCat.info("saveOrigen end");
+
+
+        } catch(Exception e) {
+            e.printStackTrace();
+            throw new SQLiteException(DatabaseErrors.ERROR_GRABAR_ORIGEN,"Error al grabar origen RSS en la base de datos: ".concat(e.getMessage()));
+        } finally {
+            if(db!=null) {
+                db.close();
+            }
+        }
+    }
 
 
     /**
