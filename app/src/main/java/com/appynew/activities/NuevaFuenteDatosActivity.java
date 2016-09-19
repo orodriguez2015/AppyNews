@@ -1,5 +1,6 @@
 package com.appynew.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -30,6 +31,8 @@ public class NuevaFuenteDatosActivity extends AppCompatActivity {
     private Button btnCancelar = null;
     private EditText txtNombreOrigen = null;
     private EditText txtUrlOrigen = null;
+    private MainActivity mainActivity = null;
+
 
     /**
      * Métoo onCreate
@@ -42,17 +45,16 @@ public class NuevaFuenteDatosActivity extends AppCompatActivity {
 
         setTitle(getString(R.string.nuevo_origen_datos));
 
-        // Se muestra el botón de atrás en la barra de título
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-
         // Se recuperan los elementos que forman la interfaz de usuario
         btnAceptar      = (Button)findViewById(R.id.btnGrabarOrigen);
         btnCancelar     = (Button)findViewById(R.id.btnCancelar);
         txtNombreOrigen = (EditText)findViewById(R.id.txtNombreOrigen);
         txtUrlOrigen    = (EditText)findViewById(R.id.txtUrlOrigen);
 
+
+        // Se muestra el botón de atrás en la barra de título
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         /**
          * Evento onClickListener sobre el botón Aceptar
@@ -61,7 +63,6 @@ public class NuevaFuenteDatosActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                boolean error = false;
                 String nombre = txtNombreOrigen.getText().toString();
                 String url    = txtUrlOrigen.getText().toString();
 
@@ -83,34 +84,7 @@ public class NuevaFuenteDatosActivity extends AppCompatActivity {
                         AlertDialogHelper.crearDialogoAlertaSimple(NuevaFuenteDatosActivity.this,getString(R.string.atencion),getString(R.string.error_url_no_valida),new BtnAceptarDialogGenerico()).show();
                     } else {
                         LogCat.debug("La url es valida " + url);
-
-                        OrigenNoticiaVO origen = new OrigenNoticiaVO();
-                        origen.setNombre(nombre);
-                        origen.setUrl(url);
-
-                        ParametrosAsyncTask params = new ParametrosAsyncTask();
-                        params.setContext(getApplicationContext());
-                        params.setOrigen(origen);
-
-                        SaveOrigenRssAsyncTask task = new SaveOrigenRssAsyncTask();
-                        task.execute(params);
-
-                        try {
-                            RespuestaAsyncTask res = task.get();
-                            if(res.getStatus().equals(DatabaseErrors.OK)) {
-                                finish();
-                            } else {
-                                // Se muestra un error
-                                AlertDialogHelper.crearDialogoAlertaSimple(NuevaFuenteDatosActivity.this,getString(R.string.atencion),getString(R.string.error_grabar_origen_bbdd),new BtnAceptarDialogGenerico()).show();
-                            }
-
-                        }catch(Exception e) {
-
-                        }
-
-
-
-
+                        grabarOrigenDatos(new OrigenNoticiaVO(nombre,url));
                     }
                 }
 
@@ -128,8 +102,41 @@ public class NuevaFuenteDatosActivity extends AppCompatActivity {
             }
         });
 
+    }
 
 
+    /**
+     * Operación que invoca a la tarea asíncrona que se encarga
+     * de grabar un origen de datos en la base de datos
+     * @param origen OrigenNoticiaVO
+     */
+    private void grabarOrigenDatos(OrigenNoticiaVO origen) {
+        ParametrosAsyncTask params = new ParametrosAsyncTask();
+        params.setContext(getApplicationContext());
+        params.setOrigen(origen);
+
+        SaveOrigenRssAsyncTask task = new SaveOrigenRssAsyncTask();
+        task.execute(params);
+
+        try {
+            RespuestaAsyncTask res = task.get();
+            if(res.getStatus().equals(DatabaseErrors.OK)) {
+                // Se pasa a la actividad MainActivity padre el resultado en el intent
+                Intent data = new Intent();
+                //data.setData(Uri.parse(cad));
+                setResult(RESULT_OK, data);
+
+                // Se finaliza el activity
+                finish();
+
+            } else {
+                // Se muestra un error
+                AlertDialogHelper.crearDialogoAlertaSimple(NuevaFuenteDatosActivity.this,getString(R.string.atencion),getString(R.string.error_grabar_origen_bbdd),new BtnAceptarDialogGenerico()).show();
+            }
+
+        }catch(Exception e) {
+
+        }
     }
 
 

@@ -11,7 +11,7 @@
 
     <TextView
             android:layout_width="wrap_content"
-            android:layout_height="37dp"
+            android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLargePopupMenu"
             android:text="@string/nombre_origen"
             android:id="@+id/labelNombreOrigen"
@@ -30,7 +30,8 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:hint="Nombre de la fuente de datos"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -53,7 +54,8 @@
         android:layout_alignParentStart="true"
         android:layout_alignRight="@+id/txtNombreOrigen"
         android:layout_alignEnd="@+id/txtNombreOrigen"
-        android:text="http://" />
+        android:text="http://"
+        android:hint="URL de la fuente de datos"/>
 
     <Button
         android:layout_width="wrap_content"

@@ -25,6 +25,18 @@ public class OrigenNoticiaVO implements Comparable<OrigenNoticiaVO>  {
 
     }
 
+
+    /**
+     * Constructor
+     * @param nombre: Nombre del sitio
+     * @param url: Url de acceso al rss del sitio
+     */
+    public OrigenNoticiaVO(String nombre, String url) {
+        this.nombre = nombre;
+        this.url = url;
+    }
+
+
     /**
      * Constructor
      * @param id: Id

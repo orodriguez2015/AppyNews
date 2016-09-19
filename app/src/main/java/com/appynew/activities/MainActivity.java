@@ -40,6 +40,7 @@ import com.appynews.model.dto.DatosUsuarioVO;
 import com.appynews.model.dto.Noticia;
 import com.appynews.model.dto.OrigenNoticiaVO;
 import com.appynews.utils.ConnectionUtils;
+import com.appynews.utils.ConstantesDatos;
 import com.appynews.utils.LogCat;
 import com.appynews.utils.LruBitmapCache;
 import com.appynews.utils.MessageUtils;
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ImageLoader imageLoader = null;
     private NoticiasAdapter noticiaAdapter = null;
     private Paint p = new Paint();
+    private NavigationView navigationView = null;
     private boolean mostrandoNoticiasExternas = false;
     /**
      * Colección con los origenes de datos RSS de los que se van a leer noticias
@@ -90,16 +92,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // Botón flotante
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        // Evento onClick sobre el botón flotante
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                showActivityNuevaFuenteDatos();
 
-                mostrarActivityNuevaFuenteDatos();
-                /**
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                 **/
             }
         });
 
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         // Rellenar el menú con las fuentes de datos
@@ -149,8 +149,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 MessageUtils.showToastDuracionLarga(getApplicationContext(),getString(R.string.err_connection_state));
 
             } else {
-
-
 
                 /************************************************************/
                 /**** Se almacenan los datos del dispositivo en la BBDD *****/
@@ -388,8 +386,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
 
             case R.id.nuevo_origen:
-                // Dar de alta un nuevo origen
-                MessageUtils.showToastDuracionCorta(getApplicationContext(),getString(R.string.err_accion_no_implementada));
+                // Se muestra el activity desde el que se pueden dar de alta una nueva fuente de datos
+                Intent intent = new Intent(MainActivity.this,NuevaFuenteDatosActivity.class);
+
+                startActivity(intent);
                 break;
 
             default:
@@ -487,7 +487,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             icon = BitmapFactory.decodeResource(getResources(), ic_menu_delete);
                             RectF icon_dest = new RectF((float) itemView.getRight() - 2*width ,(float) itemView.getTop() + width,(float) itemView.getRight() - width,(float)itemView.getBottom() - width);
                             c.drawBitmap(icon,null,icon_dest,p);
-                            c.drawText("Eliminar",500,1000,p);
                         }
                     }
                     super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
@@ -503,10 +502,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Operación que carga el activity a través de la cual se puede dar de alta una nueva
      * fuente de datos RSS
      */
-    private void mostrarActivityNuevaFuenteDatos() {
+    private void showActivityNuevaFuenteDatos() {
         Intent intent = new Intent(MainActivity.this, NuevaFuenteDatosActivity.class);
-        startActivity(intent);
+        //startActivity(intent);
+        // Se inicia la activity fuente de datos y se espera por una respuesta de la misma
+        startActivityForResult(intent, ConstantesDatos.RESPONSE_NUEVA_FUENTE_DATOS);
     }
+
+
+    /**
+     * Método que es invocado cuando un activity secundaria devuelve una respuesta
+     * a esta activity padre
+     * @param requestCode int
+     * @param resultCode int
+     * @param data Intent
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if ((requestCode == ConstantesDatos.RESPONSE_NUEVA_FUENTE_DATOS) && (resultCode == RESULT_OK)){
+            rellenarMenu(navigationView);
+        }
+    }
+
+
+
+
 
     /**
      * Devuelve true si se están visualizando en este momento las noticias externas, o noticias

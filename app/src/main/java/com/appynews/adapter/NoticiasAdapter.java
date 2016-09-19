@@ -2,6 +2,7 @@ package com.appynews.adapter;
 
 import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -144,7 +145,10 @@ public class NoticiasAdapter extends RecyclerView.Adapter<NoticiasAdapter.Notici
         }
 
         viewHolder.descripcion.setText(items.get(i).getTitulo());
-        viewHolder.fechaPublicacion.setText(String.valueOf(items.get(i).getFechaPublicacion()));
+        viewHolder.fechaPublicacion.setText("");
+        if(!TextUtils.isEmpty(items.get(i).getFechaPublicacion())) {
+            viewHolder.fechaPublicacion.setText(String.valueOf(items.get(i).getFechaPublicacion()));
+        }
 
         String origenFinal = this.origen;
         if(StringUtil.isNotEmpty(items.get(i).getOrigen())) {
