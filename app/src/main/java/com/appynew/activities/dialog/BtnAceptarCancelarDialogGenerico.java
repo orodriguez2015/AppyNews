@@ -8,7 +8,7 @@ import com.appynews.utils.LogCat;
  * Clase BtnAceptarDialogGenerico que se asocia a la acción de hacer click sobre un botón de un AlertDialog
  * @author oscar
  */
-public class BtnAceptarDialogGenerico implements DialogInterface.OnClickListener {
+public class BtnAceptarCancelarDialogGenerico implements DialogInterface.OnClickListener {
 
     /**
      * onClick

@@ -33,4 +33,23 @@ public class Utils {
 
         return salida;
     }
+
+
+    /**
+     * Convierte una colección de objetos OrigenNoticiaVO en una String[]
+     * @param fuentes List<OrigenNoticiaVO>
+     * @return String[]
+     */
+    public static String[] toStringArray(List<OrigenNoticiaVO> fuentes) {
+        String[] salida = null;
+
+        if(fuentes!=null && fuentes.size()>0) {
+            salida = new String[fuentes.size()];
+
+            for(int i=0;i<fuentes.size();i++) {
+                salida[i] = fuentes.get(i).getNombre();
+            }
+        }
+        return salida;
+    }
 }

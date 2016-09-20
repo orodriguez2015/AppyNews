@@ -11,7 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.appynew.activities.dialog.AlertDialogHelper;
-import com.appynew.activities.dialog.BtnAceptarDialogGenerico;
+import com.appynew.activities.dialog.BtnAceptarCancelarDialogGenerico;
 import com.appynews.asynctasks.ParametrosAsyncTask;
 import com.appynews.asynctasks.RespuestaAsyncTask;
 import com.appynews.asynctasks.SaveOrigenRssAsyncTask;
@@ -66,22 +66,19 @@ public class NuevaFuenteDatosActivity extends AppCompatActivity {
                 String nombre = txtNombreOrigen.getText().toString();
                 String url    = txtUrlOrigen.getText().toString();
 
-                LogCat.debug(" ===> nombre: " + nombre + ", leng: " + nombre.length());
-                LogCat.debug(" ===> url: " + url + ", leng: " + url.length());
-
                 if(TextUtils.isEmpty(nombre)) {
-                    AlertDialogHelper.crearDialogoAlertaSimple(NuevaFuenteDatosActivity.this,getString(R.string.atencion),getString(R.string.error_nombre_origen_obligatorio),new BtnAceptarDialogGenerico()).show();
+                    AlertDialogHelper.crearDialogoAlertaSimple(NuevaFuenteDatosActivity.this,getString(R.string.atencion),getString(R.string.error_nombre_origen_obligatorio),new BtnAceptarCancelarDialogGenerico()).show();
                 }
                 else
                 if(TextUtils.isEmpty(url)) {
-                    AlertDialogHelper.crearDialogoAlertaSimple(NuevaFuenteDatosActivity.this,getString(R.string.atencion),getString(R.string.error_url_origen_obligatorio),new BtnAceptarDialogGenerico()).show();
+                    AlertDialogHelper.crearDialogoAlertaSimple(NuevaFuenteDatosActivity.this,getString(R.string.atencion),getString(R.string.error_url_origen_obligatorio),new BtnAceptarCancelarDialogGenerico()).show();
                 } else {
 
                     boolean esUrlValida = Patterns.WEB_URL.matcher(url).matches();
 
                     if(!esUrlValida) {
                         // Si la url no es válida
-                        AlertDialogHelper.crearDialogoAlertaSimple(NuevaFuenteDatosActivity.this,getString(R.string.atencion),getString(R.string.error_url_no_valida),new BtnAceptarDialogGenerico()).show();
+                        AlertDialogHelper.crearDialogoAlertaSimple(NuevaFuenteDatosActivity.this,getString(R.string.atencion),getString(R.string.error_url_no_valida),new BtnAceptarCancelarDialogGenerico()).show();
                     } else {
                         LogCat.debug("La url es valida " + url);
                         grabarOrigenDatos(new OrigenNoticiaVO(nombre,url));
@@ -131,7 +128,7 @@ public class NuevaFuenteDatosActivity extends AppCompatActivity {
 
             } else {
                 // Se muestra un error
-                AlertDialogHelper.crearDialogoAlertaSimple(NuevaFuenteDatosActivity.this,getString(R.string.atencion),getString(R.string.error_grabar_origen_bbdd),new BtnAceptarDialogGenerico()).show();
+                AlertDialogHelper.crearDialogoAlertaSimple(NuevaFuenteDatosActivity.this,getString(R.string.atencion),getString(R.string.error_grabar_origen_bbdd),new BtnAceptarCancelarDialogGenerico()).show();
             }
 
         }catch(Exception e) {

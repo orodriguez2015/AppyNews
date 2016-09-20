@@ -40,6 +40,11 @@
                 android:id="@+id/nuevo_origen"
                 android:icon="@drawable/ic_menu_manage"
                 android:title="@string/nuevoOrigen" />
+
+            <item
+                android:id="@+id/mantenimiento_origen"
+                android:icon="@drawable/ic_menu_delete"
+                android:title="@string/mantenimiento_fuentes" />
         </menu>
     </item>
 

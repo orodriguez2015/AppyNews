@@ -196,9 +196,6 @@ public class AppyNewsHelper extends SQLiteOpenHelper {
     }
 
 
-
-
-
     /**
      * Graba una noticia en la base de datos
      * @param usuario: Objeto que contiene los datos a almacenar del dispositivo del usuario
@@ -396,5 +393,31 @@ public class AppyNewsHelper extends SQLiteOpenHelper {
             if(db!=null) db.close();
         }
         return origenes;
+    }
+
+
+    /**
+     * Elimina una o varias fuentes de datos de la base de datos
+     * @param origenes List<Integer>
+     */
+    public void deleteOrigenesDatos(List<Integer> origenes) throws SQLiteException {
+        SQLiteDatabase db = getWritableDatabase();
+
+        try {
+            LogCat.info("deleteOrigenesDatos init");
+
+            for(int i=0;origenes!=null && i<origenes.size();i++) {
+                db.delete(AppyNewsContract.OrigenEntry.TABLE_NAME, AppyNewsContract.OrigenEntry._ID + "=" + origenes.get(i), null);
+            }
+            LogCat.info("deleteOrigenesDatos end");
+
+        } catch(Exception e) {
+            e.printStackTrace();
+            throw new SQLiteException(DatabaseErrors.ERROR_ELIMINAR_ORIGENES_RSS,"Error al eliminar los orígenes de datos de la base de datos: ".concat(e.getMessage()));
+        } finally {
+            if(db!=null) {
+                db.close();
+            }
+        }
     }
 }

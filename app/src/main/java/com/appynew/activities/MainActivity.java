@@ -27,7 +27,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 import com.appynew.activities.dialog.AlertDialogHelper;
-import com.appynew.activities.dialog.BtnAceptarDialogGenerico;
+import com.appynew.activities.dialog.BtnAceptarCancelarDialogGenerico;
 import com.appynews.adapter.NoticiasAdapter;
 import com.appynews.asynctasks.DeleteNoticiaAsyncTask;
 import com.appynews.asynctasks.GetOrigenesRssAsyncTask;
@@ -85,12 +85,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String nombreOrigenNoticiasRecuperadas = null;
 
 
+    public NoticiasAdapter getNoticiasAdapter() {
+        return this.noticiaAdapter;
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
 
         // Botón flotante
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -113,22 +119,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         // Rellenar el menú con las fuentes de datos
-        rellenarMenu(navigationView);
+        rellenarMenu();
 
         // Obtener el Recycler
         recycler = (RecyclerView) findViewById(R.id.reciclador);
         recycler.setHasFixedSize(true);
 
-
         // Usar un administrador para LinearLayout
         lManager = new LinearLayoutManager(this);
         recycler.setLayoutManager(lManager);
 
-
-
         // Se inicializa el listener para el swipe
         initSwipe();
-
 
         // Si se dispone de permiso para leer el estado del teléfono, se obtiene datos como el número, imei, etc ...
         if(PermissionsUtil.appTienePermiso(this,Manifest.permission.READ_PHONE_STATE)) {
@@ -191,9 +193,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     /**
      * Operación que obtiene los datos de orígenes de datos rss y configurar el menú
      * para acceder a cada origen de datos
-     * @param navigationView: NavigationView en el que se añaden los menús
      */
-    private void rellenarMenu(NavigationView navigationView) {
+    private void rellenarMenu() {
         boolean continuar = false;
 
         try {
@@ -387,9 +388,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case R.id.nuevo_origen:
                 // Se muestra el activity desde el que se pueden dar de alta una nueva fuente de datos
-                Intent intent = new Intent(MainActivity.this,NuevaFuenteDatosActivity.class);
+                showActivityNuevaFuenteDatos();
+                break;
 
-                startActivity(intent);
+            case R.id.mantenimiento_origen:
+                //AlertDialogHelper.crearDialogoAlertaSeleccionMultipleFuenteDatos(MainActivity.this,"Seleccione una fuente de datos para eliminar",this.fuentesDatos,new BtnAceptarCancelarDialogGenerico()).show();
+                showActivityMantenimientoFuentesDatos();
                 break;
 
             default:
@@ -441,7 +445,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             }
 
                         } catch (Exception e) {
-                            AlertDialogHelper.crearDialogoAlertaSimple(MainActivity.this, getString(R.string.atencion),getString(R.string.err_borrar_noticia),new BtnAceptarDialogGenerico(),null);
+                            AlertDialogHelper.crearDialogoAlertaSimple(MainActivity.this, getString(R.string.atencion),getString(R.string.err_borrar_noticia),new BtnAceptarCancelarDialogGenerico(),null);
                         }
 
                     //}
@@ -504,9 +508,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     private void showActivityNuevaFuenteDatos() {
         Intent intent = new Intent(MainActivity.this, NuevaFuenteDatosActivity.class);
-        //startActivity(intent);
-        // Se inicia la activity fuente de datos y se espera por una respuesta de la misma
         startActivityForResult(intent, ConstantesDatos.RESPONSE_NUEVA_FUENTE_DATOS);
+    }
+
+
+    /**
+     * Método que muestra el activity desde el que se realiza el mantenimiento de las fuentes
+     * de dtos
+     */
+    private void showActivityMantenimientoFuentesDatos() {
+        Intent intent = new Intent(MainActivity.this,OrigenRssMantenimientoActivity.class);
+        startActivityForResult(intent,ConstantesDatos.RESPONSE_MANTENIMIENTO_FUENTE_DATOS);
     }
 
 
@@ -521,11 +533,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if ((requestCode == ConstantesDatos.RESPONSE_NUEVA_FUENTE_DATOS) && (resultCode == RESULT_OK)){
-            rellenarMenu(navigationView);
+            rellenarMenu();
         }
     }
-
-
 
 
 

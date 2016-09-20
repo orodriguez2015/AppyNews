@@ -7,6 +7,7 @@ import com.appynews.model.dto.Noticia;
 import com.appynews.model.dto.OrigenNoticiaVO;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Clase ParametrosAsyncTask utilizada para el paso de parámetros en aquellas
@@ -20,6 +21,25 @@ public class ParametrosAsyncTask implements Serializable {
     private DatosUsuarioVO usuario = null;
     private Noticia noticia        = null;
     private OrigenNoticiaVO origen = null;
+    private List<Integer> idsOrigenesEliminar = null;
+
+    /**
+     * Establece la lista con los ids de los orígenes de datos a eliminar
+     * @param idsOrigenesEliminar List<Integer>
+     */
+    public void setIdsOrigenesEliminar(List<Integer> idsOrigenesEliminar) {
+        this.idsOrigenesEliminar = idsOrigenesEliminar;
+    }
+
+
+
+    /**
+     * Devuelve la lista con los ids de los orígenes de datos a eliminar
+     * @return List<Integer>
+     */
+    public List<Integer> getIdsOrigenesEliminar() {
+        return idsOrigenesEliminar;
+    }
 
 
     /**

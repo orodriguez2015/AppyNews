@@ -13,5 +13,6 @@ public class ConstantesDatos {
     public static final String COMMA              = ",";
     public static final String EMAIL_GOOGLE       = "com.google";
 
-    public static final int RESPONSE_NUEVA_FUENTE_DATOS = 0;
+    public static final int RESPONSE_NUEVA_FUENTE_DATOS         = 0;
+    public static final int RESPONSE_MANTENIMIENTO_FUENTE_DATOS = 1;
 }
