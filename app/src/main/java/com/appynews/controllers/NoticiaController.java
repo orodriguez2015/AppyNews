@@ -33,9 +33,6 @@ public class NoticiaController {
     }
 
 
-
-
-
     /**
      * Recupera las noticias de una determinada url correspondiente a un origen RSS
      * @param url: String

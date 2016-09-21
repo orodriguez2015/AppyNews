@@ -27,7 +27,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 import com.appynew.activities.dialog.AlertDialogHelper;
-import com.appynew.activities.dialog.BtnAceptarCancelarDialogGenerico;
 import com.appynews.adapter.NoticiasAdapter;
 import com.appynews.asynctasks.DeleteNoticiaAsyncTask;
 import com.appynews.asynctasks.GetOrigenesRssAsyncTask;
@@ -284,6 +283,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
+
         recycler.setAdapter(noticiaAdapter);
     }
 
@@ -445,7 +445,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             }
 
                         } catch (Exception e) {
-                            AlertDialogHelper.crearDialogoAlertaSimple(MainActivity.this, getString(R.string.atencion),getString(R.string.err_borrar_noticia),new BtnAceptarCancelarDialogGenerico(),null);
+                            AlertDialogHelper.crearDialogoAlertaAdvertencia(MainActivity.this, getString(R.string.atencion),getString(R.string.err_borrar_noticia));
                         }
 
                     //}

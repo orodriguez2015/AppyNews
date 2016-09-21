@@ -1,13 +1,17 @@
 package com.appynews.adapter;
 
+import android.app.Activity;
 import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
+import com.appynews.listener.OnItemClickCallbackBorrarFuente;
+import com.appynews.listener.OnItemClickListener;
 import com.appynews.model.dto.OrigenNoticiaVO;
 import com.appynews.utils.LogCat;
 
@@ -29,7 +33,7 @@ public class FuenteDatosAdapter extends RecyclerView.Adapter<FuenteDatosAdapter.
     private ImageLoader imageLoader = null;
     private Resources resources = null;
     private View.OnClickListener listener = null;
-
+    private Activity actividad = null;
 
     /**
      * Clase NoticiaViewHolder que contiene los componentes que forman
@@ -40,6 +44,9 @@ public class FuenteDatosAdapter extends RecyclerView.Adapter<FuenteDatosAdapter.
         // Campos respectivos de un item
         public TextView nombre = null;
         public TextView url    = null;
+        public ImageView imageEditar = null;
+        public ImageView imageDelete = null;
+
 
         /**
          * Constructor
@@ -49,17 +56,19 @@ public class FuenteDatosAdapter extends RecyclerView.Adapter<FuenteDatosAdapter.
             super(v);
             nombre  = (TextView) v.findViewById(R.id.nombreOrigen);
             url     = (TextView) v.findViewById(R.id.urlOrigen);
+            imageEditar = (ImageView)v.findViewById(R.id.imgEditarOrigen);
+            imageDelete = (ImageView)v.findViewById(R.id.imgBorrarOrigen);
         }
     }
 
 
     /**
      * Constructor
-     * @param items: List<OrigenNoticiaVO>
-     *
+     * @param items List<OrigenNoticiaVO>
      */
-    public FuenteDatosAdapter(List<OrigenNoticiaVO> items) {
+    public FuenteDatosAdapter(List<OrigenNoticiaVO> items, Activity actividad) {
         this.items  = items;
+        this.actividad = actividad;
     }
 
     /**
@@ -115,9 +124,7 @@ public class FuenteDatosAdapter extends RecyclerView.Adapter<FuenteDatosAdapter.
     public FuenteDatosHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
 
         /** Se carga el layout noticia.xml para mostrar la información de cada noticia **/
-        View v = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.activity_detalle_origen, viewGroup, false);
-
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.activity_detalle_origen, viewGroup, false);
         v.setOnClickListener(this);
         return new FuenteDatosHolder(v);
     }
@@ -128,9 +135,14 @@ public class FuenteDatosAdapter extends RecyclerView.Adapter<FuenteDatosAdapter.
      * @param i int
      */
     @Override
-    public void onBindViewHolder(FuenteDatosHolder viewHolder, int i) {
+    public void onBindViewHolder(final FuenteDatosHolder viewHolder, int i) {
         viewHolder.nombre.setText(items.get(i).getNombre());
         viewHolder.url.setText(items.get(i).getUrl());
+
+        //viewHolder.imageDelete.setOnClickListener(new OnItemClickListener(i,this.onItemClickCallbackBtnBorrar));
+        //viewHolder.imageEditar.setOnClickListener(new OnItemClickListener(i,this.onItemClickCallbackBtnEditar));
+        viewHolder.imageDelete.setOnClickListener(new OnItemClickListener(i,new OnItemClickCallbackBorrarFuente(getFuentesDatos(),actividad)));
+
     }
 
 

@@ -28,7 +28,7 @@ public class OrigenRssMantenimientoActivity extends AppCompatActivity {
 
     private RecyclerView recycler = null;
     private LinearLayoutManager linearLayoutManager = null;
-    private OrigenRssController controller = null;
+    private OrigenRssController controller = new OrigenRssController(this);
 
     /**
      * Método onCreate que crea la actividad y renderiza la vista
@@ -39,7 +39,6 @@ public class OrigenRssMantenimientoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_origen_rss_mantenimiento);
 
-        controller = new OrigenRssController();
 
         // Se muestra el botón de atrás en la barra de título
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -65,10 +64,10 @@ public class OrigenRssMantenimientoActivity extends AppCompatActivity {
         List<OrigenNoticiaVO> origenes = null;
 
         try {
-            origenes = controller.getOrigenes(this);
+            origenes = controller.getOrigenes();
 
             LogCat.debug("cargarFuentesDatos origenes: " + origenes);
-            FuenteDatosAdapter adapter = new FuenteDatosAdapter(origenes);
+            FuenteDatosAdapter adapter = new FuenteDatosAdapter(origenes,this);
             adapter.notifyDataSetChanged();
 
             /**
@@ -84,6 +83,7 @@ public class OrigenRssMantenimientoActivity extends AppCompatActivity {
             });
 
             recycler.setAdapter(adapter);
+
 
         } catch(GetOrigenesRssException e) {
             AlertDialogHelper.crearDialogoAlertaAdvertencia(this,getString(R.string.atencion),getString(R.string.err_get_fuentes_datos));

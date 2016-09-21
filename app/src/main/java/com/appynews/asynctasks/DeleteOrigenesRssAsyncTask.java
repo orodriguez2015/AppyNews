@@ -5,8 +5,7 @@ import android.os.AsyncTask;
 
 import com.appynews.database.exceptions.SQLiteException;
 import com.appynews.database.helper.AppyNewsHelper;
-
-import java.util.List;
+import com.appynews.model.dto.OrigenNoticiaVO;
 
 /**
  * Tarea asíncrona a través de la cual se puede eliminar uno o varios orígenes de datos
@@ -23,12 +22,12 @@ public class DeleteOrigenesRssAsyncTask extends AsyncTask<ParametrosAsyncTask,Vo
 
         RespuestaAsyncTask respuesta = null;
         Context context = params[0].getContext();
-        List<Integer> idsOrigenes = params[0].getIdsOrigenesEliminar();
 
+        OrigenNoticiaVO origen = params[0].getOrigen();
         AppyNewsHelper helper = new AppyNewsHelper(context);
 
         try {
-            helper.deleteOrigenesDatos(idsOrigenes);
+            helper.deleteOrigenDato(origen);
             respuesta = new RespuestaAsyncTask(0, "OK");
 
         }catch(SQLiteException e) {

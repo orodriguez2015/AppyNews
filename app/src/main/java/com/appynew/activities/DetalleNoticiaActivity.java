@@ -8,9 +8,6 @@ import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-import com.appynew.activities.dialog.AlertDialogHelper;
-import com.appynew.activities.dialog.NoticiaFavoritaBtnAceptar;
-import com.appynew.activities.dialog.NoticiaFavoritaBtnCancelar;
 import com.appynews.model.dto.Noticia;
 import com.appynews.utils.ConstantesDatos;
 import com.appynews.utils.DateOperationsUtils;
@@ -48,8 +45,11 @@ public class DetalleNoticiaActivity extends AppCompatActivity {
                 LogCat.debug("Noticia a grabar imagen: " + noticia.getUrlThumbnail());
                 LogCat.debug("Noticia a grabar titulo: " + noticia.getTitulo());
 
+
+                /*
                 AlertDialogHelper.crearDialogoAlertaSimple(DetalleNoticiaActivity.this,getString(R.string.atencion),getString(R.string.pregunta_grabar_noticia_favorita),
                         new NoticiaFavoritaBtnAceptar(DetalleNoticiaActivity.this,noticia),new NoticiaFavoritaBtnCancelar()).show();
+                        **/
                 /*
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();

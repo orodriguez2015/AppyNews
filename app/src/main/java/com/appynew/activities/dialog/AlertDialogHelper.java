@@ -30,7 +30,7 @@ public class AlertDialogHelper  {
      *                 al botón de Cancelar
      * @return AlertDialog
      */
-    public static AlertDialog crearDialogoAlertaSimple(final Activity activity, String titulo, String mensaje, DialogInterface.OnClickListener aceptar,DialogInterface.OnClickListener cancelar) {
+    public static AlertDialog crearDialogoAlertaConfirmacion(final Activity activity, String titulo, String mensaje, DialogInterface.OnClickListener aceptar,DialogInterface.OnClickListener cancelar) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(titulo);

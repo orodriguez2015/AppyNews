@@ -38,7 +38,7 @@
     <string name="err_accion_no_implementada">Acción no implementada</string>
     <string name="msg_no_hay_noticias_favoritas">No tienes ninguna noticia favorita. Selecciona en el menú un origen de datos para visualizar sus noticias</string>
     <string name="err_borrar_noticia">Se ha producido un error al eliminar la noticia</string>
-    <string name="nuevo_origen_datos">Nuevo orígen de datos</string>
+    <string name="nuevo_origen_datos">Nueva fuentes de datos RSS</string>
     <string name="nombre_origen">Nombre:</string>
     <string name="url_origen">Dirección/URL:</string>
     <string name="btn_guardar">Guardar</string>
@@ -50,6 +50,9 @@
     <string name="error_grabar_origen_bbdd">Se ha producido un error al dar de alta el orígen de datos</string>
     <string name="mantenimiento_fuentes">Mantenimiento fuente datos</string>
     <string name="err_eliminar_origen_datos">Se ha producido un error al eliminar el/los orígenes de datos seleccionados</string>
+    <string name="err_eliminar_origen_dato">Se ha producido un error al eliminar la fuente de datos</string>
+    <string name="pregunta_eliminar_fuente_datos">¿Desea eliminar la fuente de datos</string>
+
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->
