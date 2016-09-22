@@ -29,12 +29,13 @@ import com.android.volley.toolbox.Volley;
 import com.appynew.activities.dialog.AlertDialogHelper;
 import com.appynews.adapter.NoticiasAdapter;
 import com.appynews.asynctasks.DeleteNoticiaAsyncTask;
-import com.appynews.asynctasks.GetOrigenesRssAsyncTask;
 import com.appynews.asynctasks.ParametrosAsyncTask;
 import com.appynews.asynctasks.RespuestaAsyncTask;
 import com.appynews.asynctasks.SaveUsuarioAsyncTask;
 import com.appynews.controllers.NoticiaController;
+import com.appynews.controllers.OrigenRssController;
 import com.appynews.database.helper.DatabaseErrors;
+import com.appynews.exceptions.GetOrigenesRssException;
 import com.appynews.model.dto.DatosUsuarioVO;
 import com.appynews.model.dto.Noticia;
 import com.appynews.model.dto.OrigenNoticiaVO;
@@ -56,7 +57,6 @@ import material.oscar.com.materialdesign.R;
 import static material.oscar.com.materialdesign.R.drawable.ic_menu_delete;
 
 
-
 /**
  * Clase MainActivity que lanza el Activity Principal
  * @author oscar
@@ -66,7 +66,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private RecyclerView recycler;
     private RecyclerView.LayoutManager lManager;
-    private NoticiaController noticiaController = new NoticiaController(this);
+    private NoticiaController noticiaController     = new NoticiaController(this);
+    private OrigenRssController origenRssController = new OrigenRssController(this);
     private ImageLoader imageLoader = null;
     private NoticiasAdapter noticiaAdapter = null;
     private Paint p = new Paint();
@@ -194,40 +195,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * para acceder a cada origen de datos
      */
     private void rellenarMenu() {
+        Menu menu = navigationView.getMenu();
         boolean continuar = false;
 
         try {
+            // Se vacía el menú de los orígenes de datos que ya tuviese, para proceder a dar de alta los nuevos
+            vaciarMenu(menu);
 
-            ParametrosAsyncTask params = new ParametrosAsyncTask();
-            params.setContext(getBaseContext());
+            // Se recupera de la BD los orígenes/fuentes de datos de los que obtener las noticias
+            this.fuentesDatos = origenRssController.getOrigenes();
+            continuar = true;
 
-            GetOrigenesRssAsyncTask task = new GetOrigenesRssAsyncTask();
-            task.execute(params);
-            RespuestaAsyncTask res = task.get();
 
-            if(res.getStatus().equals(DatabaseErrors.OK)) {
-                this.fuentesDatos = res.getOrigenes();
-                continuar = true;
-
-            } else {
-                MessageUtils.showToastDuracionLarga(getApplicationContext(),getString(R.string.err_get_fuentes_datos));
-            }
-
-        } catch(Exception e) {
+        } catch(GetOrigenesRssException e) {
             e.printStackTrace();
             MessageUtils.showToastDuracionLarga(getApplicationContext(),getString(R.string.err_get_fuentes_datos));
         }
 
-
         // Si se han recuperado las fuentes de datos, se rellena el menú de la aplicación con l
         if(continuar) {
-            Menu menu = navigationView.getMenu();
 
             for(int i=0;fuentesDatos!=null && i<fuentesDatos.size();i++) {
-                MenuItem menuItem = menu.add(Menu.NONE, fuentesDatos.get(i).getId(), Menu.NONE, fuentesDatos.get(i).getNombre()).setIcon(android.R.drawable.ic_menu_compass);
+                menu.add(Menu.NONE, fuentesDatos.get(i).getId(), Menu.NONE, fuentesDatos.get(i).getNombre()).setIcon(android.R.drawable.ic_menu_compass);
             }
         }
 
+    }
+
+
+    /**
+     * Vacía el menú de la aplicación de los orígenes de datos que tuviese cargados
+     * @param menu Menu
+     */
+    private void vaciarMenu(Menu menu) {
+        if(menu!=null && menu.size()>0) {
+            // Se eliminan los antiguos orígenes/fuentes de datos para actualizar el menú
+            for(int i=0;this.fuentesDatos!=null && i<this.fuentesDatos.size();i++) {
+                menu.removeItem(fuentesDatos.get(i).getId());
+            }
+        }
     }
 
 
@@ -392,7 +398,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
 
             case R.id.mantenimiento_origen:
-                //AlertDialogHelper.crearDialogoAlertaSeleccionMultipleFuenteDatos(MainActivity.this,"Seleccione una fuente de datos para eliminar",this.fuentesDatos,new BtnAceptarCancelarDialogGenerico()).show();
                 showActivityMantenimientoFuentesDatos();
                 break;
 
@@ -532,8 +537,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if ((requestCode == ConstantesDatos.RESPONSE_NUEVA_FUENTE_DATOS) && (resultCode == RESULT_OK)){
-            rellenarMenu();
+        LogCat.debug("onActivityResult requestCode: " + requestCode + ", resultCode: " + resultCode);
+        if(resultCode==RESULT_OK) {
+
+            switch (requestCode) {
+
+                case ConstantesDatos.RESPONSE_NUEVA_FUENTE_DATOS:
+                    // Se ha actualizada las fuentes/orígenes rss => HAy que actualizar el menú
+                    rellenarMenu();
+                    break;
+
+                case ConstantesDatos.RESPONSE_MANTENIMIENTO_FUENTE_DATOS:
+                    // Se ha realizado un mantenimiento de los orígenes/fuentes de datos => Hay que actualizar el menu
+
+                    MessageUtils.showToastDuracionCorta(getApplicationContext(),"rellenarmeu");
+                    rellenarMenu();
+                    break;
+            }
         }
     }
 

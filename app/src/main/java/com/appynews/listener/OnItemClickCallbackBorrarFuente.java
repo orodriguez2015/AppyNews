@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.view.View;
 
+import com.appynew.activities.OrigenRssMantenimientoActivity;
 import com.appynew.activities.dialog.AlertDialogHelper;
 import com.appynew.activities.dialog.BtnAceptarCancelarDialogGenerico;
 import com.appynews.controllers.OrigenRssController;
@@ -25,16 +26,16 @@ import material.oscar.com.materialdesign.R;
 public class OnItemClickCallbackBorrarFuente  implements OnItemClickListener.OnItemClickCallback {
 
     private List<OrigenNoticiaVO> fuentesDatos = null;
-    private Activity actividad = null;
+    private Activity origenRssMantenimientoActivity = null;
 
     /**
      * Constructor
      * @param fuentesDatos List<OrigenNoticiaVO>
-     * @param actividad Activity
+     * @param actividad OrigenRssMantenimientoActivity
      */
     public OnItemClickCallbackBorrarFuente(List<OrigenNoticiaVO> fuentesDatos, Activity actividad) {
         this.fuentesDatos = fuentesDatos;
-        this.actividad    = actividad;
+        this.origenRssMantenimientoActivity = actividad;
     }
 
 
@@ -49,10 +50,10 @@ public class OnItemClickCallbackBorrarFuente  implements OnItemClickListener.OnI
         final OrigenNoticiaVO fuente = fuentesDatos.get(position);
         LogCat.debug("Pretende eliminar la fuente: " + fuente.getNombre() + " y url: " + fuente.getUrl());
 
-        String mensaje  = actividad.getString(R.string.pregunta_eliminar_fuente_datos).concat(fuente.getNombre()).concat(ConstantesDatos.INTERROGANTE);
-        String atencion = actividad.getString(R.string.atencion);
+        String mensaje  = origenRssMantenimientoActivity.getString(R.string.pregunta_eliminar_fuente_datos).concat(fuente.getNombre()).concat(ConstantesDatos.INTERROGANTE);
+        String atencion = origenRssMantenimientoActivity.getString(R.string.atencion);
 
-        AlertDialogHelper.crearDialogoAlertaConfirmacion(actividad,atencion,mensaje, new DialogInterface.OnClickListener(){
+        AlertDialogHelper.crearDialogoAlertaConfirmacion(origenRssMantenimientoActivity,atencion,mensaje, new DialogInterface.OnClickListener(){
 
             /**
              * onClick
@@ -62,12 +63,19 @@ public class OnItemClickCallbackBorrarFuente  implements OnItemClickListener.OnI
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                OrigenRssController controller = new OrigenRssController(actividad);
+                OrigenRssController controller = new OrigenRssController(origenRssMantenimientoActivity);
                 try {
                     controller.borrarOrigenRss(fuente);
+                    // Se ha eliminado el origen rss, entonces se comunica a MainActivity
+                    if(origenRssMantenimientoActivity instanceof OrigenRssMantenimientoActivity) {
+
+                        ((OrigenRssMantenimientoActivity) origenRssMantenimientoActivity).comunicarActualizacionMenuActividadPrincipal();
+
+                    }
+
 
                 }catch(DeleteOrigenesRssException e) {
-                    AlertDialogHelper.crearDialogoAlertaAdvertencia(actividad,actividad.getString(R.string.atencion),actividad.getString(R.string.err_eliminar_origen_dato)).show();
+                    AlertDialogHelper.crearDialogoAlertaAdvertencia(origenRssMantenimientoActivity,origenRssMantenimientoActivity.getString(R.string.atencion),origenRssMantenimientoActivity.getString(R.string.err_eliminar_origen_dato)).show();
                 }
             }
 

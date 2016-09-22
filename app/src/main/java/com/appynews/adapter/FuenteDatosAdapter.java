@@ -1,6 +1,5 @@
 package com.appynews.adapter;
 
-import android.app.Activity;
 import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,10 +9,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
+import com.appynew.activities.OrigenRssMantenimientoActivity;
 import com.appynews.listener.OnItemClickCallbackBorrarFuente;
 import com.appynews.listener.OnItemClickListener;
 import com.appynews.model.dto.OrigenNoticiaVO;
-import com.appynews.utils.LogCat;
 
 import java.util.List;
 
@@ -33,7 +32,7 @@ public class FuenteDatosAdapter extends RecyclerView.Adapter<FuenteDatosAdapter.
     private ImageLoader imageLoader = null;
     private Resources resources = null;
     private View.OnClickListener listener = null;
-    private Activity actividad = null;
+    private OrigenRssMantenimientoActivity actividad = null;
 
     /**
      * Clase NoticiaViewHolder que contiene los componentes que forman
@@ -65,8 +64,9 @@ public class FuenteDatosAdapter extends RecyclerView.Adapter<FuenteDatosAdapter.
     /**
      * Constructor
      * @param items List<OrigenNoticiaVO>
+     * @param actividad OrigenRssMantenimientoActivity
      */
-    public FuenteDatosAdapter(List<OrigenNoticiaVO> items, Activity actividad) {
+    public FuenteDatosAdapter(List<OrigenNoticiaVO> items, OrigenRssMantenimientoActivity actividad) {
         this.items  = items;
         this.actividad = actividad;
     }
@@ -139,8 +139,6 @@ public class FuenteDatosAdapter extends RecyclerView.Adapter<FuenteDatosAdapter.
         viewHolder.nombre.setText(items.get(i).getNombre());
         viewHolder.url.setText(items.get(i).getUrl());
 
-        //viewHolder.imageDelete.setOnClickListener(new OnItemClickListener(i,this.onItemClickCallbackBtnBorrar));
-        //viewHolder.imageEditar.setOnClickListener(new OnItemClickListener(i,this.onItemClickCallbackBtnEditar));
         viewHolder.imageDelete.setOnClickListener(new OnItemClickListener(i,new OnItemClickCallbackBorrarFuente(getFuentesDatos(),actividad)));
 
     }
@@ -159,10 +157,8 @@ public class FuenteDatosAdapter extends RecyclerView.Adapter<FuenteDatosAdapter.
      * @param view: View
      */
     public void onClick(View view) {
-        LogCat.debug("FuentesDatosAdapter.onClick ====>");
         if(listener != null) {
             listener.onClick(view);
         }
-
     }
 }

@@ -1,5 +1,6 @@
 package com.appynew.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -89,6 +90,20 @@ public class OrigenRssMantenimientoActivity extends AppCompatActivity {
             AlertDialogHelper.crearDialogoAlertaAdvertencia(this,getString(R.string.atencion),getString(R.string.err_get_fuentes_datos));
         }
 
+    }
+
+
+    /**
+     * Operación que devuelve una respuesta de éxito a la actividad MainActivity, para que esta
+     * proceda a rellenar de nuevo el menú, ya que los orígenes/fuentes de datos han sido actualizados
+     *
+     */
+    public void comunicarActualizacionMenuActividadPrincipal() {
+        // Se pasa a la actividad MainActivity padre el resultado en el intent
+        Intent data = new Intent();
+        setResult(RESULT_OK, data);
+        // Se finaliza esta actividad
+        finish();
     }
 
 
