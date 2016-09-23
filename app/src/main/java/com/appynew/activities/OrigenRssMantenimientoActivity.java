@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -13,6 +14,7 @@ import com.appynews.adapter.FuenteDatosAdapter;
 import com.appynews.controllers.OrigenRssController;
 import com.appynews.exceptions.GetOrigenesRssException;
 import com.appynews.model.dto.OrigenNoticiaVO;
+import com.appynews.utils.ConstantesDatos;
 import com.appynews.utils.LogCat;
 
 import java.util.List;
@@ -94,16 +96,10 @@ public class OrigenRssMantenimientoActivity extends AppCompatActivity {
 
 
     /**
-     * Operación que devuelve una respuesta de éxito a la actividad MainActivity, para que esta
-     * proceda a rellenar de nuevo el menú, ya que los orígenes/fuentes de datos han sido actualizados
-     *
+     * Operación que se encarga de recargar las fuentes de datos del activity
      */
-    public void comunicarActualizacionMenuActividadPrincipal() {
-        // Se pasa a la actividad MainActivity padre el resultado en el intent
-        Intent data = new Intent();
-        setResult(RESULT_OK, data);
-        // Se finaliza esta actividad
-        finish();
+    public void recargarFuenteDatos() {
+        cargarFuentesDatos();
     }
 
 
@@ -118,9 +114,70 @@ public class OrigenRssMantenimientoActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             // Respuesta al pulsar el botón de atrás
             case android.R.id.home:
-                onBackPressed();
+                volverAtras();
+
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
+
+
+    public void showActivityEditarOrigenRss(OrigenNoticiaVO origen) {
+        Intent intent = new Intent(getApplicationContext(), EditarFuenteDatosActivity.class);
+        intent.putExtra("origenRss",origen);
+        startActivityForResult(intent, ConstantesDatos.RESPONSE_EDICION_FUENTE_DATOS);
+    }
+
+
+    /**
+     * Método que es invocado cuando un activity secundaria devuelve una respuesta
+     * a esta activity padre
+     * @param requestCode int
+     * @param resultCode int
+     * @param data Intent
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if(resultCode==RESULT_OK) {
+
+            switch (requestCode) {
+                case ConstantesDatos.RESPONSE_EDICION_FUENTE_DATOS:
+                    // Se ha actualizada las fuentes/orígenes rss
+                    cargarFuentesDatos();
+                    break;
+            }
+        }
+    }
+
+
+    /**
+     * Comunica por medio deun Intent a la MainActivity que todo está OK.
+     * A continuacion se vuelve hacia atrás
+     */
+    private void volverAtras() {
+        Intent data = new Intent();
+        setResult(RESULT_OK, data);
+        onBackPressed();
+    }
+
+
+    /**
+     * Se sobreescribe el método onKeyDown para detectar que tecla ha pulsado el usuario, y
+     * ejecutar la acción que corresponda. En este caso, si pulsa el botón atrás, se devuelve un intent
+     * a la actividad MainActivity para que esta ejecute la acción que sea conveniente
+     * @param keyCode int
+     * @param event KeyEvent
+     * @return boolean
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            volverAtras();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
 }

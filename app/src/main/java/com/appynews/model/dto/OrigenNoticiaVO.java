@@ -1,11 +1,13 @@
 package com.appynews.model.dto;
 
+import java.io.Serializable;
+
 /**
  * Clase OrigenNoticiaVO que representa un orígen de datos RSS
  *
  * Created by oscar on 03/07/16.
  */
-public class OrigenNoticiaVO implements Comparable<OrigenNoticiaVO>  {
+public class OrigenNoticiaVO implements Comparable<OrigenNoticiaVO>,Serializable {
 
     private Integer id = null;
     /**

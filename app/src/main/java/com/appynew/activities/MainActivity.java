@@ -549,8 +549,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 case ConstantesDatos.RESPONSE_MANTENIMIENTO_FUENTE_DATOS:
                     // Se ha realizado un mantenimiento de los orígenes/fuentes de datos => Hay que actualizar el menu
-
-                    MessageUtils.showToastDuracionCorta(getApplicationContext(),"rellenarmeu");
                     rellenarMenu();
                     break;
             }

@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.android.volley.toolbox.ImageLoader;
 import com.appynew.activities.OrigenRssMantenimientoActivity;
 import com.appynews.listener.OnItemClickCallbackBorrarFuente;
+import com.appynews.listener.OnItemClickCallbackEditarFuente;
 import com.appynews.listener.OnItemClickListener;
 import com.appynews.model.dto.OrigenNoticiaVO;
 
@@ -139,6 +140,7 @@ public class FuenteDatosAdapter extends RecyclerView.Adapter<FuenteDatosAdapter.
         viewHolder.nombre.setText(items.get(i).getNombre());
         viewHolder.url.setText(items.get(i).getUrl());
 
+        viewHolder.imageEditar.setOnClickListener(new OnItemClickListener(i,new OnItemClickCallbackEditarFuente(getFuentesDatos(),actividad)));
         viewHolder.imageDelete.setOnClickListener(new OnItemClickListener(i,new OnItemClickCallbackBorrarFuente(getFuentesDatos(),actividad)));
 
     }

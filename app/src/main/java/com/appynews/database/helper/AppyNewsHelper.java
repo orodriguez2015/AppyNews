@@ -338,10 +338,34 @@ public class AppyNewsHelper extends SQLiteOpenHelper {
             //origen.setId(id.intValue());
             LogCat.info("saveOrigen end");
 
-
         } catch(Exception e) {
             e.printStackTrace();
             throw new SQLiteException(DatabaseErrors.ERROR_GRABAR_ORIGEN,"Error al grabar origen RSS en la base de datos: ".concat(e.getMessage()));
+        } finally {
+            if(db!=null) {
+                db.close();
+            }
+        }
+    }
+
+
+    /**
+     * Actualiza una determinada fuente/origen de datos en la base de datos
+     * @param origen OrigenNoticiaVO
+     */
+    public void updateOrigen(OrigenNoticiaVO origen) throws SQLiteException {
+        SQLiteDatabase db = getWritableDatabase();
+
+        try {
+            LogCat.info("updateOrigen init");
+            String[] paramsWhere = {origen.getId().toString()};
+            db.update(AppyNewsContract.OrigenEntry.TABLE_NAME, ModelConversorUtil.toContentValues(origen),"_id=?",paramsWhere);
+
+            LogCat.info("updateOrigen end");
+
+        } catch(Exception e) {
+            e.printStackTrace();
+            throw new SQLiteException(DatabaseErrors.ERROR_ACTUALIZAR_ORIGEN,"Error al actualizar un origen RSS en la base de datos: ".concat(e.getMessage()));
         } finally {
             if(db!=null) {
                 db.close();

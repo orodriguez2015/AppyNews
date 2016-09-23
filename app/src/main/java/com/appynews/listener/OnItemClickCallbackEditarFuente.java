@@ -1,7 +1,9 @@
 package com.appynews.listener;
 
+import android.app.Activity;
 import android.view.View;
 
+import com.appynew.activities.OrigenRssMantenimientoActivity;
 import com.appynews.model.dto.OrigenNoticiaVO;
 
 import java.util.List;
@@ -14,13 +16,17 @@ import java.util.List;
 public class OnItemClickCallbackEditarFuente implements OnItemClickListener.OnItemClickCallback {
 
     private List<OrigenNoticiaVO> fuentesDatos = null;
+    private Activity actividad = null;
+
 
     /**
      * Constructor
      * @param fuentesDatos List<OrigenNoticiaVO>
+     * @param actividad Activity desde el que llega la petición de edición
      */
-    public OnItemClickCallbackEditarFuente(List<OrigenNoticiaVO> fuentesDatos) {
+    public OnItemClickCallbackEditarFuente(List<OrigenNoticiaVO> fuentesDatos,Activity actividad) {
         this.fuentesDatos = fuentesDatos;
+        this.actividad    = actividad;
     }
 
 
@@ -31,7 +37,7 @@ public class OnItemClickCallbackEditarFuente implements OnItemClickListener.OnIt
      */
     @Override
     public void onItemClicked(View view, int position) {
-
+        ((OrigenRssMantenimientoActivity)actividad).showActivityEditarOrigenRss(fuentesDatos.get(position));
     }
 
 

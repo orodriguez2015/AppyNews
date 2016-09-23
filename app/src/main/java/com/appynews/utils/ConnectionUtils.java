@@ -4,15 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-
-import com.appynews.adapter.NoticiasAdapter;
-import com.appynews.asynctasks.GetInputStreamNewsConnectionTask;
-import com.appynews.asynctasks.GetNewsRssSourceTask;
-import com.appynews.model.dto.Noticia;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
+import android.util.Patterns;
 
 /**
  * Clase ConnectionUtils
@@ -42,6 +34,16 @@ public class ConnectionUtils {
             e.printStackTrace();
         }
         return exito;
+    }
+
+
+    /**
+     * Comprueba si se trata de una url válida
+     * @param url String
+     * @return boolean
+     */
+    public static boolean isUrlValida(String url) {
+        return Patterns.WEB_URL.matcher(url).matches();
     }
 
 }

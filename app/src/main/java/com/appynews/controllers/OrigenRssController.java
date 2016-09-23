@@ -6,9 +6,11 @@ import com.appynews.asynctasks.DeleteOrigenesRssAsyncTask;
 import com.appynews.asynctasks.GetOrigenesRssAsyncTask;
 import com.appynews.asynctasks.ParametrosAsyncTask;
 import com.appynews.asynctasks.RespuestaAsyncTask;
+import com.appynews.asynctasks.UpdateOrigenRssAsynchTask;
 import com.appynews.database.helper.DatabaseErrors;
 import com.appynews.exceptions.DeleteOrigenesRssException;
 import com.appynews.exceptions.GetOrigenesRssException;
+import com.appynews.exceptions.UpdateOrigenRssException;
 import com.appynews.model.dto.OrigenNoticiaVO;
 
 import java.util.List;
@@ -109,6 +111,35 @@ public class OrigenRssController {
         }catch(Exception e) {
             e.printStackTrace();
             throw new DeleteOrigenesRssException(e.getMessage());
+        }
+    }
+
+
+
+    /**
+     * Método encargado de actualizar uno o varios orígenes RSS de la base de datos
+     * @param origen OrigenNoticiaVO Colección de ids de orígenes/fuentes a eliminar
+     * @throws UpdateOrigenRssException
+     */
+    public void updateOrigenRss(OrigenNoticiaVO origen) throws UpdateOrigenRssException {
+
+        try {
+
+            ParametrosAsyncTask params = new ParametrosAsyncTask();
+            params.setContext(actividad.getApplicationContext());
+            params.setOrigen(origen);
+
+            UpdateOrigenRssAsynchTask task = new UpdateOrigenRssAsynchTask();
+            task.execute(params);
+
+            RespuestaAsyncTask res = task.get();
+            if(!(res.getStatus()== DatabaseErrors.OK)) {
+                throw new UpdateOrigenRssException("Error al actualizar el orígen RSS de la base de datos");
+            }
+
+        }catch(Exception e) {
+            e.printStackTrace();
+            throw new UpdateOrigenRssException(e.getMessage());
         }
     }
 

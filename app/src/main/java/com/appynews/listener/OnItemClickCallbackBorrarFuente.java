@@ -50,7 +50,7 @@ public class OnItemClickCallbackBorrarFuente  implements OnItemClickListener.OnI
         final OrigenNoticiaVO fuente = fuentesDatos.get(position);
         LogCat.debug("Pretende eliminar la fuente: " + fuente.getNombre() + " y url: " + fuente.getUrl());
 
-        String mensaje  = origenRssMantenimientoActivity.getString(R.string.pregunta_eliminar_fuente_datos).concat(fuente.getNombre()).concat(ConstantesDatos.INTERROGANTE);
+        String mensaje  = origenRssMantenimientoActivity.getString(R.string.pregunta_eliminar_fuente_datos).concat(ConstantesDatos.ESPACIO_BLANCO).concat(fuente.getNombre()).concat(ConstantesDatos.INTERROGANTE);
         String atencion = origenRssMantenimientoActivity.getString(R.string.atencion);
 
         AlertDialogHelper.crearDialogoAlertaConfirmacion(origenRssMantenimientoActivity,atencion,mensaje, new DialogInterface.OnClickListener(){
@@ -68,9 +68,7 @@ public class OnItemClickCallbackBorrarFuente  implements OnItemClickListener.OnI
                     controller.borrarOrigenRss(fuente);
                     // Se ha eliminado el origen rss, entonces se comunica a MainActivity
                     if(origenRssMantenimientoActivity instanceof OrigenRssMantenimientoActivity) {
-
-                        ((OrigenRssMantenimientoActivity) origenRssMantenimientoActivity).comunicarActualizacionMenuActividadPrincipal();
-
+                        ((OrigenRssMantenimientoActivity) origenRssMantenimientoActivity).recargarFuenteDatos();
                     }
 
 

@@ -14,6 +14,11 @@
     <android:uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <android:uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
+    <android:uses-permission android:name="android.permission.READ_CALL_LOG" />
+
     <!--
     <android:uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <android:uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -54,8 +59,11 @@
         </activity>
         -->
 
-        <activity android:name="com.appynew.activities.NuevaFuenteDatosActivity"></activity>
-        <activity android:name="com.appynew.activities.OrigenRssMantenimientoActivity"></activity>
+        <activity android:name="com.appynew.activities.NuevaFuenteDatosActivity" />
+        <activity android:name="com.appynew.activities.OrigenRssMantenimientoActivity" />
+        <activity
+            android:name="com.appynew.activities.EditarFuenteDatosActivity"
+            android:label="@string/title_activity_editar_fuente_datos"></activity>
     </application>
 
 </manifest>

@@ -120,9 +120,7 @@ public class NuevaFuenteDatosActivity extends AppCompatActivity {
             if(res.getStatus().equals(DatabaseErrors.OK)) {
                 // Se pasa a la actividad MainActivity padre el resultado en el intent
                 Intent data = new Intent();
-                //data.setData(Uri.parse(cad));
                 setResult(RESULT_OK, data);
-
                 // Se finaliza el activity
                 finish();
 

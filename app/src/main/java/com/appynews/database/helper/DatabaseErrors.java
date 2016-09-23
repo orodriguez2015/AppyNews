@@ -22,5 +22,5 @@ public class DatabaseErrors {
     public static final int ERROR_ELIMINAR_NOTICIA      = 11;
     public static final int ERROR_GRABAR_ORIGEN         = 12;
     public static final int ERROR_ELIMINAR_ORIGENES_RSS = 13;
-
+    public static final int ERROR_ACTUALIZAR_ORIGEN     = 14;
 }
