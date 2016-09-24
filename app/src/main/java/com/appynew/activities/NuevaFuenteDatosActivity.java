@@ -4,9 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Patterns;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -17,7 +17,7 @@ import com.appynews.asynctasks.RespuestaAsyncTask;
 import com.appynews.asynctasks.SaveOrigenRssAsyncTask;
 import com.appynews.database.helper.DatabaseErrors;
 import com.appynews.model.dto.OrigenNoticiaVO;
-import com.appynews.utils.LogCat;
+import com.appynews.utils.ConnectionUtils;
 
 import material.oscar.com.materialdesign.R;
 
@@ -29,9 +29,12 @@ public class NuevaFuenteDatosActivity extends AppCompatActivity {
 
     private Button btnAceptar = null;
     private Button btnCancelar = null;
-    private EditText txtNombreOrigen = null;
-    private EditText txtUrlOrigen = null;
-    private MainActivity mainActivity = null;
+    //private EditText txtNombreOrigen = null;
+    //private EditText txtUrlOrigen = null;
+
+    private AutoCompleteTextView txtNombreOrigen;
+    private EditText txtUrlOrigen;
+    private MainActivity activity = null;
 
 
     /**
@@ -48,7 +51,7 @@ public class NuevaFuenteDatosActivity extends AppCompatActivity {
         // Se recuperan los elementos que forman la interfaz de usuario
         btnAceptar      = (Button)findViewById(R.id.btnGrabarOrigen);
         btnCancelar     = (Button)findViewById(R.id.btnCancelar);
-        txtNombreOrigen = (EditText)findViewById(R.id.txtNombreOrigen);
+        txtNombreOrigen = (AutoCompleteTextView)findViewById(R.id.txtNombreOrigen);
         txtUrlOrigen    = (EditText)findViewById(R.id.txtUrlOrigen);
 
 
@@ -62,7 +65,9 @@ public class NuevaFuenteDatosActivity extends AppCompatActivity {
         btnAceptar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+            validarCamposFormulario();
 
+                /**
                 String nombre = txtNombreOrigen.getText().toString();
                 String url    = txtUrlOrigen.getText().toString();
 
@@ -84,6 +89,7 @@ public class NuevaFuenteDatosActivity extends AppCompatActivity {
                         grabarOrigenDatos(new OrigenNoticiaVO(nombre,url));
                     }
                 }
+                 **/
 
             }
         });
@@ -98,6 +104,47 @@ public class NuevaFuenteDatosActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+    }
+
+
+    /**
+     * Se validan los campos del formulario
+     */
+    private void  validarCamposFormulario() {
+        boolean cancel = false;
+        View focusView = null;
+        String nombre  = this.txtNombreOrigen.getText().toString();
+        String url     = this.txtUrlOrigen.getText().toString();
+
+        if(TextUtils.isEmpty(nombre)) {
+            this.txtNombreOrigen.setError(getString(R.string.campo_obligatorio));
+            focusView = txtNombreOrigen;
+            cancel    = true;
+        } else
+        if(TextUtils.isEmpty(url)) {
+            this.txtUrlOrigen.setError(getString(R.string.campo_obligatorio));
+            focusView = txtUrlOrigen;
+            cancel    = true;
+        } else
+        if (!ConnectionUtils.isUrlFormatoValida(url)) {
+            this.txtUrlOrigen.setError(getString(R.string.err_formato_url_origen));
+            focusView = txtUrlOrigen;
+            cancel    = true;
+        } else
+        if (!ConnectionUtils.connectUrl(url)) {
+            this.txtUrlOrigen.setError(getString(R.string.err_conexion_url_origen));
+            focusView = txtUrlOrigen;
+            cancel    = true;
+        }
+
+
+
+        if(cancel) {
+            focusView.requestFocus();
+        } else {
+            grabarOrigenDatos(new OrigenNoticiaVO(nombre,url));
+        }
 
     }
 

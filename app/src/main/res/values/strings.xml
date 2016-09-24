@@ -55,7 +55,9 @@
     <string name="titulo_edicion_fuente_datos_rss">Edición fuente de datos RSS</string>
     <string name="campo_obligatorio">El campo es obligatorio</string>
     <string name="err_formato_url_origen">La dirección url no tiene un formato correcto</string>
+    <string name="err_conexion_url_origen">Error al establecer conexión con la dirección facilitada</string>
     <string name="err_update_origen_rss">Se ha producido un error al actualizar la fuente de datos</string>
+
 
     <string name="title_activity_settings">Settings</string>
 

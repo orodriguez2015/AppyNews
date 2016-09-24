@@ -7,15 +7,12 @@ import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -38,8 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import material.oscar.com.materialdesign.R;
-
-import static android.Manifest.permission.READ_CONTACTS;
 
 /**
  * A login screen that offers login via email/password.
@@ -129,50 +124,6 @@ public class EditarFuenteDatosActivity extends AppCompatActivity implements Load
     }
 
 
-    private void populateAutoComplete() {
-        if (!mayRequestContacts()) {
-            return;
-        }
-
-        getLoaderManager().initLoader(0, null, this);
-    }
-
-    private boolean mayRequestContacts() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return true;
-        }
-        if (checkSelfPermission(READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-        if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(edicionNombreOrigenRss, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(android.R.string.ok, new View.OnClickListener() {
-                        @Override
-                        @TargetApi(Build.VERSION_CODES.M)
-                        public void onClick(View v) {
-                            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-                        }
-                    });
-        } else {
-            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-        }
-        return false;
-    }
-
-    /**
-     * Callback received when a permissions request has been completed.
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_READ_CONTACTS) {
-            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                populateAutoComplete();
-            }
-        }
-    }
-
-
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
@@ -207,10 +158,15 @@ public class EditarFuenteDatosActivity extends AppCompatActivity implements Load
             cancel = true;
         }
         else
-        if (!ConnectionUtils.isUrlValida(url)) {
+        if (!ConnectionUtils.isUrlFormatoValida(url)) {
             edicionUrlOrigenRss.setError(getString(R.string.err_formato_url_origen));
             focusView = edicionUrlOrigenRss;
             cancel = true;
+        } else
+        if (!ConnectionUtils.connectUrl(url)) {
+            this.edicionUrlOrigenRss.setError(getString(R.string.err_conexion_url_origen));
+            focusView = edicionUrlOrigenRss;
+            cancel    = true;
         }
 
         if (cancel) {
@@ -221,12 +177,6 @@ public class EditarFuenteDatosActivity extends AppCompatActivity implements Load
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             //showProgress(true);
-
-            /**
-             mAuthTask = new UserLoginTask(email, password);
-             mAuthTask.execute((Void) null);
-             **/
-
 
             try {
                 OrigenRssController controller = new OrigenRssController(this);
@@ -243,16 +193,6 @@ public class EditarFuenteDatosActivity extends AppCompatActivity implements Load
                 AlertDialogHelper.crearDialogoAlertaAdvertencia(this, getString(R.string.atencion), getString(R.string.err_update_origen_rss));
             }
         }
-    }
-
-    private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
-        return email.contains("@");
-    }
-
-    private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() > 4;
     }
 
     /**
