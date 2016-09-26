@@ -131,12 +131,32 @@ public class NuevaFuenteDatosActivity extends AppCompatActivity {
             this.txtUrlOrigen.setError(getString(R.string.err_formato_url_origen));
             focusView = txtUrlOrigen;
             cancel    = true;
-        } else
-        if (!ConnectionUtils.connectUrl(url)) {
-            this.txtUrlOrigen.setError(getString(R.string.err_conexion_url_origen));
-            focusView = txtUrlOrigen;
-            cancel    = true;
+        } else {
+
+            int isOnline = ConnectionUtils.isOnline(this,url);
+
+            switch(isOnline) {
+                case 0: // Todo OK
+                    cancel = false;
+                    break;
+
+                case 1: // No se ha podido establecer conexión con la url del recurso RSS
+                    this.txtUrlOrigen.setError(getString(R.string.err_conexion_url_origen));
+                    focusView = txtUrlOrigen;
+                    cancel    = true;
+                    break;
+
+                case 2: // El dispositivo no tiene habilitadas sus conexiones de red
+                    this.txtUrlOrigen.setError(getString(R.string.err_connection_state));
+                    focusView = txtUrlOrigen;
+                    cancel    = true;
+                    break;
+
+            }// switch
+
         }
+
+
 
 
 

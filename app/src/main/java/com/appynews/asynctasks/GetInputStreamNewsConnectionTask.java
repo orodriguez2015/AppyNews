@@ -34,6 +34,8 @@ public class GetInputStreamNewsConnectionTask extends AsyncTask<String,Void,Inpu
             return null;
         }
 
+
+
         return is;
     }
 

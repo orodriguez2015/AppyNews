@@ -162,12 +162,31 @@ public class EditarFuenteDatosActivity extends AppCompatActivity implements Load
             edicionUrlOrigenRss.setError(getString(R.string.err_formato_url_origen));
             focusView = edicionUrlOrigenRss;
             cancel = true;
-        } else
-        if (!ConnectionUtils.connectUrl(url)) {
-            this.edicionUrlOrigenRss.setError(getString(R.string.err_conexion_url_origen));
-            focusView = edicionUrlOrigenRss;
-            cancel    = true;
+        } else {
+
+            int isOnline = ConnectionUtils.isOnline(this,url);
+
+            switch(isOnline) {
+                case 0: // Todo OK
+                    cancel = false;
+                    break;
+
+                case 1: // No se ha podido establecer conexión con la url del recurso RSS
+                    this.edicionUrlOrigenRss.setError(getString(R.string.err_conexion_url_origen));
+                    focusView = edicionUrlOrigenRss;
+                    cancel    = true;
+                    break;
+
+                case 2: // El dispositivo no tiene habilitadas sus conexiones de red
+                    this.edicionUrlOrigenRss.setError(getString(R.string.err_connection_state));
+                    focusView = edicionUrlOrigenRss;
+                    cancel    = true;
+                    break;
+
+            }// switch
+
         }
+        
 
         if (cancel) {
             // There was an error; don't attempt login and focus the first

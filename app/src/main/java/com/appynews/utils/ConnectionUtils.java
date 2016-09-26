@@ -6,9 +6,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Patterns;
 
-import com.appynews.asynctasks.GetInputStreamNewsConnectionTask;
-
-import java.io.InputStream;
+import com.appynews.asynctasks.GetConnectionUrlRssAsyncTask;
 
 /**
  * Clase ConnectionUtils
@@ -52,37 +50,33 @@ public class ConnectionUtils {
 
 
     /**
-     * Comprueba si se puede establecer conexión con la url
+     * Comprueba que desde el dispositivo se pueda establecer conexión HTTP con una determinada url
+     * @param actividad Activity desde el que se hace la petición
      * @param url String
-     * @return true si se ha establecido conexión y false en caso contrario
+     * @return int 0 --> Si la url es correcta y se puede establecer conexión
+     *             1 --> No se ha podido establecer conexión con la url
+     *             2 --> Si las conexiones de red del dispositivo no están habilitadas
      */
-    public static boolean connectUrl(String url) {
+    public static int isOnline(Activity actividad, String url) {
+        int salida = 1;
 
-        boolean connect = false;
-        InputStream is  = null;
         try {
-            GetInputStreamNewsConnectionTask task = new GetInputStreamNewsConnectionTask();
-            task.execute(url);
-            is = task.get();
 
-            if(is!=null) {
-                connect = true;
-            }
+            if(conexionRedHabilitada(actividad)) {
+                GetConnectionUrlRssAsyncTask task = new GetConnectionUrlRssAsyncTask();
+                task.execute(url);
 
-        } catch(Exception e) {
-            try {
-                e.printStackTrace();
-                connect = false;
-
-                if (is != null) {
-                    is.close();
+                boolean exito = task.get();
+                if (exito) {
+                    salida = 0;
                 }
-            }catch(Exception ex) {
+            } else salida = 2;
 
-            }
+        }catch(Exception e) {
+            e.printStackTrace();
         }
 
-        return connect;
+        return salida;
     }
 
 
