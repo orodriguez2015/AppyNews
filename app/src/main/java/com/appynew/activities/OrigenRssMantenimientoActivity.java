@@ -154,7 +154,7 @@ public class OrigenRssMantenimientoActivity extends AppCompatActivity {
 
     /**
      * Comunica por medio deun Intent a la MainActivity que todo está OK.
-     * A continuacion se vuelve hacia atrás
+     * A continuacion se vuelve hacia atrás. Se pasa el id de la noticia que se está visualizando, en el caso de que lo tenga
      */
     private void volverAtras() {
         Intent data = new Intent();

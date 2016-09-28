@@ -58,6 +58,8 @@
     <string name="err_conexion_url_origen">Error al establecer conexión con la dirección facilitada</string>
     <string name="err_update_origen_rss">Se ha producido un error al actualizar la fuente de datos</string>
 
+    <string name="procesando">Procesando...</string>
+
 
     <string name="title_activity_settings">Settings</string>
 

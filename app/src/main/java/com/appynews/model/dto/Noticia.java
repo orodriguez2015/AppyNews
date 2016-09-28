@@ -8,9 +8,9 @@ import java.io.Serializable;
  * @author oscar
  *
  */
-public class Noticia implements Serializable{
+public class Noticia implements Serializable {
 
-    private int id;
+    private Integer id = null;
     private String titulo;
     private String descripcion;
     private String descripcionCompleta;
@@ -23,6 +23,14 @@ public class Noticia implements Serializable{
      * Constructor
      */
     public Noticia() {
+
+    }
+
+    /**
+     * Constructor
+     */
+    public Noticia(Integer id) {
+        this.id = id;
     }
 
 
@@ -194,18 +202,18 @@ public class Noticia implements Serializable{
 
     /**
      * Devuelve el id
-     * @return int
+     * @return Integer
      */
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
 
     /**
      * Establece el id de la noticia
-     * @param id int
+     * @param id Integer
      */
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -218,9 +226,10 @@ public class Noticia implements Serializable{
     public boolean isNoticiaFavorita() {
         boolean exito = false;
         
-        if(this.id>=1) {
+        if(getId()!=null && getId()>=1) {
             exito = true;
         }
         return exito;
     }
+
 }

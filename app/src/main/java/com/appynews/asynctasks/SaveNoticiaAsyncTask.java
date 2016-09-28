@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import com.appynews.database.exceptions.SQLiteException;
 import com.appynews.database.helper.AppyNewsHelper;
 import com.appynews.model.dto.Noticia;
+import com.appynews.utils.LogCat;
 
 
 /**
@@ -31,6 +32,9 @@ public class SaveNoticiaAsyncTask extends AsyncTask<ParametrosAsyncTask,Void,Res
 
         try {
             helper.saveNoticia(noticia);
+
+            int idNoticia = noticia.getId();
+            LogCat.debug(" =========================> ID NOTICIA ALMACENADA " + idNoticia);
             respuesta = new RespuestaAsyncTask(0, "OK");
 
         }catch(SQLiteException e) {

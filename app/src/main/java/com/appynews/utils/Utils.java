@@ -13,8 +13,8 @@ public class Utils {
 
     /**
      * Recupera una determinada fuente de datos que tenga un determinado id
-     * @param fuentes: List<OrigenNoticiaVO>
-     * @param id: Integer
+     * @param fuentes List<OrigenNoticiaVO>
+     * @param id Integer
      * @return OrigenNoticiaVO
      */
     public static OrigenNoticiaVO getFuenteDatos(List<OrigenNoticiaVO> fuentes,Integer id) {

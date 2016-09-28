@@ -2,10 +2,12 @@ package com.appynews.asynctasks;
 
 import android.content.Context;
 
+import com.appynew.activities.MainActivity;
 import com.appynews.model.dto.DatosUsuarioVO;
 import com.appynews.model.dto.Noticia;
 import com.appynews.model.dto.OrigenNoticiaVO;
 
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 
@@ -22,6 +24,30 @@ public class ParametrosAsyncTask implements Serializable {
     private Noticia noticia        = null;
     private OrigenNoticiaVO origen = null;
     private List<Integer> idsOrigenesEliminar = null;
+
+
+    /** prueba ***/
+    private InputStream inputStream = null;
+    private MainActivity mainActivity = null;
+
+    public InputStream getInputStream() {
+        return inputStream;
+    }
+
+    public void setInputStream(InputStream inputStream) {
+        this.inputStream = inputStream;
+    }
+
+    public MainActivity getMainActivity() {
+        return mainActivity;
+    }
+
+    public void setMainActivity(MainActivity mainActivity) {
+        this.mainActivity = mainActivity;
+    }
+
+
+    /** prueba ***/
 
     /**
      * Establece la lista con los ids de los orígenes de datos a eliminar

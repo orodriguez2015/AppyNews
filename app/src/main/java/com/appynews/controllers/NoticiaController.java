@@ -3,6 +3,7 @@ package com.appynews.controllers;
 import android.app.Activity;
 import android.content.Context;
 
+import com.appynew.activities.MainActivity;
 import com.appynews.asynctasks.GetInputStreamNewsConnectionTask;
 import com.appynews.asynctasks.GetNewsRssSourceTask;
 import com.appynews.asynctasks.GetNoticiasAsyncTask;
@@ -37,7 +38,7 @@ public class NoticiaController {
      * Recupera las noticias de una determinada url correspondiente a un origen RSS
      * @param url: String
      * @return ArrayList<Noticia>
-     */
+     *
     public ArrayList<Noticia> getNoticias(String url) {
         ArrayList<Noticia> noticias = new ArrayList<Noticia>();
         GetInputStreamNewsConnectionTask conIs = new GetInputStreamNewsConnectionTask();
@@ -51,6 +52,43 @@ public class NoticiaController {
             if(is!=null) {
                 GetNewsRssSourceTask getNewsTask = new GetNewsRssSourceTask();
                 getNewsTask.execute(is);
+
+                noticias = getNewsTask.get();
+
+            } else {
+                MessageUtils.showToastDuracionLarga(this.actividad.getApplicationContext(),"No se ha podido establecer conexión con ".concat(url));
+            }
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        return noticias;
+    } */
+
+
+    public ArrayList<Noticia> getNoticias(MainActivity mainActivity,String url) {
+        ArrayList<Noticia> noticias = new ArrayList<Noticia>();
+        GetInputStreamNewsConnectionTask conIs = new GetInputStreamNewsConnectionTask();
+
+        conIs.execute(url);
+        InputStream is = null;
+
+
+        try {
+            is = conIs.get();
+
+            if(is!=null) {
+
+                ParametrosAsyncTask params = new ParametrosAsyncTask();
+                params.setMainActivity(mainActivity);
+                params.setInputStream(is);
+
+
+                GetNewsRssSourceTask getNewsTask = new GetNewsRssSourceTask(mainActivity);
+                getNewsTask.execute(params);
 
                 noticias = getNewsTask.get();
 

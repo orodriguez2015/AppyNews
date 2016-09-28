@@ -1,6 +1,7 @@
 package com.appynew.activities;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -73,6 +74,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Paint p = new Paint();
     private NavigationView navigationView = null;
     private boolean mostrandoNoticiasExternas = false;
+    private ProgressDialog progressDialog = null;
+
+
+    /** Atributo que contiene la noticia de la que se va a ver en detalle **/
+    private int posicionNoticiaSeleccionada = -1;
+
+
     /**
      * Colección con los origenes de datos RSS de los que se van a leer noticias
      */
@@ -83,11 +91,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Nombre del origen de las noticias que se están listando actualmente en el RecyclerView
      */
     private String nombreOrigenNoticiasRecuperadas = null;
-
-
-    public NoticiasAdapter getNoticiasAdapter() {
-        return this.noticiaAdapter;
-    }
 
 
     @Override
@@ -261,6 +264,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
 
+    /************** prueba ******************/
+
+    public void mostrarBarraProgreso() {
+
+        if(progressDialog==null) {
+            progressDialog = new ProgressDialog(this);
+        }
+        progressDialog.setMessage(getString(R.string.procesando));
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setProgress(0);
+        progressDialog.show();
+    }
+
+
+    public void ocultarBarraProgreso() {
+        if(progressDialog!=null) {
+            progressDialog.dismiss();
+        }
+    }
+
+    /************* prueba ************************/
 
     /**
      * Método que carga las noticias de una determinada url
@@ -270,11 +295,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void cargarNoticias(String url,String origen) {
 
         this.nombreOrigenNoticiasRecuperadas = origen;
-
         setMostrandoNoticiasExternas(true);
 
+
+
         // Se recupera la lista de noticias a través
-        final List<Noticia> noticias = noticiaController.getNoticias(url);
+        final List<Noticia> noticias = noticiaController.getNoticias(this,url);
+
         noticiaAdapter =  new NoticiasAdapter(noticias,origen,imageLoader,getResources());
         noticiaAdapter.notifyDataSetChanged();
         /**
@@ -285,10 +312,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View view) {
                 int pos =  recycler.getChildAdapterPosition(view);
-                cargarActivityDetalleNoticia(noticias.get(pos));
+                cargarActivityDetalleNoticia(noticias.get(pos),pos);
             }
         });
-
 
         recycler.setAdapter(noticiaAdapter);
     }
@@ -316,18 +342,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View view) {
                 int pos =  recycler.getChildAdapterPosition(view);
-                cargarActivityDetalleNoticia(favoritas.get(pos));
+                cargarActivityDetalleNoticia(favoritas.get(pos),pos);
             }
         });
 
         recycler.setAdapter(noticiaAdapter);
     }
 
+
+
+
     /**
      * Este método pasa el control del activity actual al activity DetalleNoticiaActivity.
      * @param noticia Objeto de la clase Noticia que se pasa a la actividad DetalleNoticiaActivity
      */
-    private void cargarActivityDetalleNoticia(Noticia noticia) {
+    private void cargarActivityDetalleNoticia(Noticia noticia,int posicion) {
+
+        this.posicionNoticiaSeleccionada = posicion;
 
         // Se pasa la noticia seleccionada al Activity que mostrará la descripción, en este caso, ActividadDescripcionNoticia
         Intent intent = new Intent(MainActivity.this, DetalleNoticiaActivity.class);
@@ -335,7 +366,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             noticia.setOrigen(getOrigenExterno());
         }
         intent.putExtra("noticia",noticia);
-        startActivity(intent);
+        startActivityForResult(intent,ConstantesDatos.RESPONSE_GRABACION_NOTICIA);
     }
 
 
@@ -344,6 +375,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+
         } else {
             super.onBackPressed();
         }
@@ -384,12 +416,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        final int id = item.getItemId();
+
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        //drawer.closeDrawers();
+        //drawer.closeDrawer(navigationView);
 
         switch(item.getItemId()) {
             case R.id.favoritos:
-                // Se recuperan las noticias grabadas en la base de datos
+
+                 /**
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        cargarFavoritas();
+                    }
+                }, 20);
+                  **/
                 cargarFavoritas();
+
                 break;
 
             case R.id.nuevo_origen:
@@ -402,14 +449,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
 
             default:
+                /**
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Se recuperan las noticias del origen seleccionado por el usuario
+                        OrigenNoticiaVO origenSeleccionado = Utils.getFuenteDatos(fuentesDatos,id);
+                        cargarNoticias(origenSeleccionado.getUrl(),origenSeleccionado.getNombre());
+                    }
+                }, 20);
+                **/
+
                 // Se recuperan las noticias del origen seleccionado por el usuario
                 OrigenNoticiaVO origenSeleccionado = Utils.getFuenteDatos(fuentesDatos,id);
                 cargarNoticias(origenSeleccionado.getUrl(),origenSeleccionado.getNombre());
                 break;
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+       // DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        //drawer.closeDrawer(GravityCompat.START);
+        //drawer.closeDrawers();
         return true;
     }
 
@@ -536,8 +595,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        LogCat.debug("onActivityResult requestCode: " + requestCode + ", resultCode: " + resultCode);
         if(resultCode==RESULT_OK) {
 
             switch (requestCode) {
@@ -550,6 +607,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 case ConstantesDatos.RESPONSE_MANTENIMIENTO_FUENTE_DATOS:
                     // Se ha realizado un mantenimiento de los orígenes/fuentes de datos => Hay que actualizar el menu
                     rellenarMenu();
+                    break;
+
+                case ConstantesDatos.RESPONSE_GRABACION_NOTICIA:
+                    Bundle parametros = data.getExtras();
+                    if(parametros!=null && parametros.size()>0) {
+                        Noticia noticiaGrabada = (Noticia)parametros.get("noticiaGrabada");
+                        if(noticiaGrabada!=null) {
+                            this.getNoticiasAdapter().getNoticia(getPosicionNoticiaSeleccionada()).setId(noticiaGrabada.getId());
+                        }
+                    }
+
                     break;
             }
         }
@@ -573,4 +641,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void setMostrandoNoticiasExternas(boolean mostrandoNoticiasExternas) {
         this.mostrandoNoticiasExternas = mostrandoNoticiasExternas;
     }
+
+    /**
+     * Devuelve el adapter NoticiasAdapter que se encarga de rellenar con datos el RecyclerView con las noticias
+     * @return NoticiasAdapter
+     */
+    public NoticiasAdapter getNoticiasAdapter() {
+        return this.noticiaAdapter;
+    }
+
+    /**
+     * Devuelve la posición de la noticia seleccionada por el usuario en la colección de noticias
+     * @return int
+     */
+    public int getPosicionNoticiaSeleccionada() {
+        return this.posicionNoticiaSeleccionada;
+    }
+
 }

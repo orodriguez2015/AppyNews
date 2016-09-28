@@ -53,6 +53,8 @@ public class NoticiaFavoritaBtnAceptar implements DialogInterface.OnClickListene
             RespuestaAsyncTask res = task.get();
             if(res.getStatus()==0) {
                 MessageUtils.showToastDuracionCorta(this.activity,this.activity.getString(R.string.noticia_grabada));
+
+                LogCat.debug("NoticiaFavoritaBtnAceptar noticia.getId() " + this.noticia.getId());
                 this.activity.mostrarBotonFlotante(false);
             } else {
                 MessageUtils.showToastDuracionCorta(this.activity,this.activity.getString(R.string.error_grabar_noticia));
