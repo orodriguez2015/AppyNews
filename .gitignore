@@ -6,3 +6,9 @@
 .DS_Store
 /build
 /captures
+
+app/src/main/res/layout/app_bar_main.xml
+
+app/src/main/res/layout/activity_main.xml
+
+app/src/main/java/com/appynew/activities/MainActivity.java

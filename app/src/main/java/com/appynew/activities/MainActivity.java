@@ -30,6 +30,7 @@ import com.android.volley.toolbox.Volley;
 import com.appynew.activities.dialog.AlertDialogHelper;
 import com.appynews.adapter.NoticiasAdapter;
 import com.appynews.asynctasks.DeleteNoticiaAsyncTask;
+import com.appynews.asynctasks.GetNoticiasExternasAsyncTask;
 import com.appynews.asynctasks.ParametrosAsyncTask;
 import com.appynews.asynctasks.RespuestaAsyncTask;
 import com.appynews.asynctasks.SaveUsuarioAsyncTask;
@@ -50,6 +51,7 @@ import com.appynews.utils.StringUtil;
 import com.appynews.utils.TelephoneUtil;
 import com.appynews.utils.Utils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -263,30 +265,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-
-    /************** prueba ******************/
-
-    public void mostrarBarraProgreso() {
-
-        if(progressDialog==null) {
-            progressDialog = new ProgressDialog(this);
-        }
-        progressDialog.setMessage(getString(R.string.procesando));
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setProgress(0);
-        progressDialog.show();
-    }
-
-
-    public void ocultarBarraProgreso() {
-        if(progressDialog!=null) {
-            progressDialog.dismiss();
-        }
-    }
-
-    /************* prueba ************************/
-
     /**
      * Método que carga las noticias de una determinada url
      * @param url String que contiene la url del orígen de datos RSS
@@ -297,13 +275,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         this.nombreOrigenNoticiasRecuperadas = origen;
         setMostrandoNoticiasExternas(true);
 
-
-
         // Se recupera la lista de noticias a través
-        final List<Noticia> noticias = noticiaController.getNoticias(this,url);
+        List<Noticia> noticias = new ArrayList<Noticia>();
 
         noticiaAdapter =  new NoticiasAdapter(noticias,origen,imageLoader,getResources());
-        noticiaAdapter.notifyDataSetChanged();
+        recycler.setAdapter(noticiaAdapter);
+
+        // Se recuperan las noticias
+        GetNoticiasExternasAsyncTask tarea = new GetNoticiasExternasAsyncTask(this);
+        ParametrosAsyncTask params = new ParametrosAsyncTask();
+        params.setUrl(url);
+        tarea.execute(params);
+
         /**
          * Se establece el listener que se pasa al adapter para que añade
          * este Listener a cada View a mostrar en el RecyclerView
@@ -312,12 +295,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View view) {
                 int pos =  recycler.getChildAdapterPosition(view);
-                cargarActivityDetalleNoticia(noticias.get(pos),pos);
+                cargarActivityDetalleNoticia(noticiaAdapter.getNoticias().get(pos),pos);
             }
         });
-
-        recycler.setAdapter(noticiaAdapter);
     }
+
 
 
     /**
@@ -347,6 +329,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
         recycler.setAdapter(noticiaAdapter);
+    }
+
+
+    /**
+     * Operación que pasa las noticias al adaptador y actualiza su contenido para renderizar el resultado
+     * @param noticias List<Noticia>
+     */
+    public void mostrarNoticias(List<Noticia> noticias) {
+        noticiaAdapter.setNoticias(noticias);
+        noticiaAdapter.notifyDataSetChanged();
     }
 
 
@@ -419,22 +411,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         final int id = item.getItemId();
 
 
+        /**
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        navigationView.clearAnimation();
+        navigationView.clearFocus();
+        drawer.clearFocus();
+        drawer.clearAnimation();
         drawer.closeDrawer(GravityCompat.START);
-        //drawer.closeDrawers();
-        //drawer.closeDrawer(navigationView);
+         **/
 
         switch(item.getItemId()) {
             case R.id.favoritos:
-
-                 /**
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        cargarFavoritas();
-                    }
-                }, 20);
-                  **/
                 cargarFavoritas();
 
                 break;
@@ -449,28 +437,58 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
 
             default:
-                /**
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Se recuperan las noticias del origen seleccionado por el usuario
-                        OrigenNoticiaVO origenSeleccionado = Utils.getFuenteDatos(fuentesDatos,id);
-                        cargarNoticias(origenSeleccionado.getUrl(),origenSeleccionado.getNombre());
-                    }
-                }, 20);
-                **/
-
                 // Se recuperan las noticias del origen seleccionado por el usuario
                 OrigenNoticiaVO origenSeleccionado = Utils.getFuenteDatos(fuentesDatos,id);
                 cargarNoticias(origenSeleccionado.getUrl(),origenSeleccionado.getNombre());
                 break;
         }
 
-       // DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        //drawer.closeDrawer(GravityCompat.START);
-        //drawer.closeDrawers();
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        drawer.closeDrawers();
+
+        return true;
+
+    }
+
+
+    private boolean cargarMenu(int idMenuItem) {
+
+        switch(idMenuItem) {
+            case R.id.favoritos:
+                cargarFavoritas();
+
+                break;
+
+            case R.id.nuevo_origen:
+                // Se muestra el activity desde el que se pueden dar de alta una nueva fuente de datos
+                showActivityNuevaFuenteDatos();
+                break;
+
+            case R.id.mantenimiento_origen:
+                showActivityMantenimientoFuentesDatos();
+                break;
+
+            default:
+                // Se recuperan las noticias del origen seleccionado por el usuario
+                OrigenNoticiaVO origenSeleccionado = Utils.getFuenteDatos(fuentesDatos,idMenuItem);
+                cargarNoticias(origenSeleccionado.getUrl(),origenSeleccionado.getNombre());
+
+                /**
+                OrigenNoticiaVO origenSeleccionado = Utils.getFuenteDatos(fuentesDatos,idMenuItem);
+                Intent intent = new Intent(MainActivity.this,ListadoNoticiasExternasActivity.class);
+                intent.putExtra("origen",origenSeleccionado);
+                startActivity(intent);
+                **/
+
+                break;
+
+        }// switch
+
         return true;
     }
+
 
 
     /**

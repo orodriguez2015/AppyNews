@@ -63,7 +63,7 @@
         <activity android:name="com.appynew.activities.OrigenRssMantenimientoActivity" />
         <activity
             android:name="com.appynew.activities.EditarFuenteDatosActivity"
-            android:label="@string/title_activity_editar_fuente_datos"></activity>
+            android:label="@string/title_activity_editar_fuente_datos" />
     </application>
 
 </manifest>

@@ -79,6 +79,10 @@ public class NoticiasAdapter extends RecyclerView.Adapter<NoticiasAdapter.Notici
         return this.items;
     }
 
+    public void setNoticias(List<Noticia> noticias) {
+        this.items = noticias;
+    }
+
 
     /**
      * Devuelve el número de noticias que se muestran
