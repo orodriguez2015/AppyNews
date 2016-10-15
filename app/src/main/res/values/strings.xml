@@ -36,7 +36,7 @@
     <string name="nuevoOrigen">Nuevo origen</string>
     <string name="err_get_fuentes_datos">Se ha producido un error al recuperar las fuentes de datos</string>
     <string name="err_accion_no_implementada">Acción no implementada</string>
-    <string name="msg_no_hay_noticias_favoritas">No tienes ninguna noticia favorita. Selecciona en el menú un origen de datos para visualizar sus noticias</string>
+    <string name="msg_no_hay_noticias_favoritas">No hay noticias favoritas disponibles. Seleccione en el menú una fuente de datos para visualizar sus noticias</string>
     <string name="err_borrar_noticia">Se ha producido un error al eliminar la noticia</string>
     <string name="nuevo_origen_datos">Nueva fuentes de datos RSS</string>
     <string name="nombre_origen">Nombre:</string>
