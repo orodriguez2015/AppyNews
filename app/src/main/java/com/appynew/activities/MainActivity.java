@@ -281,6 +281,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         params.setUrl(url);
         tarea.execute(params);
 
+        setTitle(origen);
+
         /**
          * Se establece el listener que se pasa al adapter para que añade
          * este Listener a cada View a mostrar en el RecyclerView
@@ -323,6 +325,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
         recycler.setAdapter(noticiaAdapter);
+        setTitle(getString(R.string.favoritos));
     }
 
 
@@ -379,7 +382,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Operación que es invocada cuando el usuario selecciona un determinado ítem del menú
      * @param item: MenuItem
      * @return boolean
-     */
+     *
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Id del item de menú seleccionado por el usuario
@@ -391,6 +394,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         return super.onOptionsItemSelected(item);
     }
+    **/
 
 
     /**

@@ -32,7 +32,7 @@
     <string name="error_grabar_noticia">Se ha producido un error al grabar la noticia como favorita</string>
     <string name="contacto">Contacto</string>
     <string name="configuracion">Configuración</string>
-    <string name="favoritos">Mis favoritos</string>
+    <string name="favoritos">Favoritas</string>
     <string name="nuevoOrigen">Nuevo origen</string>
     <string name="err_get_fuentes_datos">Se ha producido un error al recuperar las fuentes de datos</string>
     <string name="err_accion_no_implementada">Acción no implementada</string>
