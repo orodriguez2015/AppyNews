@@ -77,18 +77,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NavigationView navigationView = null;
     private boolean mostrandoNoticiasExternas = false;
     private ProgressDialog progressDialog = null;
-
-
     /** Atributo que contiene la noticia de la que se va a ver en detalle **/
     private int posicionNoticiaSeleccionada = -1;
-
-
     /**
      * Colección con los origenes de datos RSS de los que se van a leer noticias
      */
     private List<OrigenNoticiaVO> fuentesDatos = null;
-
-
     /**
      * Nombre del origen de las noticias que se están listando actualmente en el RecyclerView
      */
@@ -410,21 +404,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle navigation view item clicks here.
         final int id = item.getItemId();
 
-
-        /**
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        navigationView.clearAnimation();
-        navigationView.clearFocus();
-        drawer.clearFocus();
-        drawer.clearAnimation();
-        drawer.closeDrawer(GravityCompat.START);
-         **/
-
         switch(item.getItemId()) {
             case R.id.favoritos:
                 cargarFavoritas();
-
                 break;
 
             case R.id.nuevo_origen:
@@ -443,16 +425,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
         }
 
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         drawer.closeDrawers();
-
         return true;
-
     }
 
 
+    /**
     private boolean cargarMenu(int idMenuItem) {
 
         switch(idMenuItem) {
@@ -474,14 +454,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 // Se recuperan las noticias del origen seleccionado por el usuario
                 OrigenNoticiaVO origenSeleccionado = Utils.getFuenteDatos(fuentesDatos,idMenuItem);
                 cargarNoticias(origenSeleccionado.getUrl(),origenSeleccionado.getNombre());
-
-                /**
-                OrigenNoticiaVO origenSeleccionado = Utils.getFuenteDatos(fuentesDatos,idMenuItem);
-                Intent intent = new Intent(MainActivity.this,ListadoNoticiasExternasActivity.class);
-                intent.putExtra("origen",origenSeleccionado);
-                startActivity(intent);
-                **/
-
                 break;
 
         }// switch
@@ -489,7 +461,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-
+**/
 
     /**
      * initSwipe

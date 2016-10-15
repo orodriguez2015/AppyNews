@@ -11,7 +11,6 @@ import android.widget.TextView;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.appynews.model.dto.Noticia;
-import com.appynews.utils.LogCat;
 import com.appynews.utils.StringUtil;
 
 import java.util.List;
@@ -139,13 +138,12 @@ public class NoticiasAdapter extends RecyclerView.Adapter<NoticiasAdapter.Notici
     public void onBindViewHolder(NoticiaViewHolder viewHolder, int i) {
 
         if(items.get(i).getUrlThumbnail()!=null && !"".equals(items.get(i).getUrlThumbnail())) {
-
             // Se indica al NetWorkImage la url de la imagen a mostrar, en caso de que no haya imagen.
             // Se muestra el logo de la aplicación como background del NetworkImageView
             viewHolder.imagen.setAdjustViewBounds(true);
+            // Se oculta la imagen de fondo ya que la noticia tiene una imagen a modo de thumbnail
+            viewHolder.imagen.setBackground(null);
             viewHolder.imagen.setImageUrl(items.get(i).getUrlThumbnail(), this.imageLoader);
-            //BitmapDrawable bd = (BitmapDrawable)viewHolder.imagen.getDrawable();
-            //RoundedBitmapDrawableFactory.create(this.resources,null);
         }
 
         viewHolder.descripcion.setText(items.get(i).getTitulo());
@@ -175,10 +173,8 @@ public class NoticiasAdapter extends RecyclerView.Adapter<NoticiasAdapter.Notici
      * @param view: View
      */
     public void onClick(View view) {
-        LogCat.debug("NoticiasAdapter.onClick ====>");
         if(listener != null) {
             listener.onClick(view);
         }
-
     }
 }
