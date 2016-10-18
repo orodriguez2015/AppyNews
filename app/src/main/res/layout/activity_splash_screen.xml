@@ -6,8 +6,21 @@ xmlns:android="http://schemas.android.com/apk/res/android">
 
 <RelativeLayout
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="fill_parent">
+    <!--
     android:background="@drawable/logopizarra">
+    -->
+
+    <TextView
+        android:text="@string/app_name"
+        android:textSize="65dp"
+        android:textColor="@color/colorPrimaryDark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/textView2" />
+
 </RelativeLayout>
 
 </RelativeLayout>

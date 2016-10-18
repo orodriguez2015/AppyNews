@@ -1,9 +1,9 @@
 package com.appynew.activities;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 
 import material.oscar.com.materialdesign.R;
 
@@ -16,7 +16,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     /**
      * Temporizador para la pantalla de bienvenida
      */
-    private static int SPLASH_TIEMPO = 150;
+    private static int SPLASH_TIEMPO = 275;
 
 
     /**
@@ -26,9 +26,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_splash_screen);
         setContentView(R.layout.activity_splash_screen);
-
 
         new Handler().postDelayed(new Runnable() {
 
@@ -44,13 +42,10 @@ public class SplashScreenActivity extends AppCompatActivity {
                 // Se pasa a la activity principal
                 Intent i = new Intent(SplashScreenActivity.this, MainActivity.class);
                 startActivity(i);
-
                 // Cerramos esta activity
                 finish();
             }
         }, SPLASH_TIEMPO);
-
-
     }
 
 }
