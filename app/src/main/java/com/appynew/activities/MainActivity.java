@@ -136,12 +136,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         lManager = new LinearLayoutManager(this);
         recycler.setLayoutManager(lManager);
 
-        // Se inicializa el listener para el swipe
+        /*
+         * Se inicializa el listener para el swipe
+         */
         initSwipe();
 
-        initializePermissions();
+        /*
+         * Inicializar el ImageLoader
+         */
+        initializeImageLoader();
 
-        //getContent();
+        /*
+         * Inicializar permisos
+         */
+        boolean hayPermisos = initializePermissions();
+
+        if(hayPermisos) {
+            getContent();
+        }
+
     }
 
 
@@ -149,62 +162,55 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Inicializa los permisos. Solicita al usuario los permisos que la aplicación necesite
      * Válido de Android 6.0 en adelante
      */
-    private void initializePermissions() {
+    private boolean initializePermissions() {
+        boolean permissions  =true;
 
         /**
          * Si la versión de api de Android es superior a la 23 (Android 6), hay que solicitar permisos al usuario, puesto que no se conceden
          * al instalar la aplicación por primera vez, sino en la primera ejecución
          */
-        LogCat.info(" ============>  initializePermissions API ANDROID: " + Build.VERSION.SDK_INT);
         if (Build.VERSION.SDK_INT >= ConstantesDatos.API_VERSION_ANDROID_REQUEST_PERMISSIONS) {
 
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
                 // No explanation needed, we can request the permission.
                 ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_PHONE_STATE}, ConstantesPermisos.PERMISSIONS_READ_PHONE_STATE);
+                permissions = false;
             }
 
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) {
-                LogCat.debug("El usuario no ha concedido permiso ACCESS_NETWORK_STATE, se solicita");
                 ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_NETWORK_STATE}, ConstantesPermisos.PERMISSIONS_ACCESS_NETWORK_STATE);
-
+                permissions = false;
             }
-        } else {
-            // si la versión de Android es anterior a la 24, los permisos ya los ha concedido el usuario al instalar la aplicación
-            getContent();
         }
+
+        return permissions;
     }
 
 
     /**
-     * Comprueba la respuesta de los usuarios a la concesión de permisos
+     * Comprueba la respuesta de los usuarios a la concesión de permisos. Válido de Android 6.0 en adelante
      * @param requestCode int que representa al tipo de permiso
      * @param permissions Lista de permisos
-     * @param grantResults Resultado de concesión de pemi
+     * @param grantResults Resultado en la asignación de permisos (concedido o no concedido)
      */
     @Override
     public void onRequestPermissionsResult(int requestCode,String permissions[], int[] grantResults) {
-
         switch (requestCode) {
             case ConstantesPermisos.PERMISSIONS_READ_PHONE_STATE: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    LogCat.info(" ============> PERMISO_READ_PHONE_STATE concedido =======>");
                     getContent();
                 } else {
 
-                    LogCat.debug("====> Denegado permiso de lectura del estado del teléfono");
-                    AlertDialogHelper.crearDialogoAlertaConfirmacion(this, "Error", "AppyNews no dispone de permiso para comprobar el estado del teléfono, por tanto, no podrá continuar ejecutándose", new DialogInterface.OnClickListener() {
+                    AlertDialogHelper.crearDialogoAlertaSimple(this,getString(R.string.no_autorizado), getString(R.string.err_permiso_estado_telefono), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             finish();
                         }
-                    },null).show();
-                    LogCat.info(" ============> PERMISO_READ_PHONE_STATE DENEGADO =======>");
+                    }).show();
                 }
                 return;
-            }
-
+            }// case
 
 
             case ConstantesPermisos.PERMISSIONS_ACCESS_NETWORK_STATE: {
@@ -278,10 +284,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
 
 
-                /*
-                 * Inicializar el ImageLoader
-                 */
-                initializeImageLoader();
+
                 /*
                  * Carga inicial de noticias de un determinado origen
                  */

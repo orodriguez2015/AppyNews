@@ -57,6 +57,8 @@
     <string name="err_formato_url_origen">La dirección url no tiene un formato correcto</string>
     <string name="err_conexion_url_origen">Error al establecer conexión con la dirección facilitada</string>
     <string name="err_update_origen_rss">Se ha producido un error al actualizar la fuente de datos</string>
+    <string name="no_autorizado">No autorizado</string>
+    <string name="err_permiso_estado_telefono">AppyNews no puede ejecutarse ya que no dispone de permiso para comprobar el estado del teléfono</string>
 
     <string name="procesando">Procesando</string>
     <string name="espere">Espere unos segundos...</string>

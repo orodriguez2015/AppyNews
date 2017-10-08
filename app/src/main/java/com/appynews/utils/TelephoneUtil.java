@@ -4,10 +4,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
 import android.telephony.TelephonyManager;
-import android.text.TextUtils;
 
 import com.appynews.model.dto.DatosUsuarioVO;
 
@@ -67,7 +64,8 @@ public class TelephoneUtil {
      */
     private static void getEmailUsuario(Context context, DatosUsuarioVO datos) {
         AccountManager accountManager = AccountManager.get(context);
-        Account[] accounts = accountManager.getAccounts();
+        //Account[] accounts = accountManager.getAccounts();
+        Account[] accounts = accountManager.getAccountsByType("com.google");
 
         for(int i=0;accounts!=null && i<accounts.length;i++) {
             LogCat.debug("  CUENTA: " + accounts[i].name + ", TIPO: " + accounts[i].type);
