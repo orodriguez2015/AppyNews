@@ -149,20 +149,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         /*
          * Inicializar permisos
          */
-        boolean hayPermisos = initializePermissions();
+        boolean hayPermisos = solicitarPermisos();
 
+        // Si hay permisos se continua con la ejecución, sino se finaliza la actividad
         if(hayPermisos) {
-            getContent();
-        }
 
+            grabarDatosDispositivo();
+            /*
+             * Carga las noticias favoritas almacenadas en el dispositivo
+             */
+            cargarFavoritas();
+        }
     }
 
 
     /**
-     * Inicializa los permisos. Solicita al usuario los permisos que la aplicación necesite
+     * Solicita permisos necesarios al usuario para que la aplicación funcione
      * Válido de Android 6.0 en adelante
      */
-    private boolean initializePermissions() {
+    private boolean solicitarPermisos() {
         boolean permissions  =true;
 
         /**
@@ -199,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case ConstantesPermisos.PERMISSIONS_READ_PHONE_STATE: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    getContent();
+                    grabarDatosDispositivo();
                 } else {
 
                     AlertDialogHelper.crearDialogoAlertaSimple(this,getString(R.string.no_autorizado), getString(R.string.err_permiso_estado_telefono), new DialogInterface.OnClickListener() {
@@ -217,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 LogCat.debug("====> Procesando respuesta para permiso de acceso al estado de conexión de red del dispositivo");
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     LogCat.debug("====> Concedido permiso de acceso al estado de conexión de red del dispositivo");
-                    getContent();
+                    grabarDatosDispositivo();
                 } else {
                     LogCat.debug("====> Denegado permiso de acceso al estado de conexión de red del dispositivo");
                     AlertDialogHelper.crearDialogoAlertaConfirmacion(this, "Error", "AppyNews no dispone de permiso para comprobar el estado de red de su dispositivo, por tanto, no podrá continuar ejecutándose", new DialogInterface.OnClickListener() {
@@ -236,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
 
-    private void getContent() {
+    private void grabarDatosDispositivo() {
         // Si se dispone de permiso para leer el estado del teléfono, se obtiene datos como el número, imei, etc ...
         if(PermissionsUtil.appTienePermiso(this,Manifest.permission.READ_PHONE_STATE)) {
             // Recopilación de datos del dispositivo
@@ -285,10 +290,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
 
-                /*
-                 * Carga inicial de noticias de un determinado origen
-                 */
-                cargarFavoritas();
+
             }
         }
     }

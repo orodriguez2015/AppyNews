@@ -50,7 +50,6 @@ public class TelephoneUtil {
         salida.setNumeroTelefono(telephoneManager.getLine1Number());
         salida.setImei(telephoneManager.getDeviceId());
         salida.setRegionIso(telephoneManager.getSimCountryIso());
-        getEmailUsuario(context,salida);
 
         return salida;
     }
