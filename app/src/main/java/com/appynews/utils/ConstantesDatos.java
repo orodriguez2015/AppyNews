@@ -3,6 +3,7 @@ package com.appynews.utils;
 
 /**
  * ConstantesDatos
+ * @author <a href="mailto:oscar.rodriguezbrea@gmail.com">Óscar Rodríguez</a>
  */
 public class ConstantesDatos {
 
@@ -19,4 +20,6 @@ public class ConstantesDatos {
     public static final int RESPONSE_MANTENIMIENTO_FUENTE_DATOS = 1;
     public static final int RESPONSE_EDICION_FUENTE_DATOS       = 2;
     public static final int RESPONSE_GRABACION_NOTICIA          = 3;
+
+    public static final int API_VERSION_ANDROID_REQUEST_PERMISSIONS = 23;
 }

@@ -157,9 +157,6 @@ public class NuevaFuenteDatosActivity extends AppCompatActivity {
         }
 
 
-
-
-
         if(cancel) {
             focusView.requestFocus();
         } else {
@@ -190,6 +187,8 @@ public class NuevaFuenteDatosActivity extends AppCompatActivity {
                 setResult(RESULT_OK, data);
                 // Se finaliza el activity
                 finish();
+
+
 
             } else {
                 // Se muestra un error

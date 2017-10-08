@@ -1,6 +1,5 @@
 package com.appynews.utils;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.support.v4.content.ContextCompat;
@@ -25,6 +24,9 @@ public class PermissionsUtil {
             int permissionCheck = ContextCompat.checkSelfPermission(activity,permiso);
             if(permissionCheck== PackageManager.PERMISSION_GRANTED) {
                 exito = true;
+                LogCat.info("Hay permiso para leer el estado del teléfono");
+            } else {
+                LogCat.info("No Hay permiso para leer el estado del teléfono");
             }
         }catch(Exception e) {
             e.printStackTrace();

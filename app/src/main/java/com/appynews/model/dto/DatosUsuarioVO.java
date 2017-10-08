@@ -89,7 +89,8 @@ public class DatosUsuarioVO implements Serializable {
      * @return String
      */
     public String toString() {
-        return "numeroTelefono: ".concat(numeroTelefono).concat(",imei: ").concat(imei).concat(",regionIso: ").concat(regionIso).concat(",email: ").concat(email);
+        return "numeroTelefono: " + numeroTelefono +
+                ",imei: " + imei +  ",regionIso: " + regionIso +  ",email: " +  email;
     }
 
     public String getNombre() {

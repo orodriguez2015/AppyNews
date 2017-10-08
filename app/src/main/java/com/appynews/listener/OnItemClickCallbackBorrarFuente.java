@@ -31,7 +31,7 @@ public class OnItemClickCallbackBorrarFuente  implements OnItemClickListener.OnI
     /**
      * Constructor
      * @param fuentesDatos List<OrigenNoticiaVO>
-     * @param actividad OrigenRssMantenimientoActivity
+     * @param actividad Activity
      */
     public OnItemClickCallbackBorrarFuente(List<OrigenNoticiaVO> fuentesDatos, Activity actividad) {
         this.fuentesDatos = fuentesDatos;

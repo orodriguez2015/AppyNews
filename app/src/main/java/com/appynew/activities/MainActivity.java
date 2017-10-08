@@ -2,16 +2,21 @@ package com.appynew.activities;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -43,6 +48,7 @@ import com.appynews.model.dto.Noticia;
 import com.appynews.model.dto.OrigenNoticiaVO;
 import com.appynews.utils.ConnectionUtils;
 import com.appynews.utils.ConstantesDatos;
+import com.appynews.utils.ConstantesPermisos;
 import com.appynews.utils.LogCat;
 import com.appynews.utils.LruBitmapCache;
 import com.appynews.utils.MessageUtils;
@@ -57,13 +63,13 @@ import java.util.concurrent.ExecutionException;
 
 import material.oscar.com.materialdesign.R;
 
+import static android.Manifest.permission.ACCESS_NETWORK_STATE;
 import static material.oscar.com.materialdesign.R.drawable.ic_menu_delete;
 
 
 /**
  * Clase MainActivity que lanza el Activity Principal
- * @author oscar
- *
+ * @author <a href="mailto:oscar.rodriguezbrea@gmail.com">Óscar Rodríguez</a>
  */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -89,13 +95,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String nombreOrigenNoticiasRecuperadas = null;
 
 
+    /**
+     * Método que inicializa la actividad
+     * @param savedInstanceState Bundle
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
         // Botón flotante
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -104,7 +113,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View view) {
                 showActivityNuevaFuenteDatos();
-
             }
         });
 
@@ -131,6 +139,98 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Se inicializa el listener para el swipe
         initSwipe();
 
+        initializePermissions();
+
+        //getContent();
+    }
+
+
+    /**
+     * Inicializa los permisos. Solicita al usuario los permisos que la aplicación necesite
+     * Válido de Android 6.0 en adelante
+     */
+    private void initializePermissions() {
+
+        /**
+         * Si la versión de api de Android es superior a la 23 (Android 6), hay que solicitar permisos al usuario, puesto que no se conceden
+         * al instalar la aplicación por primera vez, sino en la primera ejecución
+         */
+        LogCat.info(" ============>  initializePermissions API ANDROID: " + Build.VERSION.SDK_INT);
+        if (Build.VERSION.SDK_INT >= ConstantesDatos.API_VERSION_ANDROID_REQUEST_PERMISSIONS) {
+
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_PHONE_STATE}, ConstantesPermisos.PERMISSIONS_READ_PHONE_STATE);
+            }
+
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) {
+                LogCat.debug("El usuario no ha concedido permiso ACCESS_NETWORK_STATE, se solicita");
+                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_NETWORK_STATE}, ConstantesPermisos.PERMISSIONS_ACCESS_NETWORK_STATE);
+
+            }
+        } else {
+            // si la versión de Android es anterior a la 24, los permisos ya los ha concedido el usuario al instalar la aplicación
+            getContent();
+        }
+    }
+
+
+    /**
+     * Comprueba la respuesta de los usuarios a la concesión de permisos
+     * @param requestCode int que representa al tipo de permiso
+     * @param permissions Lista de permisos
+     * @param grantResults Resultado de concesión de pemi
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode,String permissions[], int[] grantResults) {
+
+        switch (requestCode) {
+            case ConstantesPermisos.PERMISSIONS_READ_PHONE_STATE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    LogCat.info(" ============> PERMISO_READ_PHONE_STATE concedido =======>");
+                    getContent();
+                } else {
+
+                    LogCat.debug("====> Denegado permiso de lectura del estado del teléfono");
+                    AlertDialogHelper.crearDialogoAlertaConfirmacion(this, "Error", "AppyNews no dispone de permiso para comprobar el estado del teléfono, por tanto, no podrá continuar ejecutándose", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    },null).show();
+                    LogCat.info(" ============> PERMISO_READ_PHONE_STATE DENEGADO =======>");
+                }
+                return;
+            }
+
+
+
+            case ConstantesPermisos.PERMISSIONS_ACCESS_NETWORK_STATE: {
+                LogCat.debug("====> Procesando respuesta para permiso de acceso al estado de conexión de red del dispositivo");
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    LogCat.debug("====> Concedido permiso de acceso al estado de conexión de red del dispositivo");
+                    getContent();
+                } else {
+                    LogCat.debug("====> Denegado permiso de acceso al estado de conexión de red del dispositivo");
+                    AlertDialogHelper.crearDialogoAlertaConfirmacion(this, "Error", "AppyNews no dispone de permiso para comprobar el estado de red de su dispositivo, por tanto, no podrá continuar ejecutándose", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    },null).show();
+
+                }
+                return;
+            }
+
+        }
+    }
+
+
+
+    private void getContent() {
         // Si se dispone de permiso para leer el estado del teléfono, se obtiene datos como el número, imei, etc ...
         if(PermissionsUtil.appTienePermiso(this,Manifest.permission.READ_PHONE_STATE)) {
             // Recopilación de datos del dispositivo
@@ -139,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
 
-        if(!PermissionsUtil.appTienePermiso(this, Manifest.permission.ACCESS_NETWORK_STATE)) {
+        if(!PermissionsUtil.appTienePermiso(this, ACCESS_NETWORK_STATE)) {
             // Se comprueba si la app tiene permiso de acceso al estado de red del dispositivo, sino
             // se dispone del permiso, entonces se informa al usuario
             MessageUtils.showToastDuracionLarga(getApplicationContext(),getString(R.string.err_permisssion_network_state));
@@ -178,14 +278,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
 
 
-                RequestQueue requestQueau = Volley.newRequestQueue(this);
-                // Se crea para la cola una caché de 10 imágenes
-                this.imageLoader = new ImageLoader(requestQueau,new LruBitmapCache());
-
-                // Carga inicial de noticias de un determinado origen
+                /*
+                 * Inicializar el ImageLoader
+                 */
+                initializeImageLoader();
+                /*
+                 * Carga inicial de noticias de un determinado origen
+                 */
                 cargarFavoritas();
             }
         }
+    }
+
+
+    /**
+     * Inicializa un ImageLoader de la librería Volley, que se utiliza para cargar los thumbnails asociados a cada notifica
+     */
+    private void initializeImageLoader() {
+        RequestQueue requestQueau = Volley.newRequestQueue(getBaseContext());
+        // Se crea para la cola una caché de 10 imágene
+        this.imageLoader = new ImageLoader(requestQueau, new LruBitmapCache());
     }
 
 
@@ -436,36 +548,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-    /**
-    private boolean cargarMenu(int idMenuItem) {
 
-        switch(idMenuItem) {
-            case R.id.favoritos:
-                cargarFavoritas();
-
-                break;
-
-            case R.id.nuevo_origen:
-                // Se muestra el activity desde el que se pueden dar de alta una nueva fuente de datos
-                showActivityNuevaFuenteDatos();
-                break;
-
-            case R.id.mantenimiento_origen:
-                showActivityMantenimientoFuentesDatos();
-                break;
-
-            default:
-                // Se recuperan las noticias del origen seleccionado por el usuario
-                OrigenNoticiaVO origenSeleccionado = Utils.getFuenteDatos(fuentesDatos,idMenuItem);
-                cargarNoticias(origenSeleccionado.getUrl(),origenSeleccionado.getNombre());
-                break;
-
-        }// switch
-
-        return true;
-    }
-
-**/
 
     /**
      * initSwipe
@@ -578,6 +661,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Intent intent = new Intent(MainActivity.this,OrigenRssMantenimientoActivity.class);
         startActivityForResult(intent,ConstantesDatos.RESPONSE_MANTENIMIENTO_FUENTE_DATOS);
     }
+
+
+
+
+
 
 
     /**
