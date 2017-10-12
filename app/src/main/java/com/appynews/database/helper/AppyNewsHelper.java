@@ -236,14 +236,11 @@ public class AppyNewsHelper extends SQLiteOpenHelper {
 
         try {
 
-            //String sql = "select count(*) as num from usuario where imei=? and email=? and regionIso=?";
             String sql = "select count(*) as num from usuario where imei=? and regionIso=?";
 
             LogCat.debug("sql: " + sql);
             db = getReadableDatabase();
-            //rs = db.rawQuery(sql,new String[]{usuario.getImei(),usuario.getEmail()!=null?usuario.getEmail():null,usuario.getRegionIso()});
             rs = db.rawQuery(sql,new String[]{usuario.getImei(),usuario.getRegionIso()});
-
 
             if(rs!=null && rs.getCount()>0 && rs.moveToFirst()) {
                 do {
@@ -337,7 +334,6 @@ public class AppyNewsHelper extends SQLiteOpenHelper {
         try {
             LogCat.info("saveOrigen init");
             Long id = db.insert(AppyNewsContract.OrigenEntry.TABLE_NAME, null, ModelConversorUtil.toContentValues(origen));
-            //origen.setId(id.intValue());
             LogCat.info("saveOrigen end");
 
         } catch(Exception e) {

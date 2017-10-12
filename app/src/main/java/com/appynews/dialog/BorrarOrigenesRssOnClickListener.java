@@ -1,4 +1,4 @@
-package com.appynew.activities.dialog;
+package com.appynews.dialog;
 
 import android.app.Activity;
 import android.content.DialogInterface;

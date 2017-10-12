@@ -9,7 +9,7 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.appynew.activities.dialog.AlertDialogHelper;
+import com.appynews.dialog.AlertDialogHelper;
 import com.appynews.adapter.FuenteDatosAdapter;
 import com.appynews.controllers.OrigenRssController;
 import com.appynews.exceptions.GetOrigenesRssException;

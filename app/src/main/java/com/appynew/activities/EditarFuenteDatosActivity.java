@@ -25,7 +25,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.appynew.activities.dialog.AlertDialogHelper;
+import com.appynews.dialog.AlertDialogHelper;
 import com.appynews.controllers.OrigenRssController;
 import com.appynews.exceptions.UpdateOrigenRssException;
 import com.appynews.model.dto.OrigenNoticiaVO;

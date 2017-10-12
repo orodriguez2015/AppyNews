@@ -1,7 +1,6 @@
 package com.appynews.controllers;
 
 import android.app.Activity;
-import android.content.Context;
 
 import com.appynews.asynctasks.GetNoticiasAsyncTask;
 import com.appynews.asynctasks.ParametrosAsyncTask;
@@ -30,16 +29,16 @@ public class NoticiaController {
 
     /**
      * Recupera las noticias grabadas por el usuario en la base de datos
-     * @param context: Context
      * @return List<Noticia>
      */
-    public List<Noticia> getNoticiasFavoritas(Context context) {
+    //public List<Noticia> getNoticiasFavoritas(Context context) {
+    public List<Noticia> getNoticiasFavoritas() {
         List<Noticia> noticias = new ArrayList<Noticia>();
 
 
         try {
             ParametrosAsyncTask params = new ParametrosAsyncTask();
-            params.setContext(context);
+            params.setContext(this.actividad.getApplicationContext());
 
             GetNoticiasAsyncTask task = new GetNoticiasAsyncTask();
             task.execute(params);

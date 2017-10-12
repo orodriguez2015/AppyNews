@@ -1,6 +1,6 @@
 package com.appynew.activities;
 
-import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,12 +11,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -32,21 +29,19 @@ import android.view.View;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
-import com.appynew.activities.dialog.AlertDialogHelper;
 import com.appynews.adapter.NoticiasAdapter;
 import com.appynews.asynctasks.DeleteNoticiaAsyncTask;
 import com.appynews.asynctasks.GetNoticiasExternasAsyncTask;
 import com.appynews.asynctasks.ParametrosAsyncTask;
 import com.appynews.asynctasks.RespuestaAsyncTask;
-import com.appynews.asynctasks.SaveUsuarioAsyncTask;
-import com.appynews.controllers.NoticiaController;
+import com.appynews.command.actions.RecuperarNoticiasFavoritasCommandAction;
+import com.appynews.command.api.ActividadPrincipalApiCommand;
 import com.appynews.controllers.OrigenRssController;
 import com.appynews.database.helper.DatabaseErrors;
+import com.appynews.dialog.AlertDialogHelper;
 import com.appynews.exceptions.GetOrigenesRssException;
-import com.appynews.model.dto.DatosUsuarioVO;
 import com.appynews.model.dto.Noticia;
 import com.appynews.model.dto.OrigenNoticiaVO;
-import com.appynews.utils.ConnectionUtils;
 import com.appynews.utils.ConstantesDatos;
 import com.appynews.utils.ConstantesPermisos;
 import com.appynews.utils.LogCat;
@@ -54,16 +49,13 @@ import com.appynews.utils.LruBitmapCache;
 import com.appynews.utils.MessageUtils;
 import com.appynews.utils.PermissionsUtil;
 import com.appynews.utils.StringUtil;
-import com.appynews.utils.TelephoneUtil;
 import com.appynews.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import material.oscar.com.materialdesign.R;
 
-import static android.Manifest.permission.ACCESS_NETWORK_STATE;
 import static material.oscar.com.materialdesign.R.drawable.ic_menu_delete;
 
 
@@ -71,12 +63,12 @@ import static material.oscar.com.materialdesign.R.drawable.ic_menu_delete;
  * Clase MainActivity que lanza el Activity Principal
  * @author <a href="mailto:oscar.rodriguezbrea@gmail.com">Óscar Rodríguez</a>
  */
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,ActividadPrincipalApiCommand {
 
     private RecyclerView recycler;
     private RecyclerView.LayoutManager lManager;
-    private NoticiaController noticiaController     = new NoticiaController(this);
     private OrigenRssController origenRssController = new OrigenRssController(this);
+    private RecuperarNoticiasFavoritasCommandAction command = null;
     private ImageLoader imageLoader = null;
     private NoticiasAdapter noticiaAdapter = null;
     private Paint p = new Paint();
@@ -146,49 +138,58 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
          */
         initializeImageLoader();
 
-        /*
-         * Inicializar permisos
+        /**
+         * Se inicializa el comando que recupera las noticias favoritas del usuario, así como
+         * grabar el imei del dispositivo en BD, en el caso de que no lo estuviera
          */
-        boolean hayPermisos = solicitarPermisos();
+        command = new RecuperarNoticiasFavoritasCommandAction(this);
 
-        // Si hay permisos se continua con la ejecución, sino se finaliza la actividad
-        if(hayPermisos) {
-
-            grabarDatosDispositivo();
-            /*
-             * Carga las noticias favoritas almacenadas en el dispositivo
-             */
-            cargarFavoritas();
+        /*
+         * Solicitar permisos
+         */
+        if(PermissionsUtil.solicitarPermisosAccesoEstadoTelefono(this)) {
+            command.execute();
         }
     }
 
 
     /**
-     * Solicita permisos necesarios al usuario para que la aplicación funcione
-     * Válido de Android 6.0 en adelante
+     * Devuelve lel Activity
+     * @return Activity
      */
-    private boolean solicitarPermisos() {
-        boolean permissions  =true;
+    public Activity getActivity() {
+        return this;
+    }
 
-        /**
-         * Si la versión de api de Android es superior a la 23 (Android 6), hay que solicitar permisos al usuario, puesto que no se conceden
-         * al instalar la aplicación por primera vez, sino en la primera ejecución
-         */
-        if (Build.VERSION.SDK_INT >= ConstantesDatos.API_VERSION_ANDROID_REQUEST_PERMISSIONS) {
 
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_PHONE_STATE}, ConstantesPermisos.PERMISSIONS_READ_PHONE_STATE);
-                permissions = false;
-            }
+    /**
+     * Carga las noticias favoritas en la actividad
+     * @param favoritas List<Noticia>
+     */
+    public void cargarFavoritas(final List<Noticia> favoritas) {
 
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_NETWORK_STATE}, ConstantesPermisos.PERMISSIONS_ACCESS_NETWORK_STATE);
-                permissions = false;
-            }
+        noticiaAdapter =  new NoticiasAdapter(favoritas,null,imageLoader,getResources());
+        noticiaAdapter.notifyDataSetChanged();
+        setMostrandoNoticiasExternas(false);
+
+        if(favoritas==null || favoritas.size()==0) {
+            MessageUtils.showToastDuracionCorta(this,getString(R.string.msg_no_hay_noticias_favoritas));
         }
 
-        return permissions;
+        /**
+         * Se establece el listener que se pasa al adapter para que añade
+         * este Listener a cada View a mostrar en el RecyclerView
+         */
+        noticiaAdapter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int pos =  recycler.getChildAdapterPosition(view);
+                cargarActivityDetalleNoticia(favoritas.get(pos),pos);
+            }
+        });
+
+        recycler.setAdapter(noticiaAdapter);
+        setTitle(getString(R.string.favoritos));
     }
 
 
@@ -203,9 +204,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (requestCode) {
             case ConstantesPermisos.PERMISSIONS_READ_PHONE_STATE: {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    grabarDatosDispositivo();
-                } else {
+                if (!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
 
                     AlertDialogHelper.crearDialogoAlertaSimple(this,getString(R.string.no_autorizado), getString(R.string.err_permiso_estado_telefono), new DialogInterface.OnClickListener() {
                         @Override
@@ -220,10 +219,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case ConstantesPermisos.PERMISSIONS_ACCESS_NETWORK_STATE: {
                 LogCat.debug("====> Procesando respuesta para permiso de acceso al estado de conexión de red del dispositivo");
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    LogCat.debug("====> Concedido permiso de acceso al estado de conexión de red del dispositivo");
-                    grabarDatosDispositivo();
-                } else {
+                if (!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     LogCat.debug("====> Denegado permiso de acceso al estado de conexión de red del dispositivo");
                     AlertDialogHelper.crearDialogoAlertaConfirmacion(this, "Error", "AppyNews no dispone de permiso para comprobar el estado de red de su dispositivo, por tanto, no podrá continuar ejecutándose", new DialogInterface.OnClickListener() {
                         @Override
@@ -231,67 +227,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             finish();
                         }
                     },null).show();
-
                 }
                 return;
             }
 
-        }
-    }
-
-
-
-    private void grabarDatosDispositivo() {
-        // Si se dispone de permiso para leer el estado del teléfono, se obtiene datos como el número, imei, etc ...
-        if(PermissionsUtil.appTienePermiso(this,Manifest.permission.READ_PHONE_STATE)) {
-            // Recopilación de datos del dispositivo
-            DatosUsuarioVO datosTelefono = TelephoneUtil.getInfoDispositivo(getBaseContext());
-            LogCat.debug(" datos del telefono: " + datosTelefono.toString());
-        }
-
-
-        if(!PermissionsUtil.appTienePermiso(this, ACCESS_NETWORK_STATE)) {
-            // Se comprueba si la app tiene permiso de acceso al estado de red del dispositivo, sino
-            // se dispone del permiso, entonces se informa al usuario
-            MessageUtils.showToastDuracionLarga(getApplicationContext(),getString(R.string.err_permisssion_network_state));
-        } else {
-
-            if (!ConnectionUtils.conexionRedHabilitada(this)) {
-                // Si el dispositivo no tiene habilitado ninguna conexión de red, hay que informar al usuario
-                MessageUtils.showToastDuracionLarga(getApplicationContext(),getString(R.string.err_connection_state));
-
-            } else {
-
-                /************************************************************/
-                /**** Se almacenan los datos del dispositivo en la BBDD *****/
-                /************************************************************/
-                try {
-                    ParametrosAsyncTask params = new ParametrosAsyncTask();
-                    params.setContext(this.getApplicationContext());
-                    params.setUsuario(TelephoneUtil.getInfoDispositivo(getApplicationContext()));
-                    SaveUsuarioAsyncTask asyncTask = new SaveUsuarioAsyncTask();
-                    asyncTask.execute(params);
-
-                    RespuestaAsyncTask res = asyncTask.get();
-                    if(res.getStatus()==0) {
-                        LogCat.debug("Datos del teléfono/usuario grabados en BBDD");
-                    } else {
-                        LogCat.error("Se ha producido un error al grabar el teléfono/usuario grabados en BBDD ".concat(res.getDescStatus()));
-                    }
-
-
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    LogCat.error("Error al ejecutar tarea asíncrona de grabación de usuario en BD: ".concat(e.getMessage()));
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                    LogCat.error("Error al ejecutar tarea asíncrona de grabación de usuario en BD: ".concat(e.getMessage()));
-                }
-
-
-
-
-            }
         }
     }
 
@@ -414,38 +353,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-
-    /**
-     * Carga las noticias de la base de datos
-     */
-    private void cargarFavoritas() {
-
-        final List<Noticia> favoritas = noticiaController.getNoticiasFavoritas(getApplicationContext());
-        noticiaAdapter =  new NoticiasAdapter(favoritas,null,imageLoader,getResources());
-        noticiaAdapter.notifyDataSetChanged();
-        setMostrandoNoticiasExternas(false);
-
-        if(favoritas==null || favoritas.size()==0) {
-            MessageUtils.showToastDuracionCorta(this,getString(R.string.msg_no_hay_noticias_favoritas));
-        }
-
-        /**
-         * Se establece el listener que se pasa al adapter para que añade
-         * este Listener a cada View a mostrar en el RecyclerView
-         */
-        noticiaAdapter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int pos =  recycler.getChildAdapterPosition(view);
-                cargarActivityDetalleNoticia(favoritas.get(pos),pos);
-            }
-        });
-
-        recycler.setAdapter(noticiaAdapter);
-        setTitle(getString(R.string.favoritos));
-    }
-
-
     /**
      * Operación que pasa las noticias al adaptador y actualiza su contenido para renderizar el resultado
      * @param noticias List<Noticia>
@@ -527,7 +434,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch(item.getItemId()) {
             case R.id.favoritos:
-                cargarFavoritas();
+                command.execute();
                 break;
 
             case R.id.nuevo_origen:
@@ -551,8 +458,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.closeDrawers();
         return true;
     }
-
-
 
 
     /**
@@ -666,10 +571,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Intent intent = new Intent(MainActivity.this,OrigenRssMantenimientoActivity.class);
         startActivityForResult(intent,ConstantesDatos.RESPONSE_MANTENIMIENTO_FUENTE_DATOS);
     }
-
-
-
-
 
 
 

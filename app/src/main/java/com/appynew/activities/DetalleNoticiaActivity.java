@@ -10,9 +10,9 @@ import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-import com.appynew.activities.dialog.AlertDialogHelper;
-import com.appynew.activities.dialog.NoticiaFavoritaBtnAceptar;
-import com.appynew.activities.dialog.NoticiaFavoritaBtnCancelar;
+import com.appynews.dialog.AlertDialogHelper;
+import com.appynews.dialog.NoticiaFavoritaBtnAceptar;
+import com.appynews.dialog.NoticiaFavoritaBtnCancelar;
 import com.appynews.model.dto.Noticia;
 import com.appynews.utils.ConstantesDatos;
 import com.appynews.utils.DateOperationsUtils;

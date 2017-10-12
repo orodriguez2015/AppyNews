@@ -10,8 +10,8 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.appynew.activities.dialog.AlertDialogHelper;
-import com.appynew.activities.dialog.BtnAceptarCancelarDialogGenerico;
+import com.appynews.dialog.AlertDialogHelper;
+import com.appynews.dialog.BtnAceptarCancelarDialogGenerico;
 import com.appynews.asynctasks.ParametrosAsyncTask;
 import com.appynews.asynctasks.RespuestaAsyncTask;
 import com.appynews.asynctasks.SaveOrigenRssAsyncTask;

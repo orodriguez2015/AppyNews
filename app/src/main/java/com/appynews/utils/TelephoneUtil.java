@@ -4,7 +4,10 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 
 import com.appynews.model.dto.DatosUsuarioVO;
 
@@ -60,11 +63,11 @@ public class TelephoneUtil {
      * @param context: Context
      * @param datos: DatosTelefonoVO
      * @return void
-     */
+     *
     private static void getEmailUsuario(Context context, DatosUsuarioVO datos) {
         AccountManager accountManager = AccountManager.get(context);
-        //Account[] accounts = accountManager.getAccounts();
-        Account[] accounts = accountManager.getAccountsByType("com.google");
+        Account[] accounts = accountManager.getAccounts();
+
 
         for(int i=0;accounts!=null && i<accounts.length;i++) {
             LogCat.debug("  CUENTA: " + accounts[i].name + ", TIPO: " + accounts[i].type);
@@ -75,7 +78,7 @@ public class TelephoneUtil {
             }
         }
 
-        /*
+
         String main_data[] = {
                 "data1", "is_primary", "data3", "data2", "data1", "is_primary", "photo_uri", "mimetype"
         };
@@ -99,7 +102,7 @@ public class TelephoneUtil {
 
                 LogCat.debug(" ====> s1: " + s1 + ", s2: " + s2);
 
-                /*
+
                 if (s.equals("vnd.android.cursor.item/phone_v2")) {
                     String s1 = ((Cursor) (object)).getString(4);
                     boolean flag1;
@@ -114,9 +117,9 @@ public class TelephoneUtil {
             ((Cursor) (object)).close();
         }
         return null;
-        */
-    }
 
+    }
+    */
     public static String getPhoneNumber(Activity activity){
 
         StringBuffer sb = new StringBuffer();

@@ -5,8 +5,8 @@ import android.content.DialogInterface;
 import android.view.View;
 
 import com.appynew.activities.OrigenRssMantenimientoActivity;
-import com.appynew.activities.dialog.AlertDialogHelper;
-import com.appynew.activities.dialog.BtnAceptarCancelarDialogGenerico;
+import com.appynews.dialog.AlertDialogHelper;
+import com.appynews.dialog.BtnAceptarCancelarDialogGenerico;
 import com.appynews.controllers.OrigenRssController;
 import com.appynews.exceptions.DeleteOrigenesRssException;
 import com.appynews.model.dto.OrigenNoticiaVO;
