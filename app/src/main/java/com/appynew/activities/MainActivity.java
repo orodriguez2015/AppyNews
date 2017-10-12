@@ -240,7 +240,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     private void initializeImageLoader() {
         RequestQueue requestQueau = Volley.newRequestQueue(getBaseContext());
-        // Se crea para la cola una caché de 10 imágene
+        // Se crea para la cola una caché de 10 imágenes
         this.imageLoader = new ImageLoader(requestQueau, new LruBitmapCache());
     }
 
@@ -400,25 +400,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
-
-
-    /**
-     * Operación que es invocada cuando el usuario selecciona un determinado ítem del menú
-     * @param item: MenuItem
-     * @return boolean
-     *
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Id del item de menú seleccionado por el usuario
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-    **/
 
 
     /**

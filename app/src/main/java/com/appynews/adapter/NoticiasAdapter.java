@@ -127,9 +127,7 @@ public class NoticiasAdapter extends RecyclerView.Adapter<NoticiasAdapter.Notici
     public NoticiaViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
 
         /** Se carga el layout noticia.xml para mostrar la información de cada noticia **/
-        View v = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.noticia, viewGroup, false);
-
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.noticia, viewGroup, false);
         v.setOnClickListener(this);
         return new NoticiaViewHolder(v);
     }
