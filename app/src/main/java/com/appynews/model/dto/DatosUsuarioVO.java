@@ -16,7 +16,76 @@ public class DatosUsuarioVO implements Serializable {
     private String imei           = null;
     private String regionIso      = null;
     private String email          = null;
+    private String modeloDispositivo = null;
+    private String marcaDispositivo  = null;
+    private String numeroSerieDispositivo = null;
+    private String hardwareDispositivo =  null;
 
+    /**
+     * Devuelve el modelo del dispositivo
+     * @return String
+     */
+    public String getModeloDispositivo() {
+        return modeloDispositivo;
+    }
+
+
+    /**
+     * Establece el modelo del dispositivo
+     * @param modeloDispositivo String
+     */
+    public void setModeloDispositivo(String modeloDispositivo) {
+        this.modeloDispositivo = modeloDispositivo;
+    }
+
+    /**
+     * Devuelve la marca del dispositivo
+     * @return String
+     */
+    public String getMarcaDispositivo() {
+        return marcaDispositivo;
+    }
+
+    /**
+     * Establece la marca del dispositivo
+     * @param marcaDispositivo String
+     */
+    public void setMarcaDispositivo(String marcaDispositivo) {
+        this.marcaDispositivo = marcaDispositivo;
+    }
+
+    /**
+     * Devuelve el número de serie del dispositivo
+     * @return String
+     */
+    public String getNumeroSerieDispositivo() {
+        return numeroSerieDispositivo;
+    }
+
+    /**
+     * Establece el número de serie del dispositivo
+     * @param numeroSerieDispositivo  String
+     */
+    public void setNumeroSerieDispositivo(String numeroSerieDispositivo) {
+        this.numeroSerieDispositivo = numeroSerieDispositivo;
+    }
+
+    /**
+     * Devuelve un identificador del hardware del dispositivo
+     * @return String
+     */
+    public String getHardwareDispositivo() {
+        return hardwareDispositivo;
+    }
+
+
+    /**
+     * Establece el identificador del hardware del dispositivo
+     * @param hardwareDispositivo  String
+     */
+    public void setHardwareDispositivo(String hardwareDispositivo) {
+        this.hardwareDispositivo = hardwareDispositivo;
+    }
 
     /**
      * Devuelve el imei del teléfono

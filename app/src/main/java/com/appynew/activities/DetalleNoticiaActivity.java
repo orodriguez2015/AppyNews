@@ -91,7 +91,6 @@ public class DetalleNoticiaActivity extends AppCompatActivity {
         WebSettings configuracionWebView = webViewNoticia.getSettings();
         webViewNoticia.setInitialScale(1);
 
-
         configuracionWebView.setLoadsImagesAutomatically(true);
         configuracionWebView.setUseWideViewPort(true);
         configuracionWebView.setLoadWithOverviewMode(true);

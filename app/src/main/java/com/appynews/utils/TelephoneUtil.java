@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
@@ -53,6 +54,10 @@ public class TelephoneUtil {
         salida.setNumeroTelefono(telephoneManager.getLine1Number());
         salida.setImei(telephoneManager.getDeviceId());
         salida.setRegionIso(telephoneManager.getSimCountryIso());
+        salida.setMarcaDispositivo(Build.BRAND);
+        salida.setNumeroSerieDispositivo(Build.SERIAL);
+        salida.setModeloDispositivo(Build.MODEL);
+        salida.setHardwareDispositivo(Build.HARDWARE);
 
         return salida;
     }

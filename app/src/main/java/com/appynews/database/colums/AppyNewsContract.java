@@ -38,6 +38,10 @@ public class AppyNewsContract  {
         public static final String NOMBRE               = "nombre";
         public static final String APELLIDO1            = "apellido1";
         public static final String APELLIDO2            = "apellido2";
+        public static final String MARCA_DISPOSITIVO    = "marcaDispositivo";
+        public static final String MODELO_DISPOSITIVO   = "modeloDispositivo";
+        public static final String HARDWARE_DISPOSITIVO = "hardwareDispositivo";
+        public static final String NUMERO_SERIE_DISPOSITIVO = "numeroSerieDispositivo";
     }
 
 

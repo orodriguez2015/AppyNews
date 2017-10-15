@@ -59,6 +59,10 @@ public class AppyNewsHelper extends SQLiteOpenHelper {
             // Se crea la tabla Usuario
             sqLiteDatabase.execSQL("CREATE TABLE " + AppyNewsContract.UsuarioEntry.TABLE_NAME + " ("
                     + AppyNewsContract.UsuarioEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + AppyNewsContract.UsuarioEntry.MARCA_DISPOSITIVO + " TEXT, "
+                    + AppyNewsContract.UsuarioEntry.MODELO_DISPOSITIVO + " TEXT, "
+                    + AppyNewsContract.UsuarioEntry.NUMERO_SERIE_DISPOSITIVO + " TEXT, "
+                    + AppyNewsContract.UsuarioEntry.HARDWARE_DISPOSITIVO + " TEXT, "
                     + AppyNewsContract.UsuarioEntry.NOMBRE + " TEXT,"
                     + AppyNewsContract.UsuarioEntry.APELLIDO1 + " TEXT,"
                     + AppyNewsContract.UsuarioEntry.APELLIDO2 + " TEXT,"
@@ -66,7 +70,6 @@ public class AppyNewsHelper extends SQLiteOpenHelper {
                     + AppyNewsContract.UsuarioEntry.REGION_ISO + " TEXT,"
                     + AppyNewsContract.UsuarioEntry.EMAIL + " TEXT,"
                     + AppyNewsContract.UsuarioEntry.TELEFONO + " TEXT)");
-            //+ "UNIQUE (" + AppyNewsContract.NoticiaEntry._ID + "))");
 
 
             // Se crea la tabla origen

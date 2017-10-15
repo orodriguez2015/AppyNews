@@ -70,6 +70,11 @@ public class ModelConversorUtil {
         values.put(AppyNewsContract.UsuarioEntry.NOMBRE,telefono.getNombre());
         values.put(AppyNewsContract.UsuarioEntry.APELLIDO1,telefono.getApellido1());
         values.put(AppyNewsContract.UsuarioEntry.APELLIDO2,telefono.getApellido2());
+        values.put(AppyNewsContract.UsuarioEntry.APELLIDO2,telefono.getApellido2());
+        values.put(AppyNewsContract.UsuarioEntry.MARCA_DISPOSITIVO,telefono.getMarcaDispositivo());
+        values.put(AppyNewsContract.UsuarioEntry.MODELO_DISPOSITIVO,telefono.getModeloDispositivo());
+        values.put(AppyNewsContract.UsuarioEntry.NUMERO_SERIE_DISPOSITIVO,telefono.getNumeroSerieDispositivo());
+        values.put(AppyNewsContract.UsuarioEntry.HARDWARE_DISPOSITIVO,telefono.getHardwareDispositivo());
         return values;
     }
 }
