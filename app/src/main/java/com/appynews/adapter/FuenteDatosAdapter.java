@@ -1,6 +1,5 @@
 package com.appynews.adapter;
 
-import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +30,6 @@ public class FuenteDatosAdapter extends RecyclerView.Adapter<FuenteDatosAdapter.
     private List<OrigenNoticiaVO> items = null;
     private String origen = null;
     private ImageLoader imageLoader = null;
-    private Resources resources = null;
     private View.OnClickListener listener = null;
     private OrigenRssMantenimientoActivity actividad = null;
 

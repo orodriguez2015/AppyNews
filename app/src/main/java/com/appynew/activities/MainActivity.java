@@ -157,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Devuelve lel Activity
      * @return Activity
      */
+    @Override
     public Activity getActivity() {
         return this;
     }
@@ -166,6 +167,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Carga las noticias favoritas en la actividad
      * @param favoritas List<Noticia>
      */
+    @Override
     public void cargarFavoritas(final List<Noticia> favoritas) {
 
         noticiaAdapter =  new NoticiasAdapter(favoritas,null,imageLoader,getResources());

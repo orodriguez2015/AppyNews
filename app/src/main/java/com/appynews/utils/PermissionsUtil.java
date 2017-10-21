@@ -50,31 +50,6 @@ public class PermissionsUtil {
     public static boolean solicitarPermisosAccesoEstadoTelefono(Activity activity) {
         boolean permissions  =true;
 
-        LogCat.info("Device: " + Build.DEVICE);
-        LogCat.info("Board: " + Build.BOARD);
-        LogCat.info("BOOTLOADER: " + Build.BOOTLOADER);
-        LogCat.info("Brand: " + Build.BRAND);
-        LogCat.info("display: " + Build.DISPLAY);
-        LogCat.info("fingerprint: " + Build.FINGERPRINT);
-        LogCat.info("MANUFACTURER: " + Build.MANUFACTURER);
-        LogCat.info("MODEL: " + Build.MODEL);
-        LogCat.info("PRODUCT: " + Build.PRODUCT);
-        LogCat.info("SERIAL: " + Build.SERIAL);
-
-        LogCat.info("TYPE: " + Build.TYPE);
-        LogCat.info("TAGS: " + Build.TAGS);
-        LogCat.info("SHARDWARE: " + Build.HARDWARE);
-
-        /*
-        LogCat.info("SERIAL: " + Build.SERIAL);
-        LogCat.info("SERIAL: " + Build.SERIAL);
-        LogCat.info("SERIAL: " + Build.SERIAL);
-        LogCat.info("SERIAL: " + Build.SERIAL);
-        LogCat.info("SERIAL: " + Build.SERIAL);
-        LogCat.info("SERIAL: " + Build.SERIAL);
-        */
-
-
         /**
          * Si la versión de api de Android es superior a la 23 (Android 6), hay que solicitar permisos al usuario, puesto que no se conceden
          * al instalar la aplicación por primera vez, sino en la primera ejecución

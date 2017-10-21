@@ -7,17 +7,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 import android.view.MenuItem;
-import android.view.View;
 
-import com.appynews.dialog.AlertDialogHelper;
-import com.appynews.adapter.FuenteDatosAdapter;
-import com.appynews.controllers.OrigenRssController;
-import com.appynews.exceptions.GetOrigenesRssException;
+import com.appynews.command.actions.GetFuentesDatosRssCommandAction;
+import com.appynews.command.api.OrigenRssMantenimientoApiCommand;
 import com.appynews.model.dto.OrigenNoticiaVO;
 import com.appynews.utils.ConstantesDatos;
-import com.appynews.utils.LogCat;
-
-import java.util.List;
 
 import material.oscar.com.materialdesign.R;
 
@@ -27,11 +21,11 @@ import material.oscar.com.materialdesign.R;
  * mantenimiento de los orígenes de tipo RSS
  * @author oscar
  */
-public class OrigenRssMantenimientoActivity extends AppCompatActivity {
+public class OrigenRssMantenimientoActivity extends AppCompatActivity implements OrigenRssMantenimientoApiCommand {
 
     private RecyclerView recycler = null;
     private LinearLayoutManager linearLayoutManager = null;
-    private OrigenRssController controller = new OrigenRssController(this);
+    private GetFuentesDatosRssCommandAction commandAction = null;
 
     /**
      * Método onCreate que crea la actividad y renderiza la vista
@@ -41,7 +35,6 @@ public class OrigenRssMantenimientoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_origen_rss_mantenimiento);
-
 
         // Se muestra el botón de atrás en la barra de título
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -55,43 +48,37 @@ public class OrigenRssMantenimientoActivity extends AppCompatActivity {
         linearLayoutManager = new LinearLayoutManager(this);
         recycler.setLayoutManager(linearLayoutManager);
 
-        cargarFuentesDatos();
+        cargarFuentesDatosRss();
+
+    }
+
+    /**
+     * Devuelve un Activity
+     * @return Activity
+     */
+    @Override
+    public OrigenRssMantenimientoActivity getActivity() {
+        return this;
+    }
+
+    /**
+     * Devuelve un RecyclerView
+     * @return RecyclerView
+     */
+    @Override
+    public RecyclerView getRecyclerView() {
+        return this.recycler;
     }
 
 
     /**
      * Carga las noticias de la base de datos
      */
-    private void cargarFuentesDatos() {
-
-        List<OrigenNoticiaVO> origenes = null;
-
-        try {
-            origenes = controller.getOrigenes();
-
-            LogCat.debug("cargarFuentesDatos origenes: " + origenes);
-            FuenteDatosAdapter adapter = new FuenteDatosAdapter(origenes,this);
-            adapter.notifyDataSetChanged();
-
-            /**
-             * Se establece el listener que se pasa al adapter para que añade
-             * este Listener a cada View a mostrar en el RecyclerView
-             */
-            adapter.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    int pos =  recycler.getChildAdapterPosition(view);
-                    LogCat.debug("Se ha seleccionado el elemento de la posición " + pos);
-                }
-            });
-
-            recycler.setAdapter(adapter);
-
-
-        } catch(GetOrigenesRssException e) {
-            AlertDialogHelper.crearDialogoAlertaAdvertencia(this,getString(R.string.atencion),getString(R.string.err_get_fuentes_datos));
+    private void cargarFuentesDatosRss() {
+        if(commandAction==null) {
+            commandAction = new GetFuentesDatosRssCommandAction(this);
         }
-
+        commandAction.execute();
     }
 
 
@@ -99,7 +86,7 @@ public class OrigenRssMantenimientoActivity extends AppCompatActivity {
      * Operación que se encarga de recargar las fuentes de datos del activity
      */
     public void recargarFuenteDatos() {
-        cargarFuentesDatos();
+        cargarFuentesDatosRss();
     }
 
 
@@ -122,7 +109,10 @@ public class OrigenRssMantenimientoActivity extends AppCompatActivity {
     }
 
 
-
+    /**
+     * Muestra el activity de edición de una fuente/origen de datos RSS
+     * @param origen OrigenNoticiaVO
+     */
     public void showActivityEditarOrigenRss(OrigenNoticiaVO origen) {
         Intent intent = new Intent(getApplicationContext(), EditarFuenteDatosActivity.class);
         intent.putExtra("origenRss",origen);
@@ -145,7 +135,7 @@ public class OrigenRssMantenimientoActivity extends AppCompatActivity {
             switch (requestCode) {
                 case ConstantesDatos.RESPONSE_EDICION_FUENTE_DATOS:
                     // Se ha actualizada las fuentes/orígenes rss
-                    cargarFuentesDatos();
+                    cargarFuentesDatosRss();
                     break;
             }
         }
@@ -153,8 +143,8 @@ public class OrigenRssMantenimientoActivity extends AppCompatActivity {
 
 
     /**
-     * Comunica por medio deun Intent a la MainActivity que todo está OK.
-     * A continuacion se vuelve hacia atrás. Se pasa el id de la noticia que se está visualizando, en el caso de que lo tenga
+     * Comunica por medio de un Intent a la MainActivity que todo está OK.
+     * A continuacion se vuelve hacia atrás.
      */
     private void volverAtras() {
         Intent data = new Intent();
@@ -179,5 +169,6 @@ public class OrigenRssMantenimientoActivity extends AppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
+
 
 }
