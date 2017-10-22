@@ -5,7 +5,7 @@ import android.app.Activity;
 import com.appynews.asynctasks.ParametrosAsyncTask;
 import com.appynews.asynctasks.RespuestaAsyncTask;
 import com.appynews.asynctasks.SaveUsuarioAsyncTask;
-import com.appynews.command.api.ActividadPrincipalApiCommand;
+import com.appynews.command.api.ActividadPrincipalApi;
 import com.appynews.controllers.NoticiaController;
 import com.appynews.model.dto.Noticia;
 import com.appynews.utils.ConnectionUtils;
@@ -27,13 +27,13 @@ import static android.Manifest.permission.ACCESS_NETWORK_STATE;
  */
 public class RecuperarNoticiasFavoritasCommandAction implements CommandAction {
 
-    private ActividadPrincipalApiCommand command =null;
+    private ActividadPrincipalApi command =null;
 
     /**
      * Constructor
-     * @param command ActividadPrincipalApiCommand a la que está asociada el comando
+     * @param command ActividadPrincipalApi a la que está asociada el comando
      */
-    public RecuperarNoticiasFavoritasCommandAction(ActividadPrincipalApiCommand command) {
+    public RecuperarNoticiasFavoritasCommandAction(ActividadPrincipalApi command) {
         this.command = command;
     }
 

@@ -1,10 +1,11 @@
 package com.appynew.activities;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -31,11 +32,11 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 import com.appynews.adapter.NoticiasAdapter;
 import com.appynews.asynctasks.DeleteNoticiaAsyncTask;
-import com.appynews.asynctasks.GetNoticiasExternasAsyncTask;
 import com.appynews.asynctasks.ParametrosAsyncTask;
 import com.appynews.asynctasks.RespuestaAsyncTask;
+import com.appynews.command.actions.GetNoticiasCommandAction;
 import com.appynews.command.actions.RecuperarNoticiasFavoritasCommandAction;
-import com.appynews.command.api.ActividadPrincipalApiCommand;
+import com.appynews.command.api.ActividadPrincipalApi;
 import com.appynews.controllers.OrigenRssController;
 import com.appynews.database.helper.DatabaseErrors;
 import com.appynews.dialog.AlertDialogHelper;
@@ -51,7 +52,6 @@ import com.appynews.utils.PermissionsUtil;
 import com.appynews.utils.StringUtil;
 import com.appynews.utils.Utils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import material.oscar.com.materialdesign.R;
@@ -63,7 +63,7 @@ import static material.oscar.com.materialdesign.R.drawable.ic_menu_delete;
  * Clase MainActivity que lanza el Activity Principal
  * @author <a href="mailto:oscar.rodriguezbrea@gmail.com">Óscar Rodríguez</a>
  */
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,ActividadPrincipalApiCommand {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,ActividadPrincipalApi {
 
     private RecyclerView recycler;
     private RecyclerView.LayoutManager lManager;
@@ -86,6 +86,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     private String nombreOrigenNoticiasRecuperadas = null;
 
+
+    private GetNoticiasCommandAction noticiasCommandAction = null;
 
     /**
      * Método que inicializa la actividad
@@ -144,6 +146,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
          */
         command = new RecuperarNoticiasFavoritasCommandAction(this);
 
+
+        /**
+         * Se inicializa el Action que permite recuperar las noticias de una determinada
+         * fuente de datos RSS
+         */
+        this.noticiasCommandAction = new GetNoticiasCommandAction(this);
+
         /*
          * Solicitar permisos
          */
@@ -155,11 +164,48 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     /**
      * Devuelve lel Activity
-     * @return Activity
+     * @return MainActivity
      */
     @Override
-    public Activity getActivity() {
+    public MainActivity getActivity() {
         return this;
+    }
+
+
+    /**
+     * Devuelve el objeto NoticiasAdapter que está utilizando la actividad MainActivity para listar las noticias
+     * @return NoticiasAdapter
+     */
+    public NoticiasAdapter getNoticiasAdapter() {
+        return this.noticiaAdapter;
+    }
+
+
+    /**
+     * Devuelve el ImageLoader para cargar las imágenes asociadas a cada noticia
+     * @return ImageLoader
+     */
+    public ImageLoader getImageLoader() {
+        return this.imageLoader;
+    }
+
+
+    /**
+     * Devuelve el RecyclerView
+     * @return RecyclerView
+     */
+    public RecyclerView getRecyclerView() {
+        return this.recycler;
+    }
+
+
+    /**
+     * Devuelve el Context de la Actividad
+     * @return Context
+     */
+    @Override
+    public Context getContexto() {
+        return getApplicationContext();
     }
 
 
@@ -193,6 +239,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         recycler.setAdapter(noticiaAdapter);
         setTitle(getString(R.string.favoritos));
     }
+
 
 
     /**
@@ -318,60 +365,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     /**
-     * Método que carga las noticias de una determinada url
-     * @param url String que contiene la url del orígen de datos RSS
-     * @param origen String que contiene el nombre del orígen de datos RSS
+     * Permite establecer el nombr
+     * @param nombre
      */
-    private void cargarNoticias(String url,String origen) {
-
-        this.nombreOrigenNoticiasRecuperadas = origen;
-        setMostrandoNoticiasExternas(true);
-
-        // Se recupera la lista de noticias a través
-        List<Noticia> noticias = new ArrayList<Noticia>();
-
-        noticiaAdapter =  new NoticiasAdapter(noticias,origen,imageLoader,getResources());
-        recycler.setAdapter(noticiaAdapter);
-
-        // Se recuperan las noticias
-        GetNoticiasExternasAsyncTask tarea = new GetNoticiasExternasAsyncTask(this);
-        ParametrosAsyncTask params = new ParametrosAsyncTask();
-        params.setUrl(url);
-        tarea.execute(params);
-
-        setTitle(origen);
-
-        /**
-         * Se establece el listener que se pasa al adapter para que añade
-         * este Listener a cada View a mostrar en el RecyclerView
-         */
-        noticiaAdapter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int pos =  recycler.getChildAdapterPosition(view);
-                cargarActivityDetalleNoticia(noticiaAdapter.getNoticias().get(pos),pos);
-            }
-        });
+    @Override
+    public void setNombreOrigenFuenteDatos(String nombre) {
+        this.nombreOrigenNoticiasRecuperadas = nombre;
     }
 
 
     /**
-     * Operación que pasa las noticias al adaptador y actualiza su contenido para renderizar el resultado
-     * @param noticias List<Noticia>
+     * Establece el título de la actividad
+     * @param title String
      */
-    public void mostrarNoticias(List<Noticia> noticias) {
-        noticiaAdapter.setNoticias(noticias);
-        noticiaAdapter.notifyDataSetChanged();
+    @Override
+    public void setTitulo(String title) {
+        setTitle(title);
     }
 
+    /**
+     * Devuelve los Resources
+     * @return Resources
+     */
+    @Override
+    public Resources getRecursos() {
+        return getResources();
 
+    }
 
 
     /**
      * Este método pasa el control del activity actual al activity DetalleNoticiaActivity.
      * @param noticia Objeto de la clase Noticia que se pasa a la actividad DetalleNoticiaActivity
      */
-    private void cargarActivityDetalleNoticia(Noticia noticia,int posicion) {
+    @Override
+    public void cargarActivityDetalleNoticia(Noticia noticia,int posicion) {
 
         this.posicionNoticiaSeleccionada = posicion;
 
@@ -432,7 +460,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             default:
                 // Se recuperan las noticias del origen seleccionado por el usuario
                 OrigenNoticiaVO origenSeleccionado = Utils.getFuenteDatos(fuentesDatos,id);
-                cargarNoticias(origenSeleccionado.getUrl(),origenSeleccionado.getNombre());
+                this.noticiasCommandAction.cargarNoticias(origenSeleccionado.getUrl(),origenSeleccionado.getNombre());
                 break;
         }
 
@@ -585,7 +613,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     if(parametros!=null && parametros.size()>0) {
                         Noticia noticiaGrabada = (Noticia)parametros.get("noticiaGrabada");
                         if(noticiaGrabada!=null) {
-                            this.getNoticiasAdapter().getNoticia(getPosicionNoticiaSeleccionada()).setId(noticiaGrabada.getId());
+                            //this.getNoticiasAdapter().getNoticia(getPosicionNoticiaSeleccionada()).setId(noticiaGrabada.getId());
+                            this.noticiasCommandAction.getNoticiasAdapter().getNoticia(getPosicionNoticiaSeleccionada()).setId(noticiaGrabada.getId());
                         }
                     }
 
@@ -601,6 +630,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * almacenadas por el usuario en la base de datos
      * @return boolean
      */
+    @Override
     public boolean isMostrandoNoticiasExternas() {
         return mostrandoNoticiasExternas;
     }
@@ -609,17 +639,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Permite indicar si se están mostrando o no noticias externas
      * @param mostrandoNoticiasExternas boolean
      */
+    @Override
     public void setMostrandoNoticiasExternas(boolean mostrandoNoticiasExternas) {
         this.mostrandoNoticiasExternas = mostrandoNoticiasExternas;
     }
 
-    /**
-     * Devuelve el adapter NoticiasAdapter que se encarga de rellenar con datos el RecyclerView con las noticias
-     * @return NoticiasAdapter
-     */
-    public NoticiasAdapter getNoticiasAdapter() {
-        return this.noticiaAdapter;
-    }
 
     /**
      * Devuelve la posición de la noticia seleccionada por el usuario en la colección de noticias

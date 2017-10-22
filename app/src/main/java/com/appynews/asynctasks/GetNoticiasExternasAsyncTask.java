@@ -1,6 +1,7 @@
 package com.appynews.asynctasks;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.appynew.activities.MainActivity;
@@ -19,16 +20,22 @@ public class GetNoticiasExternasAsyncTask extends AsyncTask<ParametrosAsyncTask,
 
     private ArrayList<Noticia> noticias = new ArrayList<Noticia>();
     private ProgressDialog pg = null;
-    private MainActivity actividad = null;
+    //private MainActivity actividad = null;
+    private Context actividad = null;
 
     /**
      * Constructor
      * @param mainActivity MainActivity
-     */
+     *
     public GetNoticiasExternasAsyncTask(MainActivity mainActivity) {
         this.actividad = mainActivity;
     }
+                           */
 
+
+    public GetNoticiasExternasAsyncTask(Context context) {
+        this.actividad = context;
+    }
 
     /**
      * Método a implementar para establecer la conexión a un origen de datos que se obtiene a través
@@ -61,7 +68,6 @@ public class GetNoticiasExternasAsyncTask extends AsyncTask<ParametrosAsyncTask,
     @Override
     protected void onPostExecute(ArrayList<Noticia> noticias) {
         // Se pasan las noticias recuperadas al adapter y se le notifica del cambio, para que renderize la vista
-        actividad.mostrarNoticias(this.noticias);
         if (pg.isShowing()) {
             pg.dismiss();
         }
