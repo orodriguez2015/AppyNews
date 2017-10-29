@@ -34,8 +34,7 @@ import com.appynews.adapter.NoticiasAdapter;
 import com.appynews.asynctasks.DeleteNoticiaAsyncTask;
 import com.appynews.asynctasks.ParametrosAsyncTask;
 import com.appynews.asynctasks.RespuestaAsyncTask;
-import com.appynews.command.actions.GetNoticiasCommandAction;
-import com.appynews.command.actions.RecuperarNoticiasFavoritasCommandAction;
+import com.appynews.command.actions.GetNoticiasAction;
 import com.appynews.command.api.ActividadPrincipalApi;
 import com.appynews.controllers.OrigenRssController;
 import com.appynews.database.helper.DatabaseErrors;
@@ -68,7 +67,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private RecyclerView recycler;
     private RecyclerView.LayoutManager lManager;
     private OrigenRssController origenRssController = new OrigenRssController(this);
-    private RecuperarNoticiasFavoritasCommandAction command = null;
     private ImageLoader imageLoader = null;
     private NoticiasAdapter noticiaAdapter = null;
     private Paint p = new Paint();
@@ -87,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String nombreOrigenNoticiasRecuperadas = null;
 
 
-    private GetNoticiasCommandAction noticiasCommandAction = null;
+    private GetNoticiasAction noticiasAction = null;
 
     /**
      * Método que inicializa la actividad
@@ -140,24 +138,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
          */
         initializeImageLoader();
 
-        /**
-         * Se inicializa el comando que recupera las noticias favoritas del usuario, así como
-         * grabar el imei del dispositivo en BD, en el caso de que no lo estuviera
-         */
-        command = new RecuperarNoticiasFavoritasCommandAction(this);
-
 
         /**
          * Se inicializa el Action que permite recuperar las noticias de una determinada
          * fuente de datos RSS
          */
-        this.noticiasCommandAction = new GetNoticiasCommandAction(this);
+        this.noticiasAction = new GetNoticiasAction(this);
 
         /*
          * Solicitar permisos
          */
         if(PermissionsUtil.solicitarPermisosAccesoEstadoTelefono(this)) {
-            command.execute();
+            noticiasAction.cargarNoticiasFavoritas();
         }
     }
 
@@ -207,39 +199,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public Context getContexto() {
         return getApplicationContext();
     }
-
-
-    /**
-     * Carga las noticias favoritas en la actividad
-     * @param favoritas List<Noticia>
-     */
-    @Override
-    public void cargarFavoritas(final List<Noticia> favoritas) {
-
-        noticiaAdapter =  new NoticiasAdapter(favoritas,null,imageLoader,getResources());
-        noticiaAdapter.notifyDataSetChanged();
-        setMostrandoNoticiasExternas(false);
-
-        if(favoritas==null || favoritas.size()==0) {
-            MessageUtils.showToastDuracionCorta(this,getString(R.string.msg_no_hay_noticias_favoritas));
-        }
-
-        /**
-         * Se establece el listener que se pasa al adapter para que añade
-         * este Listener a cada View a mostrar en el RecyclerView
-         */
-        noticiaAdapter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int pos =  recycler.getChildAdapterPosition(view);
-                cargarActivityDetalleNoticia(favoritas.get(pos),pos);
-            }
-        });
-
-        recycler.setAdapter(noticiaAdapter);
-        setTitle(getString(R.string.favoritos));
-    }
-
 
 
     /**
@@ -390,7 +349,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public Resources getRecursos() {
         return getResources();
+    }
 
+    /**
+     * Devuelve true si se están visualizando en este momento las noticias externas, o noticias
+     * almacenadas por el usuario en la base de datos
+     * @return boolean
+     */
+    @Override
+    public boolean isMostrandoNoticiasExternas() {
+        return mostrandoNoticiasExternas;
+    }
+
+    /**
+     * Permite indicar si se están mostrando o no noticias externas
+     * @param mostrandoNoticiasExternas boolean
+     */
+    @Override
+    public void setMostrandoNoticiasExternas(boolean mostrandoNoticiasExternas) {
+        this.mostrandoNoticiasExternas = mostrandoNoticiasExternas;
+    }
+
+
+    /**
+     * Devuelve la posición de la noticia seleccionada por el usuario en la colección de noticias
+     * @return int
+     */
+    public int getPosicionNoticiaSeleccionada() {
+        return this.posicionNoticiaSeleccionada;
     }
 
 
@@ -445,7 +431,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch(item.getItemId()) {
             case R.id.favoritos:
-                command.execute();
+                //command.execute();
+                noticiasAction.cargarNoticiasFavoritas();
                 break;
 
             case R.id.nuevo_origen:
@@ -460,7 +447,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             default:
                 // Se recuperan las noticias del origen seleccionado por el usuario
                 OrigenNoticiaVO origenSeleccionado = Utils.getFuenteDatos(fuentesDatos,id);
-                this.noticiasCommandAction.cargarNoticias(origenSeleccionado.getUrl(),origenSeleccionado.getNombre());
+                noticiasAction.cargarNoticias(origenSeleccionado.getUrl(),origenSeleccionado.getNombre());
                 break;
         }
 
@@ -613,44 +600,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     if(parametros!=null && parametros.size()>0) {
                         Noticia noticiaGrabada = (Noticia)parametros.get("noticiaGrabada");
                         if(noticiaGrabada!=null) {
-                            //this.getNoticiasAdapter().getNoticia(getPosicionNoticiaSeleccionada()).setId(noticiaGrabada.getId());
-                            this.noticiasCommandAction.getNoticiasAdapter().getNoticia(getPosicionNoticiaSeleccionada()).setId(noticiaGrabada.getId());
+                            noticiasAction.getNoticiasAdapter().getNoticia(getPosicionNoticiaSeleccionada()).setId(noticiaGrabada.getId());
                         }
                     }
-
                     break;
             }
         }
-    }
-
-
-
-    /**
-     * Devuelve true si se están visualizando en este momento las noticias externas, o noticias
-     * almacenadas por el usuario en la base de datos
-     * @return boolean
-     */
-    @Override
-    public boolean isMostrandoNoticiasExternas() {
-        return mostrandoNoticiasExternas;
-    }
-
-    /**
-     * Permite indicar si se están mostrando o no noticias externas
-     * @param mostrandoNoticiasExternas boolean
-     */
-    @Override
-    public void setMostrandoNoticiasExternas(boolean mostrandoNoticiasExternas) {
-        this.mostrandoNoticiasExternas = mostrandoNoticiasExternas;
-    }
-
-
-    /**
-     * Devuelve la posición de la noticia seleccionada por el usuario en la colección de noticias
-     * @return int
-     */
-    public int getPosicionNoticiaSeleccionada() {
-        return this.posicionNoticiaSeleccionada;
     }
 
 }

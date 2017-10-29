@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 
-import com.appynew.activities.MainActivity;
 import com.appynews.model.dto.Noticia;
 import com.appynews.utils.LogCat;
 
@@ -14,25 +13,19 @@ import java.util.ArrayList;
 import material.oscar.com.materialdesign.R;
 
 /**
+ * Tarea asíncrona que permite recuperar noticias de una fuente de datos RSS
  * Created by oscar on 18/06/16.
  */
 public class GetNoticiasExternasAsyncTask extends AsyncTask<ParametrosAsyncTask,Void,ArrayList<Noticia>> {
 
     private ArrayList<Noticia> noticias = new ArrayList<Noticia>();
     private ProgressDialog pg = null;
-    //private MainActivity actividad = null;
     private Context actividad = null;
 
     /**
      * Constructor
-     * @param mainActivity MainActivity
-     *
-    public GetNoticiasExternasAsyncTask(MainActivity mainActivity) {
-        this.actividad = mainActivity;
-    }
-                           */
-
-
+     * @param context Context
+     */
     public GetNoticiasExternasAsyncTask(Context context) {
         this.actividad = context;
     }

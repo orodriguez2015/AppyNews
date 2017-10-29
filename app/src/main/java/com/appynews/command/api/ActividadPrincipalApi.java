@@ -8,8 +8,6 @@ import com.android.volley.toolbox.ImageLoader;
 import com.appynew.activities.MainActivity;
 import com.appynews.model.dto.Noticia;
 
-import java.util.List;
-
 /**
  * Clase ActividadPrincipalApi con operaciones abstractas que deberá
  * implementar la actividad principal MainActivity
@@ -23,12 +21,6 @@ public interface ActividadPrincipalApi {
      * @return MainActivity
      */
     public MainActivity getActivity();
-
-    /**
-     * Carga las noticias favoritas
-     * @param noticias List<Noticia>
-     */
-    public void cargarFavoritas(List<Noticia> noticias);
 
     /**
      * Establece el título de la actividad
